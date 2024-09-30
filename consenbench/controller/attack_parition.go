@@ -27,7 +27,7 @@ func (a *PartitionAttack_1) Attack(nodes []*AttackNode, links [][]*AttackLink, o
 		// select a random node
 		rand_node := rand.Intn(len(nodes))
 		// set all incoming and outgoing links to of rand_node to high loss
-		fmt.Printf("attacking node %v\n", rand_node)
+		fmt.Printf("attacking node %v\n", rand_node+2)
 		for i := 0; i < len(nodes); i++ {
 			for j := 0; j < len(nodes); j++ {
 				if i == j {
@@ -35,7 +35,7 @@ func (a *PartitionAttack_1) Attack(nodes []*AttackNode, links [][]*AttackLink, o
 				}
 				if i == rand_node || j == rand_node {
 					links[i][j].SetLoss(100)
-					fmt.Printf("setting loss between %v and %v\n", i, j)
+					fmt.Printf("setting loss between %v and %v\n", i+2, j+2)
 				}
 			}
 		}
