@@ -34,7 +34,7 @@ func (a *PartitionAttack_1) Attack(nodes []*AttackNode, links [][]*AttackLink, o
 					continue
 				}
 				if i == rand_node || j == rand_node {
-					links[i][j].SetLoss(100)
+					links[i][j].SetDelay(100)
 					fmt.Printf("setting loss between %v and %v\n", i, j)
 				}
 			}
@@ -46,7 +46,7 @@ func (a *PartitionAttack_1) Attack(nodes []*AttackNode, links [][]*AttackLink, o
 					continue
 				}
 				if i == rand_node || j == rand_node {
-					links[i][j].SetLoss(0)
+					links[i][j].SetDelay(0)
 				}
 			}
 		}
