@@ -196,7 +196,7 @@ func (ba *Baxos) Bootstrap(nodes []*common.Node, duration int, result chan util.
 	file_names := []string{"protocols/baxos/assets/performance_graph.py"}
 	m = 1
 	for j := int(num_replicas); j < int(num_replicas+num_clients); j++ {
-		file_names = append(file_names, fmt.Sprintf("../../logs/%v.txt ", 50+m))
+		file_names = append(file_names, fmt.Sprintf("~/toture-testing-consensus/logs/%v.txt ", 50+m))
 		m++
 	}
 
@@ -207,7 +207,7 @@ func (ba *Baxos) Bootstrap(nodes []*common.Node, duration int, result chan util.
 	if err != nil {
 		print("Error while generating performance graphs " + err.Error() + " " + string(output) + "\n")
 	} else {
-		print("Baxos Performance graphs generated successfully" + string(output) + "\n")
+		print("Baxos Performance graphs generated successfully\n" + string(output) + "\n")
 	}
 
 	result <- ba.GetPerformance(clientOutputs)
