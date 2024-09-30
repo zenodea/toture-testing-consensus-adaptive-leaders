@@ -193,14 +193,16 @@ func (ba *Baxos) Bootstrap(nodes []*common.Node, duration int, result chan util.
 	wg2.Wait()
 	fmt.Println("Downloaded all the baxos client logs")
 
-	file_names := ""
+	file_names := []string{"protocols/baxos/assets/performance_graph.py"}
 	m = 1
 	for j := int(num_replicas); j < int(num_replicas+num_clients); j++ {
-		file_names = file_names + fmt.Sprintf("logs/%v.txt ", 50+m)
+		file_names = append(file_names, fmt.Sprintf("logs/%v.txt ", 50+m))
 		m++
 	}
 
-	sshCmd := exec.Command("python3", []string{"protocols/baxos/assets/performance_graph.py", file_names}...)
+	fmt.Printf("Running python command: python3 %v\n", file_names)
+
+	sshCmd := exec.Command("python3", file_names...)
 	output, err := sshCmd.CombinedOutput()
 	if err != nil {
 		print("Error while generating performance graphs " + err.Error() + " " + string(output) + "\n")
