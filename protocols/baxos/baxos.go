@@ -200,7 +200,7 @@ func (ba *Baxos) Bootstrap(nodes []*common.Node, duration int, result chan util.
 		m++
 	}
 
-	sshCmd := exec.Command("python3", []string{"protocols/baxos/assets/performance-graph.py", file_names}...)
+	sshCmd := exec.Command("python3", []string{"protocols/baxos/assets/performance_graph.py", file_names}...)
 	output, err := sshCmd.CombinedOutput()
 	if err != nil {
 		print("Error while generating performance graphs " + err.Error() + " " + string(output))
