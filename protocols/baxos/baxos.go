@@ -180,7 +180,18 @@ func (ba *Baxos) Bootstrap(nodes []*common.Node, duration int, result chan util.
 
 	fmt.Print("Killed all the replicas and clients\n")
 
-	//fmt.Printf("Client outputs: %v\n", clientOutputs)
+	var wg2 sync.WaitGroup
+	wg2.Add(int(num_clients))
+	m = 1
+	for j := int(num_replicas); j < int(num_replicas+num_clients); j++ {
+		go func(i int, k int) {
+			nodes[i].Get_Load(fmt.Sprintf("%vbench/logs/%v.txt", nodes[i].HomeDir, 50+k), "logs/")
+			wg2.Done()
+		}(j, m)
+		m++
+	}
+	wg2.Wait()
+	fmt.Println("Downloaded all the baxos client logs")
 
 	result <- ba.GetPerformance(clientOutputs)
 }
