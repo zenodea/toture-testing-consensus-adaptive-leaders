@@ -182,6 +182,27 @@ func (ba *Baxos) Bootstrap(nodes []*common.Node, duration int, result chan util.
 
 	fmt.Print("Killed all the replicas and clients\n")
 
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		panic("Error getting home directory:" + err.Error())
+	}
+
+	sshCmd := exec.Command("rm", []string{"-r", filepath.Join(homeDir, "toture-testing-consensus/logs")}...)
+	output, err := sshCmd.CombinedOutput()
+	if err != nil {
+		print("Error while deleting logs/ " + err.Error() + " " + string(output) + "\n")
+	} else {
+		print("deleted logs/ successfully\n" + string(output) + "\n")
+	}
+
+	sshCmd = exec.Command("mkdir", []string{"-p", filepath.Join(homeDir, "toture-testing-consensus/logs")}...)
+	output, err = sshCmd.CombinedOutput()
+	if err != nil {
+		panic("Error while creating logs/ " + err.Error() + " " + string(output) + "\n")
+	} else {
+		print("created logs/ successfully\n" + string(output) + "\n")
+	}
+
 	var wg2 sync.WaitGroup
 	wg2.Add(int(num_clients))
 	m = 1
@@ -196,10 +217,6 @@ func (ba *Baxos) Bootstrap(nodes []*common.Node, duration int, result chan util.
 	fmt.Println("Downloaded all the baxos client logs")
 
 	file_names := []string{"protocols/baxos/assets/performance_graph.py"}
-	homeDir, err := os.UserHomeDir()
-	if err != nil {
-		panic("Error getting home directory:" + err.Error())
-	}
 
 	m = 1
 	for j := int(num_replicas); j < int(num_replicas+num_clients); j++ {
@@ -210,8 +227,8 @@ func (ba *Baxos) Bootstrap(nodes []*common.Node, duration int, result chan util.
 
 	fmt.Printf("Running python command: python3 %v\n", file_names)
 
-	sshCmd := exec.Command("python3", file_names...)
-	output, err := sshCmd.CombinedOutput()
+	sshCmd = exec.Command("python3", file_names...)
+	output, err = sshCmd.CombinedOutput()
 	if err != nil {
 		print("Error while generating performance graphs " + err.Error() + " " + string(output) + "\n")
 	} else {
