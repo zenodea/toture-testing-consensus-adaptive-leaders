@@ -10,7 +10,6 @@ import (
 	"strings"
 	"sync"
 	"time"
-	"toture-test/consenbench/client"
 	"toture-test/consenbench/common"
 	"toture-test/protocols"
 	"toture-test/util"
@@ -201,7 +200,13 @@ func (ba *Baxos) Bootstrap(nodes []*common.Node, duration int, result chan util.
 		m++
 	}
 
-	client.RunCommand("python3", []string{"protocols/baxos/assets/performance-graph.py", file_names}, ba.logger)
+	sshCmd := exec.Command("python3", []string{"protocols/baxos/assets/performance-graph.py", file_names}...)
+	output, err := sshCmd.CombinedOutput()
+	if err != nil {
+		print("Error while generating performance graphs " + err.Error() + " " + string(output))
+	} else {
+		print("Baxos Performance graphs generated successfully")
+	}
 
 	result <- ba.GetPerformance(clientOutputs)
 }
