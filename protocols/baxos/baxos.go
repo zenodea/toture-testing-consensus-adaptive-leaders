@@ -5,7 +5,9 @@ import (
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"log"
+	"os"
 	"os/exec"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"sync"
@@ -194,9 +196,15 @@ func (ba *Baxos) Bootstrap(nodes []*common.Node, duration int, result chan util.
 	fmt.Println("Downloaded all the baxos client logs")
 
 	file_names := []string{"protocols/baxos/assets/performance_graph.py"}
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		panic("Error getting home directory:" + err.Error())
+	}
+
 	m = 1
 	for j := int(num_replicas); j < int(num_replicas+num_clients); j++ {
-		file_names = append(file_names, fmt.Sprintf("~/toture-testing-consensus/logs/%v.txt ", 50+m))
+		logFile := filepath.Join(homeDir, fmt.Sprintf("toture-testing-consensus/logs/%v.txt", 50+m))
+		file_names = append(file_names, logFile)
 		m++
 	}
 
