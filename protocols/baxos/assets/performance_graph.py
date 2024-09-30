@@ -57,7 +57,7 @@ def plot_throughput(throughput):
     plt.xlabel('Seconds')
     plt.ylabel('Requests per second')
     plt.grid(True)
-    plt.savefig("logs/baxos/throughput.pdf")
+    plt.savefig("logs/throughput.pdf")
 
 
 def plot_latency(average_latency):
@@ -70,7 +70,7 @@ def plot_latency(average_latency):
     plt.xlabel('Seconds')
     plt.ylabel('Average Latency (ms)')
     plt.grid(True)
-    plt.savefig("logs/baxos/latency.pdf")
+    plt.savefig("logs/latency.pdf")
 
 
 def main():
