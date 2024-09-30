@@ -5,4 +5,4 @@ It allows plugging in different consensus algorithms and network topologies to t
 
 ## NOTES
 
-This project is currently under **heavy development** and is **not ready for production use**.
+This project is currently under **heavy development** and is **not yet ready for production use**.
