@@ -10,6 +10,7 @@ import (
 	"strings"
 	"sync"
 	"time"
+	"toture-test/consenbench/client"
 	"toture-test/consenbench/common"
 	"toture-test/protocols"
 	"toture-test/util"
@@ -192,6 +193,15 @@ func (ba *Baxos) Bootstrap(nodes []*common.Node, duration int, result chan util.
 	}
 	wg2.Wait()
 	fmt.Println("Downloaded all the baxos client logs")
+
+	file_names := ""
+	m = 1
+	for j := int(num_replicas); j < int(num_replicas+num_clients); j++ {
+		file_names = file_names + fmt.Sprintf("logs/%v.txt ", 50+m)
+		m++
+	}
+
+	client.RunCommand("python3", []string{"protocols/baxos/assets/performance-graph.py", file_names}, ba.logger)
 
 	result <- ba.GetPerformance(clientOutputs)
 }
