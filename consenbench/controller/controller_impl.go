@@ -170,6 +170,8 @@ func (c *Controller) GetAttackImpl(attack_impl Attack) Attack {
 		attack_impl = NewBasicAttack(c.logger)
 	} else if c.Options.Attack == "noop" {
 		attack_impl = NewNoopAttack(c.logger)
+	} else if c.Options.Attack == "partition_1" {
+		attack_impl = NewPartitionAttack_1(c.logger)
 	} else {
 		panic("Unknown attack")
 
