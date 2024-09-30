@@ -2,6 +2,7 @@ package controller
 
 import (
 	"fmt"
+	"math/rand"
 	"time"
 	"toture-test/util"
 )
@@ -19,14 +20,38 @@ func NewPartitionAttack_1(logger *util.Logger) *PartitionAttack_1 {
 }
 
 func (a *PartitionAttack_1) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
-	fmt.Printf("Running partition attack_1  for %v seconds\n", duration)
+	fmt.Printf("Running partition attack_1:randomly partition one node at a time  for %v seconds\n", duration)
 	start_time := time.Now()
 
 	for time.Now().Sub(start_time).Seconds() < float64(duration-15) {
-
+		// select a random node
+		rand_node := rand.Intn(len(nodes))
+		// set all incoming and outgoing links to of rand_node to high loss
+		for i := 0; i < len(nodes); i++ {
+			for j := 0; j < len(nodes); j++ {
+				if i == j {
+					continue
+				}
+				if i == rand_node || j == rand_node {
+					links[i][j].SetLoss(100)
+				}
+			}
+		}
+		time.Sleep(3 * time.Second)
+		for i := 0; i < len(nodes); i++ {
+			for j := 0; j < len(nodes); j++ {
+				if i == j {
+					continue
+				}
+				if i == rand_node || j == rand_node {
+					links[i][j].SetLoss(0)
+				}
+			}
+		}
+		time.Sleep(3 * time.Second)
 	}
 
-	fmt.Print("Partition attack complete\n")
+	fmt.Print("Partition attack 1 complete\n")
 }
 
 // 2 randomly partition minority node at a time
