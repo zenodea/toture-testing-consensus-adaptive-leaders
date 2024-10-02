@@ -192,7 +192,7 @@ func (a *PartitionAttack_4_1) Attack(nodes []*AttackNode, links [][]*AttackLink,
 		// select the leader
 		node_id := oracle.GetTopNLeaders()[0]
 		// set all incoming and outgoing links to of leader to high loss
-		fmt.Printf("attacking node %v\n", node_id)
+		fmt.Printf("attacking leader node %v\n", node_id)
 		for i := 0; i < len(nodes); i++ {
 			for j := 0; j < len(nodes); j++ {
 				if i == j {
