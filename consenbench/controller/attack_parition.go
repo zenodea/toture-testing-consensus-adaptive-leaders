@@ -102,20 +102,43 @@ func (a *PartitionAttack_3) Attack(nodes []*AttackNode, links [][]*AttackLink, o
 	fmt.Print("Partition attack complete\n")
 }
 
-// 4 randomly partition the leader node in simplex, duplex
+// 4_1 randomly partition the leader node in simplex
 
-type PartitionAttack_4 struct {
+type PartitionAttack_4_1 struct {
 	logger *util.Logger
 }
 
-func NewPartitionAttack_4(logger *util.Logger) *PartitionAttack_4 {
-	return &PartitionAttack_4{
+func NewPartitionAttack_4_1(logger *util.Logger) *PartitionAttack_4_1 {
+	return &PartitionAttack_4_1{
 		logger: logger,
 	}
 }
 
-func (a *PartitionAttack_4) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
-	fmt.Printf("Running partition attack_4  for %v seconds\n", duration)
+func (a *PartitionAttack_4_1) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
+	fmt.Printf("Running partition attack_4_1  for %v seconds\n", duration)
+	start_time := time.Now()
+
+	for time.Now().Sub(start_time).Seconds() < float64(duration-15) {
+
+	}
+
+	fmt.Print("Partition attack complete\n")
+}
+
+// 4_2 randomly partition the leader node in duplex
+
+type PartitionAttack_4_2 struct {
+	logger *util.Logger
+}
+
+func NewPartitionAttack_4_2(logger *util.Logger) *PartitionAttack_4_2 {
+	return &PartitionAttack_4_2{
+		logger: logger,
+	}
+}
+
+func (a *PartitionAttack_4_2) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
+	fmt.Printf("Running partition attack_4_2  for %v seconds\n", duration)
 	start_time := time.Now()
 
 	for time.Now().Sub(start_time).Seconds() < float64(duration-15) {
@@ -162,6 +185,52 @@ func NewPartitionAttack_6(logger *util.Logger) *PartitionAttack_6 {
 
 func (a *PartitionAttack_6) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
 	fmt.Printf("Running partition attack_6  for %v seconds\n", duration)
+	start_time := time.Now()
+
+	for time.Now().Sub(start_time).Seconds() < float64(duration-15) {
+
+	}
+
+	fmt.Print("Partition attack complete\n")
+}
+
+// 7 randomly partial connectivity where links are up and down randomly
+
+type PartitionAttack_7 struct {
+	logger *util.Logger
+}
+
+func NewPartitionAttack_7(logger *util.Logger) *PartitionAttack_7 {
+	return &PartitionAttack_7{
+		logger: logger,
+	}
+}
+
+func (a *PartitionAttack_7) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
+	fmt.Printf("Running partition attack_7  for %v seconds\n", duration)
+	start_time := time.Now()
+
+	for time.Now().Sub(start_time).Seconds() < float64(duration-15) {
+
+	}
+
+	fmt.Print("Partition attack complete\n")
+}
+
+// 8 randomly partition such that there is a miniroty of quorum connected nodes
+
+type PartitionAttack_8 struct {
+	logger *util.Logger
+}
+
+func NewPartitionAttack_8(logger *util.Logger) *PartitionAttack_8 {
+	return &PartitionAttack_8{
+		logger: logger,
+	}
+}
+
+func (a *PartitionAttack_8) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
+	fmt.Printf("Running partition attack_8  for %v seconds\n", duration)
 	start_time := time.Now()
 
 	for time.Now().Sub(start_time).Seconds() < float64(duration-15) {
