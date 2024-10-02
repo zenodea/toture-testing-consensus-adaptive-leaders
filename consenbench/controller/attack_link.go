@@ -47,6 +47,9 @@ func (a *AttackLink) SetDelay(ms float32) {
 }
 
 func (a *AttackLink) SetLoss(l float32) {
+	if l == 100 {
+		l = 95 // to avoid 100% loss which will make the testbed unresponsive
+	}
 	a.Controller.Network.Send(&common.RPCPairPeer{
 		RpcPair: &common.RPCPair{
 			Code: common.GetRPCCodes().ControlMsg,
