@@ -46,7 +46,7 @@ func (a *PartitionAttack_1) Attack(nodes []*AttackNode, links [][]*AttackLink, o
 					continue
 				}
 				if i == rand_node || j == rand_node {
-					links[i][j].SetLoss(100)
+					links[i][j].SetLoss(0)
 				}
 			}
 		}
