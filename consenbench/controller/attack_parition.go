@@ -369,7 +369,7 @@ func (a *PartitionAttack_6) Attack(nodes []*AttackNode, links [][]*AttackLink, o
 	fmt.Print("Partition 6 attack complete\n")
 }
 
-// 7 randomly partial connectivity where links are up and down randomly
+// 7 randomly partition such that there is a miniroty of quorum connected nodes
 
 type PartitionAttack_7 struct {
 	logger *util.Logger
@@ -382,35 +382,33 @@ func NewPartitionAttack_7(logger *util.Logger) *PartitionAttack_7 {
 }
 
 func (a *PartitionAttack_7) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
-	fmt.Printf("Running partition attack_7  for %v seconds\n", duration)
+	fmt.Printf("Running partition attack_7 -- minority of quorum connected nodes  for %v seconds\n", duration)
 	start_time := time.Now()
-
+	majority := len(nodes)/2 + 1
 	for time.Now().Sub(start_time).Seconds() < float64(duration-15) {
+		for i := 0; i < majority; i++ {
+			fmt.Printf("attacking node %v\n", i)
+			for j := 0; j < majority; j++ {
+				if i != j {
+					links[i][j].SetLoss(100)
+					fmt.Printf("setting loss between %v and %v\n", i, j)
+				}
+			}
+		}
 
+		time.Sleep(1 * time.Second)
+
+		fmt.Printf("resetting attack\n")
+
+		for i := 0; i < majority; i++ {
+			for j := 0; j < majority; j++ {
+				if i != j {
+					links[i][j].SetLoss(0)
+				}
+			}
+		}
+		time.Sleep(3 * time.Second)
 	}
 
-	fmt.Print("Partition attack complete\n")
-}
-
-// 8 randomly partition such that there is a miniroty of quorum connected nodes
-
-type PartitionAttack_8 struct {
-	logger *util.Logger
-}
-
-func NewPartitionAttack_8(logger *util.Logger) *PartitionAttack_8 {
-	return &PartitionAttack_8{
-		logger: logger,
-	}
-}
-
-func (a *PartitionAttack_8) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
-	fmt.Printf("Running partition attack_8  for %v seconds\n", duration)
-	start_time := time.Now()
-
-	for time.Now().Sub(start_time).Seconds() < float64(duration-15) {
-
-	}
-
-	fmt.Print("Partition attack complete\n")
+	fmt.Print("Partition 7 attack complete\n")
 }
