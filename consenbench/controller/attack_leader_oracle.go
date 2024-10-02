@@ -71,8 +71,8 @@ func (l *LeaderOracle) GetTopNLeaders() []int {
 	// Extract the IDs of the top n leaders
 	var leaderIds []int
 	for i := 0; i < numLeaders && i < len(nodeStatsList); i++ {
-		leaderIds = append(leaderIds, nodeStatsList[i].node.Id)
-		fmt.Printf(fmt.Sprintf("ID: %v, CPU: %v, NetIn: %v, NetOut: %v", nodeStatsList[i].node.Id, nodeStatsList[i].cpuSum, nodeStatsList[i].netInSum, nodeStatsList[i].netOutSum))
+		leaderIds = append(leaderIds, nodeStatsList[i].node.Id-2) // controller is node 1, and the first replica is not 2
+		fmt.Printf(fmt.Sprintf("ID: %v, CPU: %v, NetIn: %v, NetOut: %v", nodeStatsList[i].node.Id-2, nodeStatsList[i].cpuSum, nodeStatsList[i].netInSum, nodeStatsList[i].netOutSum))
 	}
 
 	return leaderIds
