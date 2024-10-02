@@ -186,8 +186,6 @@ func (c *Controller) GetAttackImpl(attack_impl Attack) Attack {
 		attack_impl = NewPartitionAttack_6(c.logger)
 	} else if c.Options.Attack == "partition_7" {
 		attack_impl = NewPartitionAttack_7(c.logger)
-	} else if c.Options.Attack == "partition_8" {
-		attack_impl = NewPartitionAttack_8(c.logger)
 	} else {
 		panic("Unknown attack")
 
