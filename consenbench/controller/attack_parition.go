@@ -35,7 +35,7 @@ func (a *PartitionAttack_1) Attack(nodes []*AttackNode, links [][]*AttackLink, o
 				}
 				if i == rand_node || j == rand_node {
 					links[i][j].SetLoss(100)
-					fmt.Printf("setting loss between %v and %v\n", i+2, j+2)
+					fmt.Printf("setting loss between %v and %v\n", i, j)
 				}
 			}
 		}
@@ -81,7 +81,7 @@ func (a *PartitionAttack_2) Attack(nodes []*AttackNode, links [][]*AttackLink, o
 				rand_node = rand.Intn(len(nodes))
 			}
 			rand_nodes[rand_node] = true
-			rand_nodes_list[i] = rand_node + 2
+			rand_nodes_list[i] = rand_node
 		}
 		fmt.Printf("attacking node %v\n", rand_nodes_list)
 		// set all incoming and outgoing links to of rand_nodes to high loss
@@ -92,7 +92,7 @@ func (a *PartitionAttack_2) Attack(nodes []*AttackNode, links [][]*AttackLink, o
 				}
 				if rand_nodes[i] || rand_nodes[j] {
 					links[i][j].SetLoss(100)
-					fmt.Printf("setting loss between %v and %v\n", i+2, j+2)
+					fmt.Printf("setting loss between %v and %v\n", i, j)
 				}
 			}
 		}
@@ -104,7 +104,7 @@ func (a *PartitionAttack_2) Attack(nodes []*AttackNode, links [][]*AttackLink, o
 				}
 				if rand_nodes[i] || rand_nodes[j] {
 					links[i][j].SetLoss(0)
-					fmt.Printf("resetting loss between %v and %v\n", i+2, j+2)
+					fmt.Printf("resetting loss between %v and %v\n", i, j)
 				}
 			}
 		}
@@ -139,7 +139,7 @@ func (a *PartitionAttack_3) Attack(nodes []*AttackNode, links [][]*AttackLink, o
 				rand_node = rand.Intn(len(nodes))
 			}
 			rand_nodes[rand_node] = true
-			rand_nodes_list[i] = rand_node + 2
+			rand_nodes_list[i] = rand_node
 		}
 		fmt.Printf("attacking nodes %v\n", rand_nodes_list)
 		// set all incoming and outgoing links to of rand_nodes to high loss
@@ -150,7 +150,7 @@ func (a *PartitionAttack_3) Attack(nodes []*AttackNode, links [][]*AttackLink, o
 				}
 				if rand_nodes[i] || rand_nodes[j] {
 					links[i][j].SetLoss(100)
-					fmt.Printf("setting loss between %v and %v\n", i+2, j+2)
+					fmt.Printf("setting loss between %v and %v\n", i, j)
 				}
 			}
 		}
@@ -162,7 +162,7 @@ func (a *PartitionAttack_3) Attack(nodes []*AttackNode, links [][]*AttackLink, o
 				}
 				if rand_nodes[i] || rand_nodes[j] {
 					links[i][j].SetLoss(0)
-					fmt.Printf("resetting loss between %v and %v\n", i+2, j+2)
+					fmt.Printf("resetting loss between %v and %v\n", i, j)
 				}
 			}
 		}
@@ -191,17 +191,16 @@ func (a *PartitionAttack_4_1) Attack(nodes []*AttackNode, links [][]*AttackLink,
 	for time.Now().Sub(start_time).Seconds() < float64(duration-15) {
 		// select the leader
 		node_id := oracle.GetTopNLeaders()[0]
-		attack_node := node_id - 2 // node_id starts from 2
 		// set all incoming and outgoing links to of leader to high loss
-		fmt.Printf("attacking node %v\n", nodes[attack_node].Id)
+		fmt.Printf("attacking node %v\n", node_id)
 		for i := 0; i < len(nodes); i++ {
 			for j := 0; j < len(nodes); j++ {
 				if i == j {
 					continue
 				}
-				if i == attack_node || j == attack_node {
+				if i == node_id || j == node_id {
 					links[i][j].SetLoss(100)
-					fmt.Printf("setting loss between %v and %v\n", i+2, j+2)
+					fmt.Printf("setting loss between %v and %v\n", i, j)
 				}
 			}
 		}
@@ -211,7 +210,7 @@ func (a *PartitionAttack_4_1) Attack(nodes []*AttackNode, links [][]*AttackLink,
 				if i == j {
 					continue
 				}
-				if i == attack_node || j == attack_node {
+				if i == node_id || j == node_id {
 					links[i][j].SetLoss(0)
 				}
 			}
