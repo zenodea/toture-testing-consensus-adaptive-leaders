@@ -339,12 +339,13 @@ func (a *PartitionAttack_6) Attack(nodes []*AttackNode, links [][]*AttackLink, o
 		for i := 0; i < len(nodes)-1; i++ {
 			fmt.Printf("attacking node %v\n", i)
 			for j := i + 1; j < i+majority+1; j++ {
-				if j%len(nodes) == len(nodes)-1 || j%len(nodes) == i {
-					continue
+				if j%len(nodes) == len(nodes)-1 {
+					links[i][i-1].SetLoss(100)
+					fmt.Printf("setting loss between %v and %v\n", i, i-1)
+				} else {
+					links[i][j%len(nodes)].SetLoss(100)
+					fmt.Printf("setting loss between %v and %v\n", i, j%len(nodes))
 				}
-				links[i][j%len(nodes)].SetLoss(100)
-				fmt.Printf("setting loss between %v and %v\n", i, j%len(nodes))
-
 			}
 		}
 
@@ -354,10 +355,11 @@ func (a *PartitionAttack_6) Attack(nodes []*AttackNode, links [][]*AttackLink, o
 
 		for i := 0; i < len(nodes)-1; i++ {
 			for j := i + 1; j < i+majority+1; j++ {
-				if j%len(nodes) == len(nodes)-1 || j%len(nodes) == i {
-					continue
+				if j%len(nodes) == len(nodes)-1 {
+					links[i][i-1].SetLoss(0)
+				} else {
+					links[i][j%len(nodes)].SetLoss(0)
 				}
-				links[i][j%len(nodes)].SetLoss(0)
 
 			}
 		}
