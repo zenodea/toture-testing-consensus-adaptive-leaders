@@ -303,6 +303,9 @@ func (a *PartitionAttack_5) Attack(nodes []*AttackNode, links [][]*AttackLink, o
 		}
 
 		time.Sleep(1 * time.Second)
+
+		fmt.Printf("resetting attack\n")
+
 		for i := 0; i < len(nodes); i++ {
 			for j := i + 1; j < i+majority+1; j++ {
 				links[i][j%len(nodes)].SetLoss(0)
@@ -346,6 +349,9 @@ func (a *PartitionAttack_6) Attack(nodes []*AttackNode, links [][]*AttackLink, o
 		}
 
 		time.Sleep(1 * time.Second)
+
+		fmt.Printf("resetting attack\n")
+
 		for i := 0; i < len(nodes)-1; i++ {
 			for j := i + 1; j < i+majority+1; j++ {
 				if j%len(nodes) == len(nodes)-1 || j%len(nodes) == i {
