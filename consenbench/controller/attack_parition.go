@@ -189,10 +189,37 @@ func (a *PartitionAttack_4_1) Attack(nodes []*AttackNode, links [][]*AttackLink,
 	start_time := time.Now()
 
 	for time.Now().Sub(start_time).Seconds() < float64(duration-15) {
-
+		// select the leader
+		node_id := oracle.GetTopNLeaders()[0]
+		attack_node := node_id - 2 // node_id starts from 2
+		// set all incoming and outgoing links to of leader to high loss
+		fmt.Printf("attacking node %v\n", nodes[attack_node].Id)
+		for i := 0; i < len(nodes); i++ {
+			for j := 0; j < len(nodes); j++ {
+				if i == j {
+					continue
+				}
+				if i == attack_node || j == attack_node {
+					links[i][j].SetLoss(100)
+					fmt.Printf("setting loss between %v and %v\n", i+2, j+2)
+				}
+			}
+		}
+		time.Sleep(1 * time.Second)
+		for i := 0; i < len(nodes); i++ {
+			for j := 0; j < len(nodes); j++ {
+				if i == j {
+					continue
+				}
+				if i == attack_node || j == attack_node {
+					links[i][j].SetLoss(0)
+				}
+			}
+		}
+		time.Sleep(3 * time.Second)
 	}
 
-	fmt.Print("Partition attack complete\n")
+	fmt.Print("Partition attack 4_1 complete\n")
 }
 
 // 4_2 randomly partition the leader node in duplex

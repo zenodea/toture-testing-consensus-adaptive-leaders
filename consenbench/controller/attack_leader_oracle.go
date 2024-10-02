@@ -72,7 +72,7 @@ func (l *LeaderOracle) GetTopNLeaders() []int {
 	var leaderIds []int
 	for i := 0; i < numLeaders && i < len(nodeStatsList); i++ {
 		leaderIds = append(leaderIds, nodeStatsList[i].node.Id)
-		l.logger.Debug(fmt.Sprintf("ID: %v, CPU: %v, NetIn: %v, NetOut: %v", nodeStatsList[i].node.Id, nodeStatsList[i].cpuSum, nodeStatsList[i].netInSum, nodeStatsList[i].netOutSum), 5)
+		fmt.Printf(fmt.Sprintf("ID: %v, CPU: %v, NetIn: %v, NetOut: %v", nodeStatsList[i].node.Id, nodeStatsList[i].cpuSum, nodeStatsList[i].netInSum, nodeStatsList[i].netOutSum))
 	}
 
 	return leaderIds
