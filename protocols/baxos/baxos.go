@@ -221,7 +221,17 @@ func (ba *Baxos) Bootstrap(nodes []*common.Node, duration int, result chan util.
 	m = 1
 	for j := int(num_replicas); j < int(num_replicas+num_clients); j++ {
 		logFile := filepath.Join(homeDir, fmt.Sprintf("toture-testing-consensus/logs/%v.txt", 50+m))
+
 		file_names = append(file_names, logFile)
+
+		sshCmd = exec.Command("python3", logFile)
+		output, err = sshCmd.CombinedOutput()
+		if err != nil {
+			print("Error while generating performance graph " + err.Error() + " " + string(output) + "\n")
+		} else {
+			print("Baxos Performance graph generated successfully\n" + string(output) + "\n")
+		}
+
 		m++
 	}
 
