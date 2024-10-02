@@ -73,9 +73,13 @@ func (a *PartitionAttack_2) Attack(nodes []*AttackNode, links [][]*AttackLink, o
 	start_time := time.Now()
 
 	for time.Now().Sub(start_time).Seconds() < float64(duration-15) {
+		f := len(nodes)/2 - 1
+		if len(nodes)%2 == 1 {
+			f++
+		}
 		rand_nodes := make(map[int]bool)
-		rand_nodes_list := make([]int, len(nodes)/2-1)
-		for i := 0; i < len(nodes)/2-1; i++ {
+		rand_nodes_list := make([]int, f)
+		for i := 0; i < f; i++ {
 			rand_node := rand.Intn(len(nodes))
 			for rand_nodes[rand_node] {
 				rand_node = rand.Intn(len(nodes))
