@@ -39,7 +39,7 @@ func (a *PartitionAttack_1) Attack(nodes []*AttackNode, links [][]*AttackLink, o
 				}
 			}
 		}
-		time.Sleep(3 * time.Second)
+		time.Sleep(1 * time.Second)
 		for i := 0; i < len(nodes); i++ {
 			for j := 0; j < len(nodes); j++ {
 				if i == j {
