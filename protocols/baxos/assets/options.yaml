@@ -4,5 +4,5 @@ num_replicas: 5
 num_clients: 3
 arrival_rate: 10000
 ports: 10000
-round_trip_time: 5000
+round_trip_time: 500
 process_name: replica

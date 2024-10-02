@@ -73,10 +73,46 @@ func (a *PartitionAttack_2) Attack(nodes []*AttackNode, links [][]*AttackLink, o
 	start_time := time.Now()
 
 	for time.Now().Sub(start_time).Seconds() < float64(duration-15) {
-
+		// select a random node
+		rand_nodes := make(map[int]bool)
+		rand_nodes_list := make([]int, len(nodes)/2-1)
+		for i := 0; i < len(nodes)/2-1; i++ {
+			rand_node := rand.Intn(len(nodes))
+			for rand_nodes[rand_node] {
+				rand_node = rand.Intn(len(nodes))
+			}
+			rand_nodes[rand_node] = true
+			rand_nodes_list[i] = rand_node + 2
+		}
+		fmt.Printf("attacking node %v\n", rand_nodes_list)
+		// set all incoming and outgoing links to of rand_nodes to high loss
+		for i := 0; i < len(nodes); i++ {
+			for j := 0; j < len(nodes); j++ {
+				if i == j {
+					continue
+				}
+				if rand_nodes[i] || rand_nodes[j] {
+					links[i][j].SetLoss(100)
+					fmt.Printf("setting loss between %v and %v\n", i+2, j+2)
+				}
+			}
+		}
+		time.Sleep(1 * time.Second)
+		for i := 0; i < len(nodes); i++ {
+			for j := 0; j < len(nodes); j++ {
+				if i == j {
+					continue
+				}
+				if rand_nodes[i] || rand_nodes[j] {
+					links[i][j].SetLoss(0)
+					fmt.Printf("resetting loss between %v and %v\n", i+2, j+2)
+				}
+			}
+		}
+		time.Sleep(3 * time.Second)
 	}
 
-	fmt.Print("Partition attack complete\n")
+	fmt.Print("Partition attack 2 attack complete\n")
 }
 
 // 3 randomly partition majority node at a time
