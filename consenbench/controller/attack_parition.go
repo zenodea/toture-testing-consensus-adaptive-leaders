@@ -287,14 +287,32 @@ func NewPartitionAttack_5(logger *util.Logger) *PartitionAttack_5 {
 }
 
 func (a *PartitionAttack_5) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
-	fmt.Printf("Running partition attack_5  for %v seconds\n", duration)
+	fmt.Printf("Running partition attack_5 -- each node patitioned from  majority for %v seconds\n", duration)
 	start_time := time.Now()
-
+	majority := len(nodes)/2 + 1
 	for time.Now().Sub(start_time).Seconds() < float64(duration-15) {
 
+		for i := 0; i < len(nodes); i++ {
+			fmt.Printf("attacking node %v\n", i)
+			for j := i + 1; j < i+majority+1; j++ {
+				links[i][j%len(nodes)].SetLoss(100)
+				fmt.Printf("setting loss between %v and %v\n", i, j%len(nodes))
+				links[j%len(nodes)][i].SetLoss(100)
+				fmt.Printf("setting loss between %v and %v\n", j%len(nodes), i)
+			}
+		}
+
+		time.Sleep(1 * time.Second)
+		for i := 0; i < len(nodes); i++ {
+			for j := i + 1; j < i+majority+1; j++ {
+				links[i][j%len(nodes)].SetLoss(0)
+				links[j%len(nodes)][i].SetLoss(0)
+			}
+		}
+		time.Sleep(3 * time.Second)
 	}
 
-	fmt.Print("Partition attack complete\n")
+	fmt.Print("Partition attack 5 complete\n")
 }
 
 // 6 randomly partition such that there is only on quorum connected node
