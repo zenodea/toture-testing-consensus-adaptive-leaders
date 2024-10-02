@@ -172,6 +172,22 @@ func (c *Controller) GetAttackImpl(attack_impl Attack) Attack {
 		attack_impl = NewNoopAttack(c.logger)
 	} else if c.Options.Attack == "partition_1" {
 		attack_impl = NewPartitionAttack_1(c.logger)
+	} else if c.Options.Attack == "partition_2" {
+		attack_impl = NewPartitionAttack_2(c.logger)
+	} else if c.Options.Attack == "partition_3" {
+		attack_impl = NewPartitionAttack_3(c.logger)
+	} else if c.Options.Attack == "partition_4_1" {
+		attack_impl = NewPartitionAttack_4_1(c.logger)
+	} else if c.Options.Attack == "partition_4_2" {
+		attack_impl = NewPartitionAttack_4_2(c.logger)
+	} else if c.Options.Attack == "partition_5" {
+		attack_impl = NewPartitionAttack_5(c.logger)
+	} else if c.Options.Attack == "partition_6" {
+		attack_impl = NewPartitionAttack_6(c.logger)
+	} else if c.Options.Attack == "partition_7" {
+		attack_impl = NewPartitionAttack_7(c.logger)
+	} else if c.Options.Attack == "partition_8" {
+		attack_impl = NewPartitionAttack_8(c.logger)
 	} else {
 		panic("Unknown attack")
 
