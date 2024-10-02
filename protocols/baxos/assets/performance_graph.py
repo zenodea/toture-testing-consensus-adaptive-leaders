@@ -57,7 +57,7 @@ def plot_throughput(throughput):
     plt.xlabel('Seconds')
     plt.ylabel('Requests per second')
     plt.grid(True)
-    plt.savefig("logs/throughput.pdf")
+    plt.savefig("logs/"+sys.argv[1]+"-throughput.pdf")
 
 
 def plot_latency(average_latency):
@@ -70,15 +70,15 @@ def plot_latency(average_latency):
     plt.xlabel('Seconds')
     plt.ylabel('Average Latency (ms)')
     plt.grid(True)
-    plt.savefig("logs/latency.pdf")
+    plt.savefig("logs/"+sys.argv[1]+"-latency.pdf")
 
 
 def main():
-    if len(sys.argv) < 2:
-        print("Usage: python throughput_latency.py <file1> <file2> ...")
+    if len(sys.argv) < 3:
+        print("Usage: python throughput_latency.py <name> <file1> <file2> ...")
         return
 
-    filenames = sys.argv[1:]
+    filenames = sys.argv[2:]
     start_end_pairs = extract_start_end_pairs(filenames)
     if not start_end_pairs:
         print("No valid data found.")

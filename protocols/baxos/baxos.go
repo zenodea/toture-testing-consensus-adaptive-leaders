@@ -216,7 +216,8 @@ func (ba *Baxos) Bootstrap(nodes []*common.Node, duration int, result chan util.
 	wg2.Wait()
 	fmt.Println("Downloaded all the baxos client logs")
 
-	file_names := []string{"protocols/baxos/assets/performance_graph.py"}
+	command := "protocols/baxos/assets/performance_graph.py"
+	file_names := []string{}
 
 	m = 1
 	for j := int(num_replicas); j < int(num_replicas+num_clients); j++ {
@@ -224,7 +225,7 @@ func (ba *Baxos) Bootstrap(nodes []*common.Node, duration int, result chan util.
 
 		file_names = append(file_names, logFile)
 
-		sshCmd = exec.Command("python3", logFile)
+		sshCmd = exec.Command("python3", []string{command, "baxos-" + strconv.Itoa(50+m), logFile}...)
 		output, err = sshCmd.CombinedOutput()
 		if err != nil {
 			print("Error while generating performance graph " + err.Error() + " " + string(output) + "\n")
@@ -235,9 +236,7 @@ func (ba *Baxos) Bootstrap(nodes []*common.Node, duration int, result chan util.
 		m++
 	}
 
-	fmt.Printf("Running python command: python3 %v\n", file_names)
-
-	sshCmd = exec.Command("python3", file_names...)
+	sshCmd = exec.Command("python3", append([]string{command, "baxos"}, file_names...)...)
 	output, err = sshCmd.CombinedOutput()
 	if err != nil {
 		print("Error while generating performance graphs " + err.Error() + " " + string(output) + "\n")
