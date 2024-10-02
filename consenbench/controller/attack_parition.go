@@ -315,7 +315,7 @@ func (a *PartitionAttack_5) Attack(nodes []*AttackNode, links [][]*AttackLink, o
 	fmt.Print("Partition attack 5 complete\n")
 }
 
-// 6 randomly partition such that there is only on quorum connected node
+// 6 randomly partition such that there is only one quorum connected node
 
 type PartitionAttack_6 struct {
 	logger *util.Logger
@@ -328,14 +328,37 @@ func NewPartitionAttack_6(logger *util.Logger) *PartitionAttack_6 {
 }
 
 func (a *PartitionAttack_6) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
-	fmt.Printf("Running partition attack_6  for %v seconds\n", duration)
+	fmt.Printf("Running partition attack_6 -- only one quorum connected node  for %v seconds\n", duration)
 	start_time := time.Now()
-
+	majority := len(nodes)/2 + 1
 	for time.Now().Sub(start_time).Seconds() < float64(duration-15) {
+		// len(nodes) -  1 not attacked
+		for i := 0; i < len(nodes)-1; i++ {
+			fmt.Printf("attacking node %v\n", i)
+			for j := i + 1; j < i+majority+1; j++ {
+				if j%len(nodes) == len(nodes)-1 || j%len(nodes) == i {
+					continue
+				}
+				links[i][j%len(nodes)].SetLoss(100)
+				fmt.Printf("setting loss between %v and %v\n", i, j%len(nodes))
 
+			}
+		}
+
+		time.Sleep(1 * time.Second)
+		for i := 0; i < len(nodes)-1; i++ {
+			for j := i + 1; j < i+majority+1; j++ {
+				if j%len(nodes) == len(nodes)-1 || j%len(nodes) == i {
+					continue
+				}
+				links[i][j%len(nodes)].SetLoss(0)
+
+			}
+		}
+		time.Sleep(3 * time.Second)
 	}
 
-	fmt.Print("Partition attack complete\n")
+	fmt.Print("Partition 6 attack complete\n")
 }
 
 // 7 randomly partial connectivity where links are up and down randomly
