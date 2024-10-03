@@ -132,8 +132,7 @@ func (c *Controller) Run(protocol string) {
 	}
 
 	attackNodes, attackLinks, leaderOracle := GetAttackObjects(int(num_replicas), process_name, c.Nodes, c, c.logger, strings.Split(ports, ","))
-	var attack_impl Attack
-	attack_impl = c.GetAttackImpl(attack_impl)
+	attack_impl := c.GetAttackImpl()
 
 	<-bootstrap_complete_chan // wait for the bootstrap to complete
 	fmt.Print("Bootstrap complete, starting attack from controller\n")
@@ -165,28 +164,43 @@ func (c *Controller) Run(protocol string) {
 	fmt.Println("test complete")
 }
 
-func (c *Controller) GetAttackImpl(attack_impl Attack) Attack {
-	if c.Options.Attack == "basic" {
-		attack_impl = NewBasicAttack(c.logger)
-	} else if c.Options.Attack == "noop" {
-		attack_impl = NewNoopAttack(c.logger)
-	} else if c.Options.Attack == "partition_1" {
-		attack_impl = NewPartitionAttack_1(c.logger)
-	} else if c.Options.Attack == "partition_2" {
-		attack_impl = NewPartitionAttack_2(c.logger)
-	} else if c.Options.Attack == "partition_3" {
-		attack_impl = NewPartitionAttack_3(c.logger)
-	} else if c.Options.Attack == "partition_4" {
-		attack_impl = NewPartitionAttack_4(c.logger)
-	} else if c.Options.Attack == "partition_5" {
-		attack_impl = NewPartitionAttack_5(c.logger)
-	} else if c.Options.Attack == "partition_6" {
-		attack_impl = NewPartitionAttack_6(c.logger)
-	} else if c.Options.Attack == "partition_7" {
-		attack_impl = NewPartitionAttack_7(c.logger)
-	} else {
-		panic("Unknown attack")
-
+func (c *Controller) GetAttackImpl() Attack {
+	switch c.Options.Attack {
+	case "basic":
+		return NewBasicAttack(c.logger)
+	case "noop":
+		return NewNoopAttack(c.logger)
+	case "partition_1":
+		return NewPartitionAttack_1(c.logger)
+	case "partition_2":
+		return NewPartitionAttack_2(c.logger)
+	case "partition_3":
+		return NewPartitionAttack_3(c.logger)
+	case "partition_4":
+		return NewPartitionAttack_4(c.logger)
+	case "partition_5":
+		return NewPartitionAttack_5(c.logger)
+	case "partition_6":
+		return NewPartitionAttack_6(c.logger)
+	case "partition_7":
+		return NewPartitionAttack_7(c.logger)
+	case "delay_1":
+		return NewDelayAttack_1(c.logger)
+	case "delay_2":
+		return NewDelayAttack_2(c.logger)
+	case "delay_3":
+		return NewDelayAttack_3(c.logger)
+	case "delay_4":
+		return NewDelayAttack_4(c.logger)
+	case "bandwidth_1":
+		return NewBandwidthAttack_1(c.logger)
+	case "bandwidth_2":
+		return NewBandwidthAttack_2(c.logger)
+	case "bandwidth_3":
+		return NewBandwidthAttack_3(c.logger)
+	case "bandwidth_4":
+		return NewBandwidthAttack_4(c.logger)
+	default:
+		panic("Unknown attack: " + c.Options.Attack)
 	}
-	return attack_impl
 }
