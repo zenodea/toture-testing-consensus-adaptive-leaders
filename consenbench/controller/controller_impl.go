@@ -214,7 +214,12 @@ func (c *Controller) GetAttackImpl() Attack {
 		return NewStragglerAttack_3(c.logger)
 	case "straggler_4":
 		return NewStragglerAttack_4(c.logger)
-
+	case "crash_1":
+		return NewCrashAttack_1(c.logger)
+	case "crash_2":
+		return NewCrashAttack_2(c.logger)
+	case "crash_3":
+		return NewCrashAttack_3(c.logger)
 	default:
 		panic("Unknown attack: " + c.Options.Attack)
 	}
