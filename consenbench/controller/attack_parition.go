@@ -177,20 +177,20 @@ func (a *PartitionAttack_3) Attack(nodes []*AttackNode, links [][]*AttackLink, o
 	fmt.Print("Partition attack 3 complete\n")
 }
 
-// 4_1 randomly partition the leader node in simplex
+// 4 randomly partition the leader node in simplex
 
-type PartitionAttack_4_1 struct {
+type PartitionAttack_4 struct {
 	logger *util.Logger
 }
 
-func NewPartitionAttack_4_1(logger *util.Logger) *PartitionAttack_4_1 {
-	return &PartitionAttack_4_1{
+func NewPartitionAttack_4(logger *util.Logger) *PartitionAttack_4 {
+	return &PartitionAttack_4{
 		logger: logger,
 	}
 }
 
-func (a *PartitionAttack_4_1) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
-	fmt.Printf("Running partition attack_4_1 leader node parition simplex  for %v seconds\n", duration)
+func (a *PartitionAttack_4) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
+	fmt.Printf("Running partition attack_4 leader node parition simplex  for %v seconds\n", duration)
 	start_time := time.Now()
 
 	for time.Now().Sub(start_time).Seconds() < float64(duration-15) {
@@ -225,58 +225,7 @@ func (a *PartitionAttack_4_1) Attack(nodes []*AttackNode, links [][]*AttackLink,
 		time.Sleep(3 * time.Second)
 	}
 
-	fmt.Print("Partition attack 4_1 complete\n")
-}
-
-// 4_2 randomly partition the leader node in duplex
-
-type PartitionAttack_4_2 struct {
-	logger *util.Logger
-}
-
-func NewPartitionAttack_4_2(logger *util.Logger) *PartitionAttack_4_2 {
-	return &PartitionAttack_4_2{
-		logger: logger,
-	}
-}
-
-func (a *PartitionAttack_4_2) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
-	fmt.Printf("Running partition attack_4_2  parittion leader in duplex for %v seconds\n", duration)
-	start_time := time.Now()
-
-	for time.Now().Sub(start_time).Seconds() < float64(duration-15) {
-		// select the leader
-		node_id := oracle.GetTopNLeaders()[0]
-		// set all outgoing links to of leader to high loss
-		fmt.Printf("attacking leader node %v\n", node_id)
-		for i := 0; i < len(nodes); i++ {
-			for j := 0; j < len(nodes); j++ {
-				if i == j {
-					continue
-				}
-				if i == node_id {
-					links[i][j].SetLoss(100)
-					fmt.Printf("setting loss between %v and %v\n", i, j)
-				}
-			}
-		}
-		time.Sleep(1 * time.Second)
-		fmt.Printf("resetting attack\n")
-		for i := 0; i < len(nodes); i++ {
-			for j := 0; j < len(nodes); j++ {
-				if i == j {
-					continue
-				}
-				if i == node_id {
-					links[i][j].SetLoss(0)
-					fmt.Printf("resetting loss between %v and %v\n", i, j)
-				}
-			}
-		}
-		time.Sleep(3 * time.Second)
-	}
-
-	fmt.Print("Partition 4_2 attack complete\n")
+	fmt.Print("Partition attack 4 complete\n")
 }
 
 // 5 randomly partition such that each node can contact only a minority of other nodes
@@ -312,6 +261,7 @@ func (a *PartitionAttack_5) Attack(nodes []*AttackNode, links [][]*AttackLink, o
 		for i := 0; i < len(nodes); i++ {
 			for j := i + 1; j < i+majority+1; j++ {
 				links[i][j%len(nodes)].SetLoss(0)
+				fmt.Printf("resetting loss between %v and %v\n", i, j%len(nodes))
 			}
 		}
 		time.Sleep(3 * time.Second)

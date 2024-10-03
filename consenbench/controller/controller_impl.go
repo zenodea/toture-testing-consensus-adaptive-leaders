@@ -176,10 +176,8 @@ func (c *Controller) GetAttackImpl(attack_impl Attack) Attack {
 		attack_impl = NewPartitionAttack_2(c.logger)
 	} else if c.Options.Attack == "partition_3" {
 		attack_impl = NewPartitionAttack_3(c.logger)
-	} else if c.Options.Attack == "partition_4_1" {
-		attack_impl = NewPartitionAttack_4_1(c.logger)
-	} else if c.Options.Attack == "partition_4_2" {
-		attack_impl = NewPartitionAttack_4_2(c.logger)
+	} else if c.Options.Attack == "partition_4" {
+		attack_impl = NewPartitionAttack_4(c.logger)
 	} else if c.Options.Attack == "partition_5" {
 		attack_impl = NewPartitionAttack_5(c.logger)
 	} else if c.Options.Attack == "partition_6" {
