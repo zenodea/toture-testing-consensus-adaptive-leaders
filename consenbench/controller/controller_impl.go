@@ -206,6 +206,15 @@ func (c *Controller) GetAttackImpl() Attack {
 		return NewSkewAttack_2(c.logger)
 	case "skew_3":
 		return NewSkewAttack_3(c.logger)
+	case "straggler_1":
+		return NewStragglerAttack_1(c.logger)
+	case "straggler_2":
+		return NewStragglerAttack_2(c.logger)
+	case "straggler_3":
+		return NewStragglerAttack_3(c.logger)
+	case "straggler_4":
+		return NewStragglerAttack_4(c.logger)
+
 	default:
 		panic("Unknown attack: " + c.Options.Attack)
 	}
