@@ -200,6 +200,12 @@ func (c *Controller) GetAttackImpl() Attack {
 		return NewBandwidthAttack_3(c.logger)
 	case "bandwidth_4":
 		return NewBandwidthAttack_4(c.logger)
+	case "skew_1":
+		return NewSkewAttack_1(c.logger)
+	case "skew_2":
+		return NewSkewAttack_2(c.logger)
+	case "skew_3":
+		return NewSkewAttack_3(c.logger)
 	default:
 		panic("Unknown attack: " + c.Options.Attack)
 	}
