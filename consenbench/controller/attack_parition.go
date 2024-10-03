@@ -26,27 +26,29 @@ func (a *PartitionAttack_1) Attack(nodes []*AttackNode, links [][]*AttackLink, o
 	for time.Now().Sub(start_time).Seconds() < float64(duration-15) {
 		// select a random node
 		rand_node := rand.Intn(len(nodes))
-		// set all incoming and outgoing links to of rand_node to high loss
+		// set all incoming and outgoing links of rand_node to high loss
 		fmt.Printf("attacking node %v\n", rand_node)
 		for i := 0; i < len(nodes); i++ {
 			for j := 0; j < len(nodes); j++ {
 				if i == j {
 					continue
 				}
-				if i == rand_node || j == rand_node {
+				if i == rand_node {
 					links[i][j].SetLoss(100)
 					fmt.Printf("setting loss between %v and %v\n", i, j)
 				}
 			}
 		}
 		time.Sleep(1 * time.Second)
+		fmt.Printf("resetting attack\n")
 		for i := 0; i < len(nodes); i++ {
 			for j := 0; j < len(nodes); j++ {
 				if i == j {
 					continue
 				}
-				if i == rand_node || j == rand_node {
+				if i == rand_node {
 					links[i][j].SetLoss(0)
+					fmt.Printf("resetting loss between %v and %v\n", i, j)
 				}
 			}
 		}
@@ -69,44 +71,42 @@ func NewPartitionAttack_2(logger *util.Logger) *PartitionAttack_2 {
 }
 
 func (a *PartitionAttack_2) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
-	fmt.Printf("Running partition attack_2  for %v seconds\n", duration)
+	fmt.Printf("Running partition attack_2 randomly partition minority nodes  for %v seconds\n", duration)
 	start_time := time.Now()
 
 	for time.Now().Sub(start_time).Seconds() < float64(duration-15) {
-		f := len(nodes)/2 - 1
-		if len(nodes)%2 == 1 {
-			f++
-		}
+		majority := len(nodes)/2 + 1
+		minority := len(nodes) - majority
+
 		rand_nodes := make(map[int]bool)
-		rand_nodes_list := make([]int, f)
-		for i := 0; i < f; i++ {
+
+		for i := 0; i < minority; i++ {
 			rand_node := rand.Intn(len(nodes))
 			for rand_nodes[rand_node] {
 				rand_node = rand.Intn(len(nodes))
 			}
 			rand_nodes[rand_node] = true
-			rand_nodes_list[i] = rand_node
 		}
-		fmt.Printf("attacking node %v\n", rand_nodes_list)
-		// set all incoming and outgoing links to of rand_nodes to high loss
+		fmt.Printf("attacking nodes %v\n", rand_nodes)
 		for i := 0; i < len(nodes); i++ {
 			for j := 0; j < len(nodes); j++ {
 				if i == j {
 					continue
 				}
-				if rand_nodes[i] || rand_nodes[j] {
+				if rand_nodes[i] {
 					links[i][j].SetLoss(100)
 					fmt.Printf("setting loss between %v and %v\n", i, j)
 				}
 			}
 		}
 		time.Sleep(1 * time.Second)
+		fmt.Printf("resetting attack\n")
 		for i := 0; i < len(nodes); i++ {
 			for j := 0; j < len(nodes); j++ {
 				if i == j {
 					continue
 				}
-				if rand_nodes[i] || rand_nodes[j] {
+				if rand_nodes[i] {
 					links[i][j].SetLoss(0)
 					fmt.Printf("resetting loss between %v and %v\n", i, j)
 				}
@@ -131,40 +131,41 @@ func NewPartitionAttack_3(logger *util.Logger) *PartitionAttack_3 {
 }
 
 func (a *PartitionAttack_3) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
-	fmt.Printf("Running partition attack_3  for %v seconds\n", duration)
+	fmt.Printf("Running partition attack_3 majority nodes attacked for %v seconds\n", duration)
 	start_time := time.Now()
 
 	for time.Now().Sub(start_time).Seconds() < float64(duration-15) {
 		rand_nodes := make(map[int]bool)
-		rand_nodes_list := make([]int, len(nodes)/2+1)
+
 		for i := 0; i < len(nodes)/2+1; i++ {
 			rand_node := rand.Intn(len(nodes))
 			for rand_nodes[rand_node] {
 				rand_node = rand.Intn(len(nodes))
 			}
 			rand_nodes[rand_node] = true
-			rand_nodes_list[i] = rand_node
+
 		}
-		fmt.Printf("attacking nodes %v\n", rand_nodes_list)
-		// set all incoming and outgoing links to of rand_nodes to high loss
+		fmt.Printf("attacking nodes %v\n", rand_nodes)
+
 		for i := 0; i < len(nodes); i++ {
 			for j := 0; j < len(nodes); j++ {
 				if i == j {
 					continue
 				}
-				if rand_nodes[i] || rand_nodes[j] {
+				if rand_nodes[i] {
 					links[i][j].SetLoss(100)
 					fmt.Printf("setting loss between %v and %v\n", i, j)
 				}
 			}
 		}
 		time.Sleep(1 * time.Second)
+		fmt.Printf("resetting attack\n")
 		for i := 0; i < len(nodes); i++ {
 			for j := 0; j < len(nodes); j++ {
 				if i == j {
 					continue
 				}
-				if rand_nodes[i] || rand_nodes[j] {
+				if rand_nodes[i] {
 					links[i][j].SetLoss(0)
 					fmt.Printf("resetting loss between %v and %v\n", i, j)
 				}
@@ -189,13 +190,13 @@ func NewPartitionAttack_4_1(logger *util.Logger) *PartitionAttack_4_1 {
 }
 
 func (a *PartitionAttack_4_1) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
-	fmt.Printf("Running partition attack_4_1  for %v seconds\n", duration)
+	fmt.Printf("Running partition attack_4_1 leader node parition simplex  for %v seconds\n", duration)
 	start_time := time.Now()
 
 	for time.Now().Sub(start_time).Seconds() < float64(duration-15) {
 		// select the leader
 		node_id := oracle.GetTopNLeaders()[0]
-		// set all incoming and outgoing links to of leader to high loss
+		// set all outgoing links to of leader to high loss
 		fmt.Printf("attacking leader node %v\n", node_id)
 		for i := 0; i < len(nodes); i++ {
 			for j := 0; j < len(nodes); j++ {
@@ -209,6 +210,7 @@ func (a *PartitionAttack_4_1) Attack(nodes []*AttackNode, links [][]*AttackLink,
 			}
 		}
 		time.Sleep(1 * time.Second)
+		fmt.Printf("resetting attack\n")
 		for i := 0; i < len(nodes); i++ {
 			for j := 0; j < len(nodes); j++ {
 				if i == j {
@@ -216,6 +218,7 @@ func (a *PartitionAttack_4_1) Attack(nodes []*AttackNode, links [][]*AttackLink,
 				}
 				if i == node_id {
 					links[i][j].SetLoss(0)
+					fmt.Printf("resetting loss between %v and %v\n", i, j)
 				}
 			}
 		}
@@ -238,33 +241,35 @@ func NewPartitionAttack_4_2(logger *util.Logger) *PartitionAttack_4_2 {
 }
 
 func (a *PartitionAttack_4_2) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
-	fmt.Printf("Running partition attack_4_2  for %v seconds\n", duration)
+	fmt.Printf("Running partition attack_4_2  parittion leader in duplex for %v seconds\n", duration)
 	start_time := time.Now()
 
 	for time.Now().Sub(start_time).Seconds() < float64(duration-15) {
 		// select the leader
 		node_id := oracle.GetTopNLeaders()[0]
-		// set all incoming and outgoing links to of leader to high loss
+		// set all outgoing links to of leader to high loss
 		fmt.Printf("attacking leader node %v\n", node_id)
 		for i := 0; i < len(nodes); i++ {
 			for j := 0; j < len(nodes); j++ {
 				if i == j {
 					continue
 				}
-				if i == node_id || j == node_id {
+				if i == node_id {
 					links[i][j].SetLoss(100)
 					fmt.Printf("setting loss between %v and %v\n", i, j)
 				}
 			}
 		}
 		time.Sleep(1 * time.Second)
+		fmt.Printf("resetting attack\n")
 		for i := 0; i < len(nodes); i++ {
 			for j := 0; j < len(nodes); j++ {
 				if i == j {
 					continue
 				}
-				if i == node_id || j == node_id {
+				if i == node_id {
 					links[i][j].SetLoss(0)
+					fmt.Printf("resetting loss between %v and %v\n", i, j)
 				}
 			}
 		}
@@ -287,7 +292,7 @@ func NewPartitionAttack_5(logger *util.Logger) *PartitionAttack_5 {
 }
 
 func (a *PartitionAttack_5) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
-	fmt.Printf("Running partition attack_5 -- each node patitioned from  majority for %v seconds\n", duration)
+	fmt.Printf("Running partition attack_5 -- each node can contact a minority for %v seconds\n", duration)
 	start_time := time.Now()
 	majority := len(nodes)/2 + 1
 	for time.Now().Sub(start_time).Seconds() < float64(duration-15) {
@@ -297,8 +302,6 @@ func (a *PartitionAttack_5) Attack(nodes []*AttackNode, links [][]*AttackLink, o
 			for j := i + 1; j < i+majority+1; j++ {
 				links[i][j%len(nodes)].SetLoss(100)
 				fmt.Printf("setting loss between %v and %v\n", i, j%len(nodes))
-				links[j%len(nodes)][i].SetLoss(100)
-				fmt.Printf("setting loss between %v and %v\n", j%len(nodes), i)
 			}
 		}
 
@@ -309,7 +312,6 @@ func (a *PartitionAttack_5) Attack(nodes []*AttackNode, links [][]*AttackLink, o
 		for i := 0; i < len(nodes); i++ {
 			for j := i + 1; j < i+majority+1; j++ {
 				links[i][j%len(nodes)].SetLoss(0)
-				links[j%len(nodes)][i].SetLoss(0)
 			}
 		}
 		time.Sleep(3 * time.Second)
@@ -331,7 +333,7 @@ func NewPartitionAttack_6(logger *util.Logger) *PartitionAttack_6 {
 }
 
 func (a *PartitionAttack_6) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
-	fmt.Printf("Running partition attack_6 -- only one quorum connected node  for %v seconds\n", duration)
+	fmt.Printf("Running partition attack_6 -- only one quorum connected node exists  for %v seconds\n", duration)
 	start_time := time.Now()
 	majority := len(nodes)/2 + 1
 	for time.Now().Sub(start_time).Seconds() < float64(duration-15) {
@@ -339,8 +341,8 @@ func (a *PartitionAttack_6) Attack(nodes []*AttackNode, links [][]*AttackLink, o
 		for i := 0; i < len(nodes)-1; i++ {
 			fmt.Printf("attacking node %v\n", i)
 			for j := i + 1; j < i+majority+1; j++ {
-				if j%len(nodes) == len(nodes)-1 {
-					links[i][i-1].SetLoss(100)
+				if j%len(nodes) == len(nodes)-1 { // the node that we don't attack
+					links[i][i-1].SetLoss(100) // because i -1 is not already chosen
 					fmt.Printf("setting loss between %v and %v\n", i, i-1)
 				} else {
 					links[i][j%len(nodes)].SetLoss(100)
@@ -357,8 +359,10 @@ func (a *PartitionAttack_6) Attack(nodes []*AttackNode, links [][]*AttackLink, o
 			for j := i + 1; j < i+majority+1; j++ {
 				if j%len(nodes) == len(nodes)-1 {
 					links[i][i-1].SetLoss(0)
+					fmt.Printf("resetting loss between %v and %v\n", i, i-1)
 				} else {
 					links[i][j%len(nodes)].SetLoss(0)
+					fmt.Printf("resetting loss between %v and %v\n", i, j%len(nodes))
 				}
 
 			}
@@ -369,7 +373,7 @@ func (a *PartitionAttack_6) Attack(nodes []*AttackNode, links [][]*AttackLink, o
 	fmt.Print("Partition 6 attack complete\n")
 }
 
-// 7 randomly partition such that there is a miniroty of quorum connected nodes
+// 7 randomly partition such that there is a minority of quorum connected nodes
 
 type PartitionAttack_7 struct {
 	logger *util.Logger
@@ -382,7 +386,7 @@ func NewPartitionAttack_7(logger *util.Logger) *PartitionAttack_7 {
 }
 
 func (a *PartitionAttack_7) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
-	fmt.Printf("Running partition attack_7 -- minority of quorum connected nodes  for %v seconds\n", duration)
+	fmt.Printf("Running partition attack_7 -- there is minority of quorum connected nodes  for %v seconds\n", duration)
 	start_time := time.Now()
 	majority := len(nodes)/2 + 1
 	for time.Now().Sub(start_time).Seconds() < float64(duration-15) {
@@ -404,6 +408,7 @@ func (a *PartitionAttack_7) Attack(nodes []*AttackNode, links [][]*AttackLink, o
 			for j := 0; j < majority; j++ {
 				if i != j {
 					links[i][j].SetLoss(0)
+					fmt.Printf("resetting loss between %v and %v\n", i, j)
 				}
 			}
 		}
