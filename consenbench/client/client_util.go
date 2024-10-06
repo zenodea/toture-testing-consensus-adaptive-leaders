@@ -107,6 +107,5 @@ func RunCommand(name string, arg []string, logger *util.Logger) error {
 
 func (c *Client) Init(id_ip []string, ports_under_attack []string, device string) {
 	c.NetInit(id_ip, ports_under_attack, device)
-	go c.intern_slowdown()
 	c.logger.Debug("Initialized TC ", 3)
 }

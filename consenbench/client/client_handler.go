@@ -15,9 +15,6 @@ func (c *Client) Handle(msg *common.ControlMsg) {
 	} else if int(msg.OperationType) == common.GetOperationCodes().Kill {
 		c.logger.Debug("Received Kill signal from controller", 3)
 		c.Kill()
-	} else if int(msg.OperationType) == common.GetOperationCodes().Slowdown {
-		c.logger.Debug("Received Slowdown signal from controller", 3)
-		c.SlowDown(msg.StringArgs[0])
 	} else if int(msg.OperationType) == common.GetOperationCodes().Pause {
 		c.logger.Debug("Received Pause signal from controller", 3)
 		c.Pause()

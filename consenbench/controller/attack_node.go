@@ -52,20 +52,6 @@ func (n *AttackNode) Kill() {
 	n.logger.Debug(fmt.Sprintf("killed node %v", n.Id), 3)
 }
 
-func (n *AttackNode) Slowdown(on string) {
-	n.Controller.Network.Send(&common.RPCPairPeer{
-		RpcPair: &common.RPCPair{
-			Code: common.GetRPCCodes().ControlMsg,
-			Obj: &common.ControlMsg{
-				OperationType: int32(common.GetOperationCodes().Slowdown),
-				StringArgs:    []string{on},
-			},
-		},
-		Peer: n.Id,
-	})
-	n.logger.Debug(fmt.Sprintf("Slowed node %v", n.Id), 3)
-}
-
 func (n *AttackNode) Pause() {
 	n.Controller.Network.Send(&common.RPCPairPeer{
 		RpcPair: &common.RPCPair{

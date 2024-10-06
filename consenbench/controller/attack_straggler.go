@@ -28,9 +28,9 @@ func (a *StragglerAttack_1) Attack(nodes []*AttackNode, links [][]*AttackLink, o
 
 		fmt.Printf("attacking leader node %v\n", node_id)
 
-		nodes[node_id].Slowdown("true")
+		nodes[node_id].Pause()
 		time.Sleep(1 * time.Second)
-		nodes[node_id].Slowdown("false")
+		nodes[node_id].Continue()
 		time.Sleep(3 * time.Second)
 	}
 
@@ -59,11 +59,11 @@ func (a *StragglerAttack_2) Attack(nodes []*AttackNode, links [][]*AttackLink, o
 
 		fmt.Printf("attacking leader nodes %v %v\n", leader1, leader2)
 
-		nodes[leader1].Slowdown("true")
-		nodes[leader2].Slowdown("true")
+		nodes[leader1].Pause()
+		nodes[leader2].Pause()
 		time.Sleep(1 * time.Second)
-		nodes[leader1].Slowdown("false")
-		nodes[leader2].Slowdown("false")
+		nodes[leader1].Continue()
+		nodes[leader2].Continue()
 		time.Sleep(3 * time.Second)
 	}
 
@@ -101,11 +101,11 @@ func (a *StragglerAttack_3) Attack(nodes []*AttackNode, links [][]*AttackLink, o
 		fmt.Printf("attacking minority nodes %v \n", randNodes)
 
 		for node_id := range randNodes {
-			nodes[node_id].Slowdown("true")
+			nodes[node_id].Pause()
 		}
 		time.Sleep(1 * time.Second)
 		for node_id := range randNodes {
-			nodes[node_id].Slowdown("false")
+			nodes[node_id].Continue()
 		}
 		time.Sleep(3 * time.Second)
 	}
@@ -143,11 +143,11 @@ func (a *StragglerAttack_4) Attack(nodes []*AttackNode, links [][]*AttackLink, o
 		fmt.Printf("attacking majority nodes %v \n", randNodes)
 
 		for node_id := range randNodes {
-			nodes[node_id].Slowdown("true")
+			nodes[node_id].Pause()
 		}
 		time.Sleep(1 * time.Second)
 		for node_id := range randNodes {
-			nodes[node_id].Slowdown("false")
+			nodes[node_id].Continue()
 		}
 		time.Sleep(3 * time.Second)
 	}

@@ -52,7 +52,6 @@ type OperationCodes struct {
 	ShutDown     int
 	Stats        int
 	Kill         int
-	Slowdown     int
 	Pause        int
 	Continue     int
 	SetSkew      int
@@ -72,7 +71,6 @@ func GetOperationCodes() OperationCodes {
 		ShutDown:     1,
 		Stats:        2,
 		Kill:         3,
-		Slowdown:     4,
 		Pause:        5,
 		Continue:     6,
 		SetSkew:      7,
