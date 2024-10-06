@@ -68,12 +68,12 @@ func (n *Network) ConnectRemotes() error {
 				binary.LittleEndian.PutUint16(bs, uint16(n.Id))
 				_, err := conn.Write(bs)
 				if err != nil {
-					panic("Error while connecting to replica " + strconv.Itoa(int(id)))
+					panic("Error while connecting to replica " + strconv.Itoa(id))
 				}
 				n.logger.Debug("Outgoing TCP Connected to "+strconv.Itoa(id), 3)
 				break
 			} else {
-				n.logger.Debug("Error while connecting to "+strconv.Itoa(id)+" "+err.Error(), 3)
+				n.logger.Debug("Error while connecting to "+strconv.Itoa(id)+" "+err.Error()+" retrying....", 3)
 				time.Sleep(1 * time.Second)
 			}
 		}
@@ -121,7 +121,7 @@ func (n *Network) HandleReadStream(reader *bufio.Reader, id int) error {
 
 	for true {
 		if msgType, err = reader.ReadByte(); err != nil {
-			n.logger.Debug("Error while reading message code: connection broken from "+strconv.Itoa(int(id))+fmt.Sprintf(" %v", err.Error()), 3)
+			n.logger.Debug("Error while reading message code: connection broken from "+strconv.Itoa(id)+fmt.Sprintf(" %v", err.Error()), 3)
 			return err
 		}
 		if rpair, present := n.rpcTable[msgType]; present {

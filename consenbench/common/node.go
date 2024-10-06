@@ -23,13 +23,13 @@ type Node struct {
 	Username       string `yaml:"Username"`
 	HomeDir        string `yaml:"HomeDir"`
 	PrivateKeyPath string `yaml:"privateKeyPath"`
-	stat           NodeStat
+	stat           *NodeStat
 	statMutex      *sync.Mutex
 	Logger         *util.Logger
 }
 
 func (n *Node) InitNode(logger *util.Logger) {
-	n.stat = NodeStat{
+	n.stat = &NodeStat{
 		cpu_usage:   make([]float32, 0),
 		mem_usage:   make([]float32, 0),
 		network_in:  make([]float32, 0),
