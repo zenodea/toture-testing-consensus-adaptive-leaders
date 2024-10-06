@@ -139,15 +139,15 @@ func (ba *Baxos) Bootstrap(nodes []*common.Node, duration int, result chan util.
 		}(j)
 	}
 
-	time.Sleep(15 * time.Second)
+	time.Sleep(5 * time.Second)
 
 	fmt.Print("Started all the replicas\n")
 
-	nodes[num_replicas].ExecCmd("." + ctl_path + " --name " + strconv.Itoa(50+1) + " --logFilePath " + fmt.Sprintf("%vbench/logs/", nodes[num_replicas].HomeDir) + " --config " + fmt.Sprintf("%vbench/ip_config.yaml", nodes[num_replicas].HomeDir) + " --requestType status --operationType 1 ")
+	nodes[num_replicas].ExecCmd("." + ctl_path + " --name " + strconv.Itoa(51) + " --logFilePath " + fmt.Sprintf("%vbench/logs/", nodes[num_replicas].HomeDir) + " --config " + fmt.Sprintf("%vbench/ip_config.yaml", nodes[num_replicas].HomeDir) + " --requestType status --operationType 1 ")
 
 	fmt.Print("Sent initial status to bootstrap\n")
 
-	time.Sleep(20 * time.Second)
+	time.Sleep(15 * time.Second)
 
 	clientOutputs := make([]string, num_clients)
 	m := 1
@@ -192,7 +192,7 @@ func (ba *Baxos) Bootstrap(nodes []*common.Node, duration int, result chan util.
 	if err != nil {
 		print("Error while deleting logs/ " + err.Error() + " " + string(output) + "\n")
 	} else {
-		print("deleted logs/ successfully\n" + string(output) + "\n")
+		print("deleted local logs/ successfully\n" + string(output) + "\n")
 	}
 
 	sshCmd = exec.Command("mkdir", []string{"-p", filepath.Join(homeDir, "toture-testing-consensus/logs")}...)
