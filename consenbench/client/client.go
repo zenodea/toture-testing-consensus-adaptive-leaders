@@ -21,7 +21,6 @@ type ClientAttacker struct {
 	Ports_under_attack []string // ports under attack
 	Process_name       string   // process under attack
 	Device             string
-	On_Off_Chan        chan bool
 	NetEmAttackers     map[int]*NetEmAttacker
 }
 
@@ -44,9 +43,8 @@ func NewClient(Id int, options ClientOptions) *Client {
 	}
 
 	attacker := &ClientAttacker{
-		Logger:      c.logger,
-		Device:      options.Device,
-		On_Off_Chan: make(chan bool, 1000),
+		Logger: c.logger,
+		Device: options.Device,
 	}
 
 	c.Attacker = attacker

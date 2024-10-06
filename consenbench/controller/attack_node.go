@@ -77,31 +77,3 @@ func (n *AttackNode) Continue() {
 	})
 	n.logger.Debug(fmt.Sprintf("Continued node %v", n.Id), 3)
 }
-
-func (n *AttackNode) SetSkew(ms float32) {
-	n.Controller.Network.Send(&common.RPCPairPeer{
-		RpcPair: &common.RPCPair{
-			Code: common.GetRPCCodes().ControlMsg,
-			Obj: &common.ControlMsg{
-				OperationType: int32(common.GetOperationCodes().SetSkew),
-				FloatArgs:     []float32{ms},
-			},
-		},
-		Peer: n.Id,
-	})
-	n.logger.Debug(fmt.Sprintf("Skewed node %v", n.Id), 3)
-}
-
-func (n *AttackNode) SetDrift(ms float32) {
-	n.Controller.Network.Send(&common.RPCPairPeer{
-		RpcPair: &common.RPCPair{
-			Code: common.GetRPCCodes().ControlMsg,
-			Obj: &common.ControlMsg{
-				OperationType: int32(common.GetOperationCodes().SetDrift),
-				FloatArgs:     []float32{ms},
-			},
-		},
-		Peer: n.Id,
-	})
-	n.logger.Debug(fmt.Sprintf("Drfted node %v", n.Id), 3)
-}

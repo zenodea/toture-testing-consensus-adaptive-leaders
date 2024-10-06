@@ -54,8 +54,6 @@ type OperationCodes struct {
 	Kill         int
 	Pause        int
 	Continue     int
-	SetSkew      int
-	SetDrift     int
 	SetDelay     int
 	SetLoss      int
 	SetBandwidth int
@@ -73,8 +71,6 @@ func GetOperationCodes() OperationCodes {
 		Kill:         3,
 		Pause:        5,
 		Continue:     6,
-		SetSkew:      7,
-		SetDrift:     8,
 		SetDelay:     9,
 		SetLoss:      10,
 		SetBandwidth: 11,

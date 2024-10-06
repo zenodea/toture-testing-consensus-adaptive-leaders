@@ -10,8 +10,6 @@ func (c *Client) Handle(msg *common.ControlMsg) {
 		c.logger.Debug("Received ShutDown signal from controller", 3)
 		c.CleanUp()
 		os.Exit(0)
-	} else if int(msg.OperationType) == common.GetOperationCodes().Stats {
-		panic("Received Stats signal from controller")
 	} else if int(msg.OperationType) == common.GetOperationCodes().Kill {
 		c.logger.Debug("Received Kill signal from controller", 3)
 		c.Kill()
@@ -21,12 +19,6 @@ func (c *Client) Handle(msg *common.ControlMsg) {
 	} else if int(msg.OperationType) == common.GetOperationCodes().Continue {
 		c.logger.Debug("Received Continue signal from controller", 3)
 		c.Continue()
-	} else if int(msg.OperationType) == common.GetOperationCodes().SetSkew {
-		c.logger.Debug("Received SetSkew signal from controller", 3)
-		c.SetSkew(msg.FloatArgs[0])
-	} else if int(msg.OperationType) == common.GetOperationCodes().SetDrift {
-		c.logger.Debug("Received SetDrift signal from controller", 3)
-		c.SetDrift(msg.FloatArgs[0])
 	} else if int(msg.OperationType) == common.GetOperationCodes().SetDelay {
 		c.logger.Debug("Received SetDelay signal from controller", 3)
 		c.SetDelay(msg.FloatArgs[0], msg.IntArgs[0])
