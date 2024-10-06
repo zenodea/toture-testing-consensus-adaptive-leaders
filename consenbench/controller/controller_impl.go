@@ -28,7 +28,6 @@ func (c *Controller) BootstrapClients() error {
 			c.Nodes[i].ExecCmd(fmt.Sprintf("sudo apt install iproute2"))
 			c.Nodes[i].ExecCmd(fmt.Sprintf("sudo setcap cap_net_admin,cap_net_raw+ep $(which tc)"))
 			c.Nodes[i].ExecCmd(fmt.Sprintf("getcap $(which tc)"))
-
 			c.Nodes[i].ExecCmd(fmt.Sprintf("pkill -KILL -f bench"))
 			c.Nodes[i].ExecCmd(fmt.Sprintf("rm -r %vbench", c.Nodes[i].HomeDir))
 			c.Nodes[i].ExecCmd(fmt.Sprintf("mkdir -p %vbench", c.Nodes[i].HomeDir))
@@ -70,22 +69,21 @@ func (c *Controller) BootstrapClients() error {
 func (c *Controller) CopyConsensus(protocol string) {
 	c.InitiliazeNodes()
 	var protocol_impl protocols.Consensus
-	protocol_impl = c.GetProtocolImpl(protocol, protocol_impl)
+	protocol_impl = c.GetProtocolImpl(protocol)
 	protocol_impl.ExtractOptions("protocols/" + protocol + "/assets/options.yaml")
 	protocol_impl.CopyConsensus(c.Nodes)
 }
 
 // as you add more protocols, you need to add the protocol here
 
-func (c *Controller) GetProtocolImpl(protocol string, protocol_impl protocols.Consensus) protocols.Consensus {
+func (c *Controller) GetProtocolImpl(protocol string) protocols.Consensus {
 	if protocol == "baxos" {
-		protocol_impl = baxos.NewBaxos(c.logger)
+		return baxos.NewBaxos(c.logger)
 	} else if protocol == "ping" {
-		protocol_impl = ping.NewPing(c.logger)
+		return ping.NewPing(c.logger)
 	} else {
 		panic("Unknown protocol")
 	}
-	return protocol_impl
 }
 
 // run the controller
@@ -104,10 +102,9 @@ func (c *Controller) Run(protocol string) {
 	fmt.Println("Initialized the network layer with all clients")
 
 	c.HandleClientMessages()
-	time.Sleep(10 * time.Second)
+	time.Sleep(5 * time.Second)
 
-	var protocol_impl protocols.Consensus
-	protocol_impl = c.GetProtocolImpl(protocol, protocol_impl)
+	protocol_impl := c.GetProtocolImpl(protocol)
 	options := protocol_impl.ExtractOptions("protocols/" + protocol + "/assets/options.yaml")
 
 	bootstrap_complete_chan := make(chan bool)

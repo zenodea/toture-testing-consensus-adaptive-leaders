@@ -80,13 +80,6 @@ func (n *Node) Put_Load(local_location string, remote_location string) error {
 	return nil
 }
 
-// shut down the node
-
-func (n *Node) Shut_Down() string {
-	// shut down the node
-	return n.ExecCmd("sudo shutdown -h now")
-}
-
 // start client
 
 func (n *Node) Start_Client(device string) error {
