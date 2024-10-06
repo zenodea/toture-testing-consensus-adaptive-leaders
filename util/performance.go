@@ -23,7 +23,7 @@ func NewBasicPerformance() *Performance {
 }
 
 func NewPerformance() Performance {
-	return Performance{}
+	return Performance{Option: make(map[string]string)}
 }
 
 func NewPerformanceWithOptions(options map[string]string) Performance {
