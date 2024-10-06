@@ -63,7 +63,7 @@ func GetNetworkStats() (float64, float64) {
 		panic(err.Error())
 	}
 
-	time.Sleep(1 * time.Second)
+	time.Sleep(100 * time.Millisecond)
 
 	finalStats, err := net.IOCounters(false)
 
@@ -76,8 +76,8 @@ func GetNetworkStats() (float64, float64) {
 	}
 
 	// Calculate packet rates (packets per second)
-	packetsInRate := float64(finalStats[0].PacketsRecv-initialStats[0].PacketsRecv) / 1.0
-	packetsOutRate := float64(finalStats[0].PacketsSent-initialStats[0].PacketsSent) / 1.0
+	packetsInRate := float64(finalStats[0].PacketsRecv-initialStats[0].PacketsRecv) * 10
+	packetsOutRate := float64(finalStats[0].PacketsSent-initialStats[0].PacketsSent) * 10
 
 	return packetsInRate, packetsOutRate
 }

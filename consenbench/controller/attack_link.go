@@ -22,15 +22,6 @@ func NewAttackLink(sender int, reciever int, controller *Controller, logger *uti
 	}
 }
 
-func (a *AttackLink) SetStatus(on bool) {
-	if !on {
-		a.SetLoss(100)
-	} else {
-		a.SetLoss(0)
-	}
-	a.logger.Debug(fmt.Sprintf("set status link %v-%v", a.Id_sender, a.Id_reciever), 3)
-}
-
 func (a *AttackLink) SetDelay(ms float32) {
 	a.Controller.Network.Send(&common.RPCPairPeer{
 		RpcPair: &common.RPCPair{
