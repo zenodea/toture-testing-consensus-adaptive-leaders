@@ -1,0 +1,7 @@
+replica_path: protocols/dedis_paxos/assets/replica
+client_path: protocols/dedis_paxos/assets/client
+num_replicas: 5
+num_clients: 4
+arrival_rate: 10000
+ports: 10000
+process_name: replica
