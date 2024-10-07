@@ -1,6 +1,7 @@
 consenbench/bin/
 logs/
 vendor/
+venv/
 *.log
 *.csv
 *.pdf
