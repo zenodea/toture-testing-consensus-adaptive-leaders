@@ -9,6 +9,7 @@ import (
 	"time"
 	"toture-test/protocols"
 	baxos "toture-test/protocols/baxos"
+	dedis_paxos "toture-test/protocols/dedis_paxos"
 	ping "toture-test/protocols/ping"
 	"toture-test/util"
 )
@@ -81,6 +82,8 @@ func (c *Controller) GetProtocolImpl(protocol string) protocols.Consensus {
 		return baxos.NewBaxos(c.logger)
 	} else if protocol == "ping" {
 		return ping.NewPing(c.logger)
+	} else if protocol == "dedis_paxos" {
+		return dedis_paxos.NewDedis_Paxos(c.logger)
 	} else {
 		panic("Unknown protocol")
 	}
