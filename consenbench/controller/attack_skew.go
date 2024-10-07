@@ -36,8 +36,6 @@ func (a *SkewAttack_1) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle
 					links[i][j].SetDelay(10)
 					links[i][j].SetDelay(20)
 					links[i][j].SetDelay(30)
-					links[i][j].SetDelay(40)
-					links[i][j].SetDelay(50)
 					links[i][j].SetDelay(0)
 					fmt.Printf("setting skew between %v and %v\n", i, j)
 				}
@@ -86,12 +84,10 @@ func (a *SkewAttack_2) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle
 					continue
 				}
 				if randNodes[i] {
-					links[i][j].SetDelay(10) // todo adjust according to the configured view change delay
-					links[i][j].SetDelay(20) // todo adjust according to the configured view change delay
-					links[i][j].SetDelay(30) // todo adjust according to the configured view change delay
-					links[i][j].SetDelay(40) // todo adjust according to the configured view change delay
-					links[i][j].SetDelay(50) // todo adjust according to the configured view change delay
-					links[i][j].SetDelay(0)  // todo adjust according to the configured view change delay
+					links[i][j].SetDelay(10)
+					links[i][j].SetDelay(20)
+					links[i][j].SetDelay(30)
+					links[i][j].SetDelay(0)
 					fmt.Printf("setting skew between %v and %v\n", i, j)
 				}
 			}
@@ -138,12 +134,10 @@ func (a *SkewAttack_3) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle
 					continue
 				}
 				if randNodes[i] {
-					links[i][j].SetDelay(10) // todo adjust according to the configured view change delay
-					links[i][j].SetDelay(20) // todo adjust according to the configured view change delay
-					links[i][j].SetDelay(30) // todo adjust according to the configured view change delay
-					links[i][j].SetDelay(40) // todo adjust according to the configured view change delay
-					links[i][j].SetDelay(50) // todo adjust according to the configured view change delay
-					links[i][j].SetDelay(0)  // todo adjust according to the configured view change delay
+					links[i][j].SetDelay(10)
+					links[i][j].SetDelay(20)
+					links[i][j].SetDelay(30)
+					links[i][j].SetDelay(0)
 					fmt.Printf("setting skew between %v and %v\n", i, j)
 				}
 			}

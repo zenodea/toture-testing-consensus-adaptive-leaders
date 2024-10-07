@@ -209,8 +209,6 @@ func (c *Controller) GetAttackImpl() Attack {
 		return NewStragglerAttack_2(c.logger)
 	case "straggler_3":
 		return NewStragglerAttack_3(c.logger)
-	case "straggler_4":
-		return NewStragglerAttack_4(c.logger)
 	case "crash_1":
 		return NewCrashAttack_1(c.logger)
 	case "crash_2":
