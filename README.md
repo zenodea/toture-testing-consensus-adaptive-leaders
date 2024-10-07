@@ -11,3 +11,9 @@ It allows plugging in different consensus algorithms and network topologies to t
 - Partition attacks
 - Clock skew attacks
 - Straggler nodes
+
+## Supported consensus algorithms
+
+- Raft
+- Paxos
+- Baxos
