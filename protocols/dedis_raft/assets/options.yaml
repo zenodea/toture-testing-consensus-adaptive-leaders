@@ -1,0 +1,9 @@
+replica_path: protocols/dedis_raft/assets/replica
+client_path: protocols/dedis_raft/assets/client
+num_replicas: 5
+num_clients: 4
+arrival_rate: 10000
+ports: 11000
+process_name: replica
+pipeline_length: 1
+view_timeout_time: 1000000
