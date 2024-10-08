@@ -17,3 +17,4 @@ It allows plugging in different consensus algorithms and network topologies to t
 - Raft
 - Paxos
 - Baxos
+- Rabia
