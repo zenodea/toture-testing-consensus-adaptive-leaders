@@ -34,9 +34,6 @@ func (a *SkewAttack_1) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle
 				}
 				if i == node_id {
 					links[i][j].SetDelay(10)
-					links[i][j].SetDelay(20)
-					links[i][j].SetDelay(30)
-					links[i][j].SetDelay(0)
 					fmt.Printf("setting skew between %v and %v\n", i, j)
 				}
 			}
@@ -85,9 +82,6 @@ func (a *SkewAttack_2) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle
 				}
 				if randNodes[i] {
 					links[i][j].SetDelay(10)
-					links[i][j].SetDelay(20)
-					links[i][j].SetDelay(30)
-					links[i][j].SetDelay(0)
 					fmt.Printf("setting skew between %v and %v\n", i, j)
 				}
 			}
@@ -135,9 +129,6 @@ func (a *SkewAttack_3) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle
 				}
 				if randNodes[i] {
 					links[i][j].SetDelay(10)
-					links[i][j].SetDelay(20)
-					links[i][j].SetDelay(30)
-					links[i][j].SetDelay(0)
 					fmt.Printf("setting skew between %v and %v\n", i, j)
 				}
 			}
