@@ -221,6 +221,12 @@ func (c *Controller) GetAttackImpl() Attack {
 		return NewCrashAttack_2(c.logger)
 	case "crash_3":
 		return NewCrashAttack_3(c.logger)
+	case "drift_1":
+		return NewDriftAttack_1(c.logger)
+	case "drift_2":
+		return NewDriftAttack_2(c.logger)
+	case "drift_3":
+		return NewDriftAttack_3(c.logger)
 	default:
 		panic("Unknown attack: " + c.Options.Attack)
 	}
