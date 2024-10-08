@@ -198,7 +198,7 @@ func (ba *Rabia) Bootstrap(nodes []*common.Node, duration int, result chan util.
 	m = 0
 	for j := int(num_replicas); j < int(num_replicas+num_clients); j++ {
 		go func(i int, k int) {
-			nodes[i].Get_Load(fmt.Sprintf("%vbench/logs/%v.txt", nodes[i].HomeDir, m), "logs/")
+			nodes[i].Get_Load(fmt.Sprintf("%vbench/logs/%v.txt", nodes[i].HomeDir, k), "logs/")
 			wg2.Done()
 		}(j, m)
 		m++
