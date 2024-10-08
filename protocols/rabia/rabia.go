@@ -118,6 +118,10 @@ func (ba *Rabia) Bootstrap(nodes []*common.Node, duration int, result chan util.
 			nodes[i].ExecCmd(svr_export)
 			nodes[i].ExecCmd(export_command)
 			nodes[i].ExecCmd("." + rabia_path)
+			if i == 0 {
+				fmt.Printf("export_command: %v\n", export_command)
+				fmt.Printf("svr_export: %v\n", svr_export)
+			}
 		}(j)
 	}
 
@@ -134,6 +138,10 @@ func (ba *Rabia) Bootstrap(nodes []*common.Node, duration int, result chan util.
 			nodes[i].ExecCmd(cli_export)
 			nodes[i].ExecCmd(export_command)
 			clientOutputs[i-int(num_replicas)] = nodes[i].ExecCmd("." + rabia_path)
+			if i == int(num_replicas) {
+				fmt.Printf("export_command: %v\n", export_command)
+				fmt.Printf("cli_export: %v\n", cli_export)
+			}
 		}(j, m)
 		m++
 	}
@@ -145,6 +153,8 @@ func (ba *Rabia) Bootstrap(nodes []*common.Node, duration int, result chan util.
 	nodes[0].ExecCmd(crl_export)
 	nodes[0].ExecCmd(export_command)
 	nodes[0].ExecCmd("." + rabia_path)
+	fmt.Printf("export_command: %v\n", export_command)
+	fmt.Printf("crl_export: %v\n", crl_export)
 
 	time.Sleep(6 * time.Second)
 
