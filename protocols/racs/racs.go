@@ -176,7 +176,7 @@ func (ba *Racs) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 	fmt.Print("Bootstrap complete\n")
 	bootstrap_complete <- true
 
-	time.Sleep(time.Duration(2*duration) * time.Second)
+	time.Sleep(time.Duration(3*duration) * time.Second)
 
 	fmt.Print("Finished the clients\n")
 
