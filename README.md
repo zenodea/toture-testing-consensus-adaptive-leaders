@@ -18,3 +18,5 @@ It allows plugging in different consensus algorithms and network topologies to t
 - Paxos
 - Baxos
 - Rabia
+- RACS
+- SADL-RACS
