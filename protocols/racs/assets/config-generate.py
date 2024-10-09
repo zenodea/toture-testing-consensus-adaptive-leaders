@@ -25,14 +25,14 @@ def print_peers(replicaIPs):
     print("peers:")
     for j in range(1, 1 + numReplicas, 1):
         print("   - name: " + str(j))
-        print("     address: " + str(replicaIPs[j - 1])+str(":")+str(10000+j))
+        print("     address: " + str(replicaIPs[j - 1])+str(":")+str(10000))
 
 
 def print_clients(clientIPs):
     print("clients:")
     for j in range(1, 1 + numClients, 1):
-        print("   - name: " + str(j+20))
-        print("     address: " + str(clientIPs[j - 1])+str(":")+str(11000+j))
+        print("   - name: " + str(j+50))
+        print("     address: " + str(clientIPs[j - 1])+str(":")+str(11000))
 
 
 print_peers(replicaIPs)
