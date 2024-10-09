@@ -5,5 +5,4 @@ num_clients: 4
 arrival_rate: 10000
 ports: 10000
 process_name: replica
-pipeline_length: 1
 view_timeout_time: 1000000
