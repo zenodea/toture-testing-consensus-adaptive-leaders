@@ -13,6 +13,7 @@ import (
 	dedis_raft "toture-test/protocols/dedis_raft"
 	ping "toture-test/protocols/ping"
 	rabia "toture-test/protocols/rabia"
+	racs "toture-test/protocols/racs"
 	sadl_racs "toture-test/protocols/sadl_racs"
 	"toture-test/util"
 )
@@ -93,6 +94,8 @@ func (c *Controller) GetProtocolImpl(protocol string) protocols.Consensus {
 		return rabia.NewRabia(c.logger)
 	} else if protocol == "sadl_racs" {
 		return sadl_racs.NewSadl_Racs(c.logger)
+	} else if protocol == "racs" {
+		return racs.NewRacs(c.logger)
 	} else {
 		panic("Unknown protocol")
 	}
