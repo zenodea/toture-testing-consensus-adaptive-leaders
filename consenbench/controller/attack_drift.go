@@ -153,7 +153,7 @@ func (a *DriftAttack_3) Attack(nodes []*AttackNode, links [][]*AttackLink, oracl
 		time.Sleep(3 * time.Second)
 	}
 
-	fmt.Print(" attack complete\n")
+	fmt.Print("attack complete\n")
 }
 
 func drift(link *AttackLink, remaining_seconds float64) {
