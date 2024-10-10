@@ -136,6 +136,5 @@ func (a *SkewAttack_3) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle
 
 		time.Sleep(3 * time.Second)
 	}
-
 	fmt.Print(" attack complete\n")
 }
