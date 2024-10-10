@@ -8,8 +8,9 @@ It allows plugging in different consensus algorithms and network topologies to t
 - Bandwidth throttling
 - Crashes
 - Delay injection
-- Partition attacks
-- Clock skew attacks
+- Network Partitions
+- Clock skew
+- Clock drift
 - Straggler nodes
 
 ## Supported consensus algorithms
