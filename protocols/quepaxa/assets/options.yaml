@@ -1,0 +1,11 @@
+replica_path: protocols/quepaxa/assets/replica
+client_path: protocols/quepaxa/assets/client
+num_replicas: 5
+num_clients: 4
+arrival_rate: 10000
+ports: 10000
+process_name: replica
+pipeline_length: 1
+leader_timeout: 1000000
+server_mode: 0
+leader_mode: 4
