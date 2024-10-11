@@ -16,8 +16,12 @@ It allows plugging in different consensus algorithms and network topologies to t
 ## Supported consensus algorithms
 
 - Raft
-- Paxos
+- Paxos (2 versions)
 - Baxos
 - Rabia
 - RACS
 - SADL-RACS
+- EPaxos
+- Mencius
+- Generalized Paxos
+- QuePaxa
