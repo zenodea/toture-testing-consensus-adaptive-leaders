@@ -5,6 +5,7 @@ import (
 	baxos "toture-test/protocols/baxos"
 	dedis_paxos "toture-test/protocols/dedis_paxos"
 	dedis_raft "toture-test/protocols/dedis_raft"
+	efficient "toture-test/protocols/efficient"
 	ping "toture-test/protocols/ping"
 	rabia "toture-test/protocols/rabia"
 	racs "toture-test/protocols/racs"
@@ -93,6 +94,8 @@ func (c *Controller) GetProtocolImpl(protocol string) protocols.Consensus {
 		return sadl_racs.NewSadl_Racs(c.logger)
 	} else if protocol == "racs" {
 		return racs.NewRacs(c.logger)
+	} else if protocol == "efficient" {
+		return efficient.NewEfficient(c.logger)
 	} else {
 		panic("Unknown protocol")
 	}
