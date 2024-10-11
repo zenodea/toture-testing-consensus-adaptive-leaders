@@ -115,7 +115,6 @@ func (n *Node) UpdateStats(perf []float32) {
 		n.stat.network_in = append(n.stat.network_in, perf[2])
 		n.stat.network_out = append(n.stat.network_out, perf[3])
 	}
-	fmt.Printf("Node %v stats: %v\n", n.Id, perf)
 	n.statMutex.Unlock()
 }
 

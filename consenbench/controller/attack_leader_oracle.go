@@ -46,7 +46,7 @@ func (l *LeaderOracle) GetTopNLeaders() []int {
 
 		nodeStatsList = append(nodeStatsList, NodeStats{
 			node:      node,
-			cpuSum:    cpuSum / float32(len(cpu_usage)),
+			cpuSum:    cpuSum / float32(len(cpuUsage)),
 			netInSum:  netInSum / float32(len(netIn)),
 			netOutSum: netOutSum / float32(len(netOut)),
 		})
