@@ -122,12 +122,14 @@ func (ba *Efficient) Bootstrap(nodes []*common.Node, duration int, result chan u
 
 	fmt.Print("Killed all the replicas and clients\n")
 
-	nodes[0].ExecCmd("." + master_path + " -N " + strconv.Itoa(int(num_replicas)))
+	go nodes[0].ExecCmd("." + master_path + " -N " + strconv.Itoa(int(num_replicas)))
+
+	time.Sleep(5 * time.Second)
 
 	fmt.Print("Started the master\n")
 
 	for i := 0; i < int(num_replicas); i++ {
-		nodes[i].ExecCmd("." + replica_path + " -port 10000 " + " -maddr " + nodes[0].Ip + " -addr " + nodes[i].Ip + " -batchSize 3000 " + " -batchTime 5000 " + " -pipeline " + pipeline_length + " -exec  -dreply " + algo)
+		go nodes[i].ExecCmd("." + replica_path + " -port 10000 " + " -maddr " + nodes[0].Ip + " -addr " + nodes[i].Ip + " -batchSize 3000 " + " -batchTime 5000 " + " -pipeline " + pipeline_length + " -exec  -dreply " + algo)
 		time.Sleep(5 * time.Second)
 	}
 
@@ -136,14 +138,16 @@ func (ba *Efficient) Bootstrap(nodes []*common.Node, duration int, result chan u
 	time.Sleep(5 * time.Second)
 
 	clientOutputs := make([]string, num_clients)
-	k := 1
-	for i := int(num_replicas); i < int(num_replicas+num_clients); i++ {
-		if algo != "pa" {
-			clientOutputs[i-int(num_replicas)] = nodes[i].ExecCmd("." + ctl_path + " -name " + strconv.Itoa(50+k) + " -maddr " + nodes[0].Ip + " -w 50 -c 2 -clientBatchSize 50  -logFilePath " + fmt.Sprintf("%vbench/logs/", nodes[i].HomeDir) + " -arrivalRate  " + arrival_rate + " -testDuration " + strconv.Itoa(duration) + " -leaderTimeout " + view_timeout_time + " -defaultReplica " + strconv.Itoa(i-int(num_replicas)))
-		} else {
-			clientOutputs[i-int(num_replicas)] = nodes[i].ExecCmd("." + ctl_path + " -name " + strconv.Itoa(50+k) + " -maddr " + nodes[0].Ip + " -w 50 -c 2 -clientBatchSize 50  -logFilePath " + fmt.Sprintf("%vbench/logs/", nodes[i].HomeDir) + " -arrivalRate  " + arrival_rate + " -testDuration " + strconv.Itoa(duration) + " -leaderTimeout " + view_timeout_time + " -defaultReplica " + strconv.Itoa(i-int(num_replicas)) + " -l")
-		}
-		k++
+	m := 1
+	for j := int(num_replicas); j < int(num_replicas+num_clients); j++ {
+		go func(i int, k int) {
+			if algo != "pa" {
+				clientOutputs[i-int(num_replicas)] = nodes[i].ExecCmd("." + ctl_path + " -name " + strconv.Itoa(50+k) + " -maddr " + nodes[0].Ip + " -w 50 -c 2 -clientBatchSize 50  -logFilePath " + fmt.Sprintf("%vbench/logs/", nodes[i].HomeDir) + " -arrivalRate  " + arrival_rate + " -testDuration " + strconv.Itoa(duration) + " -leaderTimeout " + view_timeout_time + " -defaultReplica " + strconv.Itoa(i-int(num_replicas)))
+			} else {
+				clientOutputs[i-int(num_replicas)] = nodes[i].ExecCmd("." + ctl_path + " -name " + strconv.Itoa(50+k) + " -maddr " + nodes[0].Ip + " -w 50 -c 2 -clientBatchSize 50  -logFilePath " + fmt.Sprintf("%vbench/logs/", nodes[i].HomeDir) + " -arrivalRate  " + arrival_rate + " -testDuration " + strconv.Itoa(duration) + " -leaderTimeout " + view_timeout_time + " -defaultReplica " + strconv.Itoa(i-int(num_replicas)) + " -l")
+			}
+		}(j, m)
+		m++
 	}
 
 	fmt.Print("Started all the clients\n")
@@ -194,7 +198,7 @@ func (ba *Efficient) Bootstrap(nodes []*common.Node, duration int, result chan u
 
 	var wg2 sync.WaitGroup
 	wg2.Add(int(num_clients))
-	m := 1
+	m = 1
 	for j := int(num_replicas); j < int(num_replicas+num_clients); j++ {
 		go func(i int, k int) {
 			nodes[i].Get_Load(fmt.Sprintf("%vbench/logs/%v.txt", nodes[i].HomeDir, 50+k), "logs/")

@@ -146,7 +146,7 @@ func (ba *Rabia) Bootstrap(nodes []*common.Node, duration int, result chan util.
 
 	crl_export := fmt.Sprintf("export RC_Role=ctrl")
 	export_command := fmt.Sprintf("export LogFilePath=%vbench/logs/ RC_Ctrl=%v RC_Folder=%v/bench/ RC_LLevel=\"warn\" Rabia_ClosedLoop=false Rabia_NServers=%v Rabia_NFaulty=0 Rabia_NClients=%v Rabia_NConcurrency=1 Rabia_ClientBatchSize=50 Rabia_ClientTimeout=%v Rabia_ClientThinkTime=0 Rabia_ClientNRequests=0 Rabia_ClientArrivalRate=%v Rabia_ProxyBatchSize=50 Rabia_ProxyBatchTimeout=5 Rabia_NetworkBatchSize=0 Rabia_NetworkBatchTimeout=0 RC_Peers=%v Rabia_StorageMode=0", nodes[0].HomeDir, Controller, nodes[0].HomeDir, NServers, NClients, duration, arrival_rate, RC_Peers_N)
-	nodes[0].ExecCmd(crl_export + ";" + export_command + ";" + "." + rabia_path)
+	go nodes[0].ExecCmd(crl_export + ";" + export_command + ";" + "." + rabia_path)
 	fmt.Printf("export_command: %v\n\n\n", export_command)
 	fmt.Printf("crl_export: %v\n\n\n", crl_export)
 
