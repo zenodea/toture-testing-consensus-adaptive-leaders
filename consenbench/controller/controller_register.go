@@ -6,7 +6,7 @@ import (
 	dedis_paxos "toture-test/protocols/dedis_paxos"
 	dedis_raft "toture-test/protocols/dedis_raft"
 	efficient "toture-test/protocols/efficient"
-	mahi "toture-test/protocols/mahi_mahi"
+	mahi "toture-test/protocols/mahi"
 	ping "toture-test/protocols/ping"
 	quepaxa "toture-test/protocols/quepaxa"
 	rabia "toture-test/protocols/rabia"
