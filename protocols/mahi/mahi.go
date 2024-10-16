@@ -39,7 +39,7 @@ func (ba *Mahi) CopyConsensus(nodes []*common.Node) error {
 		panic("Not enough nodes to deploy mahi")
 	}
 
-	nodes[0].ExecCmd(fmt.Sprintf("sudo rm -r async-mystecity; git clone https://github.com/PasinduTennage/async-mystecity; cd async-mystecity; git checkout identical-network-port-for-torture; sudo apt-get install -y libfontconfig1-dev; source %v.cargo/env; cargo build", nodes[0].HomeDir))
+	nodes[0].ExecCmd(fmt.Sprintf("sudo rm -r async-mystecity; git clone https://github.com/PasinduTennage/async-mystecity; cd async-mystecity; git checkout consensus-rework; sudo apt-get install -y libfontconfig1-dev; source %v.cargo/env; cargo build", nodes[0].HomeDir))
 
 	println("Cloned the mahi repository and built the binary")
 
@@ -53,6 +53,7 @@ func (ba *Mahi) CopyConsensus(nodes []*common.Node) error {
 	for j := int64(0); j < num_replicas_int; j++ {
 		go func(i int) {
 			nodes[i].Put_Load("protocols/mahi/assets/mysticeti", fmt.Sprintf("%vbench/", nodes[i].HomeDir))
+			nodes[i].Put_Load("protocols/mahi/assets/config-rewrite.py", fmt.Sprintf("%vbench/", nodes[i].HomeDir))
 			wg.Done()
 		}(int(j))
 	}
@@ -133,6 +134,8 @@ func (ba *Mahi) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 			nodes[j].Put_Load("protocols/mahi/assets/node-parameters.yml", fmt.Sprintf("%vbench/", nodes[j].HomeDir))
 			nodes[j].ExecCmd(fmt.Sprintf("rm %v/bench/storage-%v/wal", nodes[j].HomeDir, j))
 			nodes[j].ExecCmd(fmt.Sprintf("./bench/mysticeti benchmark-genesis --ips %v --working-directory %v --node-parameters-path %vnode-parameters.yml", ip_string, nodes[j].HomeDir+"bench/", nodes[j].HomeDir+"bench/"))
+			nodes[j].ExecCmd(fmt.Sprintf("python3 %vbench/config-rewrite.py %vbench/public-config.yaml", nodes[j].HomeDir, nodes[j].HomeDir))
+
 			wg1.Done()
 		}(i)
 	}
