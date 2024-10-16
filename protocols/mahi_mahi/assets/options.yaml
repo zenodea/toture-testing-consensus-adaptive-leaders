@@ -1,0 +1,9 @@
+num_replicas: 5
+load: 10000
+ports: 10000
+wave_length: 5
+number_of_leaders: 1
+enable_pipelining: true
+enable_synchronizer: true
+transaction_size: 512
+process_name: mysticeti

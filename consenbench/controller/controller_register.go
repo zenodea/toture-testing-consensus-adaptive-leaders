@@ -6,6 +6,7 @@ import (
 	dedis_paxos "toture-test/protocols/dedis_paxos"
 	dedis_raft "toture-test/protocols/dedis_raft"
 	efficient "toture-test/protocols/efficient"
+	mahi "toture-test/protocols/mahi_mahi"
 	ping "toture-test/protocols/ping"
 	quepaxa "toture-test/protocols/quepaxa"
 	rabia "toture-test/protocols/rabia"
@@ -99,6 +100,8 @@ func (c *Controller) GetProtocolImpl(protocol string) protocols.Consensus {
 		return efficient.NewEfficient(c.logger)
 	} else if protocol == "quepaxa" {
 		return quepaxa.NewQuePaxa(c.logger)
+	} else if protocol == "mahi" {
+		return mahi.NewMahi(c.logger)
 	} else {
 		panic("Unknown protocol")
 	}
