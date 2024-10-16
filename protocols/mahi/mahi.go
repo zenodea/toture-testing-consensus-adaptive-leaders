@@ -9,6 +9,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 	"toture-test/consenbench/common"
@@ -220,6 +221,7 @@ func (ba *Mahi) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 	}
 
 	fmt.Printf("Mahi Mahi Performance:\n %v\n", outputs)
+	result <- ba.getPerformance(outputs)
 
 }
 
@@ -244,4 +246,28 @@ func (ba *Mahi) ExtractOptions(path string) protocols.ConsensusOptions {
 
 	ba.options = options
 	return options
+}
+
+func (ba *Mahi) getPerformance(outputs []string) util.Performance {
+	p := util.Performance{
+		Option: make(map[string]string),
+	}
+	sum_tx := 0
+	sum_lat := 0
+	for i := 0; i < len(outputs); i++ {
+		tx, err := strconv.ParseInt(strings.Split(outputs[i], " ")[0], 10, 64)
+		if err != nil {
+			panic(err.Error() + " while parsing tx")
+		}
+		lat, err := strconv.ParseFloat(strings.Split(outputs[i], " ")[1], 64)
+		if err != nil {
+			panic(err.Error() + " while parsing lat")
+		}
+		sum_tx += int(tx)
+		sum_lat += int(lat)
+	}
+	p.Option["throughput"] = fmt.Sprintf("%v requests per second", sum_tx/len(outputs))
+	p.Option["average latency"] = fmt.Sprintf("%v ms", sum_lat/len(outputs))
+
+	return p
 }
