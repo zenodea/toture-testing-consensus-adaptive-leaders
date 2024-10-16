@@ -25,3 +25,5 @@ It allows plugging in different consensus algorithms and network topologies to t
 - Mencius
 - Generalized Paxos
 - QuePaxa
+- Mahi-Mahi
+- Codial-Miners
