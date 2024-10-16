@@ -5,7 +5,9 @@ import (
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"log"
+	"os"
 	"os/exec"
+	"path/filepath"
 	"strconv"
 	"sync"
 	"time"
@@ -168,6 +170,65 @@ func (ba *Mahi) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 	wg2.Wait()
 
 	println("Killed all the replicas")
+
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		panic("Error getting home directory:" + err.Error())
+	}
+
+	cmd := exec.Command("rm", []string{"-r", filepath.Join(homeDir, "toture-testing-consensus/logs")}...)
+	output, err = cmd.CombinedOutput()
+	if err != nil {
+		print("Error while deleting logs/ " + err.Error() + " " + string(output) + "\n")
+	} else {
+		print("deleted local logs/ successfully\n" + string(output) + "\n")
+	}
+
+	cmd = exec.Command("mkdir", []string{"-p", filepath.Join(homeDir, "toture-testing-consensus/logs")}...)
+	output, err = cmd.CombinedOutput()
+	if err != nil {
+		panic("Error while creating logs/ " + err.Error() + " " + string(output) + "\n")
+	} else {
+		print("created logs/ successfully\n" + string(output) + "\n")
+	}
+
+	var wg3 sync.WaitGroup
+	wg3.Add(int(num_replicas))
+	for i := 0; i < int(num_replicas); i++ {
+		go func(j int) {
+			nodes[j].Get_Load(fmt.Sprintf("%vclient-times-%v.txt", nodes[j].HomeDir, j), fmt.Sprintf("logs/"))
+			wg3.Done()
+		}(i)
+	}
+	wg3.Wait()
+
+	println("Downloaded the client logs")
+
+	command := "protocols/mahi/assets/performance_graph.py"
+	file_names := []string{}
+
+	for j := 0; j < int(num_replicas); j++ {
+		logFile := filepath.Join(homeDir, fmt.Sprintf("toture-testing-consensus/logs/client-times-%v.txt", j))
+
+		file_names = append(file_names, logFile)
+
+		sshCmd = exec.Command("python3", []string{command, "mahi-" + strconv.Itoa(j), logFile}...)
+		output, err = sshCmd.CombinedOutput()
+		if err != nil {
+			print("Error while generating performance graph " + err.Error() + " " + string(output) + "\n")
+		} else {
+			print("Mahi Performance graph generated successfully\n" + string(output) + "\n")
+		}
+	}
+
+	sshCmd = exec.Command("python3", append([]string{command, "mahi"}, file_names...)...)
+	output, err = sshCmd.CombinedOutput()
+	if err != nil {
+		print("Error while generating performance graphs " + err.Error() + " " + string(output) + "\n")
+	} else {
+		print("Mahi Performance graphs generated successfully\n" + string(output) + "\n")
+	}
+
 }
 
 func (ba *Mahi) ExtractOptions(path string) protocols.ConsensusOptions {
