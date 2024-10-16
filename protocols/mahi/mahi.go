@@ -5,6 +5,7 @@ import (
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"log"
+	"os/exec"
 	"strconv"
 	"sync"
 	"toture-test/consenbench/common"
@@ -61,6 +62,64 @@ func (ba *Mahi) CopyConsensus(nodes []*common.Node) error {
 }
 
 func (ba *Mahi) Bootstrap(nodes []*common.Node, duration int, result chan util.Performance, bootstrap_complete chan bool) {
+	//replica_path := "/bench/mysticeti"
+
+	num_replicas, err := strconv.ParseInt(ba.options.Option["num_replicas"], 10, 64)
+	if err != nil {
+		panic(err.Error() + " while parsing num_replicas")
+
+	}
+
+	var wg sync.WaitGroup
+	wg.Add(int(num_replicas))
+	for i := 0; i < int(num_replicas); i++ {
+		go func(j int) {
+			nodes[j].ExecCmd("pkill -KILL -f mysticeti")
+			nodes[j].ExecCmd(fmt.Sprintf("rm -r %vbench/logs/", nodes[j].HomeDir))
+			nodes[j].ExecCmd(fmt.Sprintf("mkdir -p %vbench/logs/", nodes[j].HomeDir))
+			wg.Done()
+		}(i)
+	}
+	wg.Wait()
+
+	fmt.Print("Killed all the replicas and clients\n")
+
+	load, ok := ba.options.Option["load"]
+	if !ok {
+		panic("load not found in options")
+	}
+
+	wave_length, ok := ba.options.Option["wave_length"]
+	if !ok {
+		panic("wave_length not found in options")
+	}
+
+	number_of_leaders, ok := ba.options.Option["number_of_leaders"]
+	if !ok {
+		panic("number_of_leaders not found in options")
+	}
+
+	enable_pipelining, ok := ba.options.Option["enable_pipelining"]
+	if !ok {
+		panic("enable_pipelining not found in options")
+	}
+
+	enable_synchronizer, ok := ba.options.Option["enable_synchronizer"]
+	if !ok {
+		panic("enable_synchronizer not found in options")
+	}
+
+	transaction_size, ok := ba.options.Option["transaction_size"]
+	if !ok {
+		panic("transaction_size not found in options")
+	}
+
+	sshCmd := exec.Command("python3", []string{"protocols/mahi/assets/generate-configs.py", "--wave_length", wave_length, "--number_of_leaders", number_of_leaders, "--enable_pipelining", enable_pipelining, "--consensus_only", "true", "--enable_synchronizer", enable_synchronizer, "--initial_delay_secs", "5", "--initial_delay_nanos", "0", "--load", load, "--transaction_size", transaction_size, "--output_dir", "protocols/mahi/assets/"}...)
+	output, err := sshCmd.CombinedOutput()
+	if err != nil {
+
+		panic("Error while running config-generate.py " + err.Error() + " " + string(output))
+	}
 
 }
 
