@@ -157,7 +157,7 @@ func (ba *Mahi) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 
 	bootstrap_complete <- true
 
-	time.Sleep(time.Duration(2*duration) * time.Second)
+	time.Sleep(time.Duration(duration) * time.Second)
 
 	var wg2 sync.WaitGroup
 	wg2.Add(int(num_replicas))
@@ -205,12 +205,9 @@ func (ba *Mahi) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 	println("Downloaded the client logs")
 
 	command := "protocols/mahi/assets/performance_graph.py"
-	file_names := []string{}
 
 	for j := 0; j < int(num_replicas); j++ {
 		logFile := filepath.Join(homeDir, fmt.Sprintf("toture-testing-consensus/logs/client-times-%v.txt", j))
-
-		file_names = append(file_names, logFile)
 
 		sshCmd = exec.Command("python3", []string{command, "mahi-" + strconv.Itoa(j), logFile}...)
 		output, err = sshCmd.CombinedOutput()
@@ -219,14 +216,6 @@ func (ba *Mahi) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 		} else {
 			print("Mahi Performance graph generated successfully\n" + string(output) + "\n")
 		}
-	}
-
-	sshCmd = exec.Command("python3", append([]string{command, "mahi"}, file_names...)...)
-	output, err = sshCmd.CombinedOutput()
-	if err != nil {
-		print("Error while generating performance graphs " + err.Error() + " " + string(output) + "\n")
-	} else {
-		print("Mahi Performance graphs generated successfully\n" + string(output) + "\n")
 	}
 
 }

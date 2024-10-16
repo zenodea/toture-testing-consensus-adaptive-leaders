@@ -1,6 +1,6 @@
 num_replicas: 5
-load: 10000
-ports: 10000
+load: 1000
+ports: 1500
 wave_length: 5
 number_of_leaders: 1
 enable_pipelining: true
