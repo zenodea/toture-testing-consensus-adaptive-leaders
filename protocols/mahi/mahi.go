@@ -114,7 +114,7 @@ func (ba *Mahi) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 		panic("transaction_size not found in options")
 	}
 
-	sshCmd := exec.Command("python3", []string{"protocols/mahi/assets/config-generate.py", "--wave_length", wave_length, "--number_of_leaders", number_of_leaders, "--enable_pipelining", enable_pipelining, "--consensus_only", "true", "--enable_synchronizer", enable_synchronizer, "--initial_delay_secs", "5", "--initial_delay_nanos", "0", "--load", load, "--transaction_size", transaction_size, "--output_dir", "protocols/mahi/assets/"}...)
+	sshCmd := exec.Command("python3", []string{"protocols/mahi/assets/genrate-configs.py", "--wave_length", wave_length, "--number_of_leaders", number_of_leaders, "--enable_pipelining", enable_pipelining, "--consensus_only", "true", "--enable_synchronizer", enable_synchronizer, "--initial_delay_secs", "5", "--initial_delay_nanos", "0", "--load", load, "--transaction_size", transaction_size, "--output_dir", "protocols/mahi/assets/"}...)
 	output, err := sshCmd.CombinedOutput()
 	if err != nil {
 
