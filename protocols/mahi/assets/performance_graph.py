@@ -13,8 +13,8 @@ def extract_start_end_pairs(filenames):
                 for line in f:
                     parts = line.strip().split(',')
                     if len(parts) >= 2:
-                        start_time = int(parts[0])
-                        end_time = int(parts[1])
+                        start_time = int(parts[0].strip())
+                        end_time = int(parts[1].strip())
                         start_end_pairs.append((start_time, end_time))
         except FileNotFoundError:
             print(f"File not found: {filename}")
@@ -52,7 +52,6 @@ def calculate_throughput_latency(start_end_pairs):
     overall_throughput = total_requests / total_seconds
     overall_average_latency = total_latency / total_requests / 1000
     print(f"{overall_throughput:.2f} {overall_average_latency:.2f} ")
-
 
     return throughput, average_latency
 

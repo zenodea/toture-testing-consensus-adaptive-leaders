@@ -9,10 +9,10 @@ parser.add_argument('--wave_length', type=int, default=5, help='Wave length (def
 parser.add_argument('--number_of_leaders', type=int, default=3, help='Number of leaders (default: 3)')
 parser.add_argument('--enable_pipelining', type=str, default="True", help='Enable pipelining (default: True)')
 parser.add_argument('--consensus_only', type=str, default="True", help='Consensus only (default: True)')
-parser.add_argument('--enable_synchronizer', type=str, default="False", help='Enable synchronizer (default: False)')
-parser.add_argument('--initial_delay_secs', type=int, default=1, help='Initial delay in seconds (default: 1)')
+parser.add_argument('--enable_synchronizer', type=str, default="True", help='Enable synchronizer (default: False)')
+parser.add_argument('--initial_delay_secs', type=int, default=5, help='Initial delay in seconds (default: 1)')
 parser.add_argument('--initial_delay_nanos', type=int, default=500, help='Initial delay in nanoseconds (default: 500)')
-parser.add_argument('--load', type=int, default=100000, help='Load (default: 100000)')
+parser.add_argument('--load', type=int, default=1000, help='Load (default: 1000)')
 parser.add_argument('--transaction_size', type=int, default=512, help='Transaction size (default: 512)')
 parser.add_argument('--output_dir', type=str, default="protocols/mahi/assets/", help='configuration file output directory')
 
