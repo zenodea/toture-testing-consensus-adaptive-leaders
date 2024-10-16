@@ -62,8 +62,6 @@ func (ba *Mahi) CopyConsensus(nodes []*common.Node) error {
 }
 
 func (ba *Mahi) Bootstrap(nodes []*common.Node, duration int, result chan util.Performance, bootstrap_complete chan bool) {
-	//replica_path := "/bench/mysticeti"
-
 	num_replicas, err := strconv.ParseInt(ba.options.Option["num_replicas"], 10, 64)
 	if err != nil {
 		panic(err.Error() + " while parsing num_replicas")
@@ -120,6 +118,27 @@ func (ba *Mahi) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 
 		panic("Error while running config-generate.py " + err.Error() + " " + string(output))
 	}
+
+	ip_string := ""
+	for i := 0; i < int(num_replicas); i++ {
+		ip_string = ip_string + nodes[i].Ip + " "
+	}
+
+	var wg1 sync.WaitGroup
+	wg1.Add(int(num_replicas))
+	for i := 0; i < int(num_replicas); i++ {
+		go func(j int) {
+			nodes[j].ExecCmd("pkill -KILL -f mysticeti")
+			nodes[j].Put_Load("protocols/mahi/assets/client-parameters.yml", fmt.Sprintf("%vbench/", nodes[j].HomeDir))
+			nodes[j].Put_Load("protocols/mahi/assets/node-parameters.yml", fmt.Sprintf("%vbench/", nodes[j].HomeDir))
+			nodes[j].ExecCmd(fmt.Sprintf("rm %v/bench/storage-%v/wal", nodes[j].HomeDir, j))
+			nodes[j].ExecCmd(fmt.Sprintf("./bench/mysticeti benchmark-genesis --ips %v --working-directory %v --node-parameters-path %vnode-parameters.yml", ip_string, nodes[j].HomeDir+"bench/", nodes[j].HomeDir+"bench/"))
+			wg1.Done()
+		}(i)
+	}
+	wg1.Wait()
+
+	println("Generated the node private keys")
 
 }
 
