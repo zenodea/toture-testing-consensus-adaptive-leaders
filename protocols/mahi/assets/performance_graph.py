@@ -44,6 +44,17 @@ def calculate_throughput_latency(start_end_pairs):
     # Calculate average latency per second in ms
     average_latency = {sec: latency_sum[sec] / latency_count[sec] / 1_000 for sec in latency_sum}
 
+    # print the overall throughput and average_latency
+
+    total_requests = sum(throughput.values())
+    total_latency = sum(latency_sum.values())
+    total_seconds = len(throughput)
+    overall_throughput = total_requests / total_seconds
+    overall_average_latency = total_latency / total_requests
+    print(f"Throughput: {overall_throughput:.2f} requests per second")
+    print(f"Average Latency: {overall_average_latency:.2f} ms")
+
+
     return throughput, average_latency
 
 

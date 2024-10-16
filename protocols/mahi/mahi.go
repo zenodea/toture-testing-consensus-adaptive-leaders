@@ -205,7 +205,7 @@ func (ba *Mahi) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 	println("Downloaded the client logs")
 
 	command := "protocols/mahi/assets/performance_graph.py"
-
+	outputs := []string{}
 	for j := 0; j < int(num_replicas); j++ {
 		logFile := filepath.Join(homeDir, fmt.Sprintf("toture-testing-consensus/logs/client-times-%v.txt", j))
 
@@ -215,8 +215,11 @@ func (ba *Mahi) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 			print("Error while generating performance graph " + err.Error() + " " + string(output) + "\n")
 		} else {
 			print("Mahi Performance graph generated successfully\n" + string(output) + "\n")
+			outputs = append(outputs, string(output))
 		}
 	}
+
+	fmt.Printf("Mahi Mahi Performance:\n %v\n", outputs)
 
 }
 
@@ -241,8 +244,4 @@ func (ba *Mahi) ExtractOptions(path string) protocols.ConsensusOptions {
 
 	ba.options = options
 	return options
-}
-
-func (ba *Mahi) GetPerformance(outputs []string) util.Performance {
-	return util.Performance{}
 }
