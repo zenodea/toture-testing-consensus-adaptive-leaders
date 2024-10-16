@@ -255,7 +255,7 @@ func (ba *Mahi) getPerformance(outputs []string) util.Performance {
 	sum_tx := 0
 	sum_lat := 0
 	for i := 0; i < len(outputs); i++ {
-		tx, err := strconv.ParseInt(strings.Split(outputs[i], " ")[0], 10, 64)
+		tx, err := strconv.ParseFloat(strings.Split(outputs[i], " ")[0], 64)
 		if err != nil {
 			panic(err.Error() + " while parsing tx")
 		}
