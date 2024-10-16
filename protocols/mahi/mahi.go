@@ -39,7 +39,7 @@ func (ba *Mahi) CopyConsensus(nodes []*common.Node) error {
 		panic("Not enough nodes to deploy mahi")
 	}
 
-	nodes[0].ExecCmd(fmt.Sprintf("sudo rm -r async-mystecity; git clone https://github.com/PasinduTennage/async-mystecity; cd async-mystecity; git checkout consensus-rework; sudo apt-get install -y libfontconfig1-dev; source %v.cargo/env; cargo build", nodes[0].HomeDir))
+	nodes[0].ExecCmd(fmt.Sprintf("sudo rm -r async-mystecity; git clone https://github.com/PasinduTennage/async-mystecity; cd async-mystecity; git checkout identical-network-port-for-torture; sudo apt-get install -y libfontconfig1-dev; source %v.cargo/env; cargo build", nodes[0].HomeDir))
 
 	println("Cloned the mahi repository and built the binary")
 
