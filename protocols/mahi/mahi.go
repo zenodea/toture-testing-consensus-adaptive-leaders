@@ -42,7 +42,7 @@ func (ba *Mahi) CopyConsensus(nodes []*common.Node) error {
 
 	println("Cloned the mahi repository and built the binary")
 
-	nodes[0].Get_Load(fmt.Sprintf("%vasync-mystecity/target/debug/mysticeti", nodes[0].HomeDir), "protocols/mahi_mahi/assets/")
+	nodes[0].Get_Load(fmt.Sprintf("%vasync-mystecity/target/debug/mysticeti", nodes[0].HomeDir), "protocols/mahi/assets/")
 
 	println("Copied the mahi binary to the local machine")
 
