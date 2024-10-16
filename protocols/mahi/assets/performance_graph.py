@@ -51,8 +51,7 @@ def calculate_throughput_latency(start_end_pairs):
     total_seconds = len(throughput)
     overall_throughput = total_requests / total_seconds
     overall_average_latency = total_latency / total_requests / 1000
-    print(f"Throughput: {overall_throughput:.2f} requests per second")
-    print(f"Average Latency: {overall_average_latency:.2f} ms")
+    print(f"{overall_throughput:.2f},{overall_average_latency:.2f}")
 
 
     return throughput, average_latency
