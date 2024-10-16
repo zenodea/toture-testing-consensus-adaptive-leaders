@@ -8,6 +8,7 @@ import (
 	"os/exec"
 	"strconv"
 	"sync"
+	"time"
 	"toture-test/consenbench/common"
 	"toture-test/protocols"
 	"toture-test/util"
@@ -143,6 +144,30 @@ func (ba *Mahi) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 
 	println("Generated the node private keys")
 
+	for i := 0; i < int(num_replicas); i++ {
+		go func(j int) {
+			nodes[j].ExecCmd(fmt.Sprintf("./bench/mysticeti run --authority %v --committee-path %vbench/committee.yaml --public-config-path %vbench/public-config.yaml --private-config-path %vbench/private-config-%v.yaml --client-parameters-path %vbench/client-parameters.yml", j, nodes[j].HomeDir, nodes[j].HomeDir, nodes[j].HomeDir, j, nodes[j].HomeDir))
+		}(i)
+	}
+	time.Sleep(5 * time.Second)
+
+	println("Started the replicas")
+
+	bootstrap_complete <- true
+
+	time.Sleep(time.Duration(2*duration) * time.Second)
+
+	var wg2 sync.WaitGroup
+	wg2.Add(int(num_replicas))
+	for i := 0; i < int(num_replicas); i++ {
+		go func(j int) {
+			nodes[j].ExecCmd("pkill -KILL -f mysticeti")
+			wg2.Done()
+		}(i)
+	}
+	wg2.Wait()
+
+	println("Killed all the replicas")
 }
 
 func (ba *Mahi) ExtractOptions(path string) protocols.ConsensusOptions {
