@@ -27,3 +27,4 @@ It allows plugging in different consensus algorithms and network topologies to t
 - QuePaxa
 - Mahi-Mahi
 - Codial-Miners
+- Mysticeti
