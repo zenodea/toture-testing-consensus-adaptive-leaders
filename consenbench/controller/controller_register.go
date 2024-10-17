@@ -7,6 +7,7 @@ import (
 	dedis_raft "toture-test/protocols/dedis_raft"
 	efficient "toture-test/protocols/efficient"
 	mahi "toture-test/protocols/mahi"
+	mysticeti "toture-test/protocols/mysticeti"
 	ping "toture-test/protocols/ping"
 	quepaxa "toture-test/protocols/quepaxa"
 	rabia "toture-test/protocols/rabia"
@@ -102,6 +103,8 @@ func (c *Controller) GetProtocolImpl(protocol string) protocols.Consensus {
 		return quepaxa.NewQuePaxa(c.logger)
 	} else if protocol == "mahi" {
 		return mahi.NewMahi(c.logger)
+	} else if protocol == "mysticeti" {
+		return mysticeti.NewMysticeti(c.logger)
 	} else {
 		panic("Unknown protocol")
 	}
