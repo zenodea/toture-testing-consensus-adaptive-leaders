@@ -134,6 +134,7 @@ func (ba *Mahi) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 	for i := 0; i < int(num_replicas); i++ {
 		go func(j int) {
 			nodes[j].ExecCmd("pkill -KILL -f mysticeti")
+			nodes[j].ExecCmd(fmt.Sprintf("rm %vclient-times-%v.txt", nodes[j].HomeDir, j))
 			nodes[j].Put_Load("protocols/mahi/assets/client-parameters.yml", fmt.Sprintf("%vbench/", nodes[j].HomeDir))
 			nodes[j].Put_Load("protocols/mahi/assets/node-parameters.yml", fmt.Sprintf("%vbench/", nodes[j].HomeDir))
 			nodes[j].ExecCmd(fmt.Sprintf("rm %vbench/storage-%v/wal", nodes[j].HomeDir, j))
