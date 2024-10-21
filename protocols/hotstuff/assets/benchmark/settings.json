@@ -11,6 +11,6 @@
     "repo": {
         "name": "hotstuff",
         "url": "https://github.com/asonnino/hotstuff.git",
-        "branch": "main"
+        "branch": "3-chain"
     }
 }
