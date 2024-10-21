@@ -28,4 +28,4 @@ It allows plugging in different consensus algorithms and network topologies to t
 - Mahi-Mahi
 - Codial-Miners
 - Mysticeti
-- Hotstuff-2-chain
+- Jolteon

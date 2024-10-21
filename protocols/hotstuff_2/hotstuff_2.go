@@ -29,7 +29,7 @@ func NewHotstuff_2(logger *util.Logger) *Hotstuff_2 {
 
 func (ba *Hotstuff_2) CopyConsensus(nodes []*common.Node) error {
 	println("Copying Hotstuff_2 consensus to nodes using fabric")
-	err := os.Chdir("protocols/hotstuff/assets/benchmark")
+	err := os.Chdir("protocols/hotstuff_2/assets/benchmark")
 	if err != nil {
 		panic("Failed to change directory")
 	}
@@ -48,7 +48,7 @@ func (ba *Hotstuff_2) CopyConsensus(nodes []*common.Node) error {
 
 func (ba *Hotstuff_2) Bootstrap(nodes []*common.Node, duration int, result chan util.Performance, bootstrap_complete chan bool) {
 	println("Running Hotstuff_2 consensus using fabric")
-	err := os.Chdir("protocols/hotstuff/assets/benchmark")
+	err := os.Chdir("protocols/hotstuff_2/assets/benchmark")
 	if err != nil {
 		panic("Failed to change directory")
 	}
