@@ -1,2 +1,3 @@
 ports: 10000
 process_name: node
+num_replicas: 8

@@ -69,10 +69,16 @@ func (ba *Hotstuff) Bootstrap(nodes []*common.Node, duration int, result chan ut
 		fmt.Printf("Created  results/ %s\n", output)
 	}
 
+	num_replicas, ok := ba.options.Option["num_replicas"]
+	if !ok {
+		panic(err.Error() + " while parsing num_replicas")
+
+	}
+
 	var wg sync.WaitGroup
 	wg.Add(1)
 	go func() {
-		cmd = exec.Command("fab", "remote", "--pid=", fmt.Sprintf("%v", os.Getpid()), "--attack-duration=", fmt.Sprintf("%v", duration))
+		cmd = exec.Command("fab", "remote", "--pid=", fmt.Sprintf("%v", os.Getpid()), "--attack-duration=", fmt.Sprintf("%v", duration), "--num-replicas", num_replicas)
 		output, err = cmd.CombinedOutput()
 		if err != nil {
 			panic(fmt.Sprintf("Failed to run fab remote: %v\n%v", err, string(output)))
