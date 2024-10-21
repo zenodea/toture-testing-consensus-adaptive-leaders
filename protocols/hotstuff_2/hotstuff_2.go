@@ -24,9 +24,10 @@ func NewHotstuff_2(logger *util.Logger) *Hotstuff_2 {
 }
 
 func (ba *Hotstuff_2) CopyConsensus(nodes []*common.Node) error {
+	println("Copying Hotstuff_2 consensus to nodes using fabric")
 	err := os.Chdir("protocols/hotstuff_2/assets/benchmark")
 	if err != nil {
-		log.Fatalf("Failed to change directory: %v", err)
+		panic("Failed to change directory")
 	}
 
 	// Define the command to run fab install
