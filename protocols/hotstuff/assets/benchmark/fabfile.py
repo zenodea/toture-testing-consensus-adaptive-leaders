@@ -47,13 +47,13 @@ def install(ctx):
 
 
 @task
-def remote(ctx, pid):
+def remote(ctx, pid, attack_duration):
     """Run benchmarks on AWS"""
     bench_params = {
         "nodes": [4],
         "rate": [10_000],
         "tx_size": 512,
-        "duration": 300,
+        "duration": int(attack_duration),
         "runs": 1,
     }
     node_params = {
