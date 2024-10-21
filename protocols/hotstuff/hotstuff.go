@@ -61,7 +61,7 @@ func (ba *Hotstuff) Bootstrap(nodes []*common.Node, duration int, result chan ut
 	} else {
 		fmt.Printf("Deleted old results/ %s\n", output)
 	}
-	cmd = exec.Command("mkdir", "-r", "results/")
+	cmd = exec.Command("mkdir", "results/")
 	output, err = cmd.CombinedOutput()
 	if err != nil {
 		panic(fmt.Sprintf("Failed to create results/ %v\n%v", err, string(output)))
