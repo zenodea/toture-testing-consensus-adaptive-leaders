@@ -33,7 +33,7 @@ class InstanceManager:
         # Extract nodes' information
         nodes = data.get('nodes', [])
         ips = [node['Ip'] for node in nodes[1:]]
-        print(ips)
+        print("available machines" + str(ips))
         return ips
 
     def user(self):

@@ -106,7 +106,7 @@ func (c *Controller) GetProtocolImpl(protocol string) protocols.Consensus {
 		return mahi.NewMahi(c.logger)
 	} else if protocol == "mysticeti" {
 		return mysticeti.NewMysticeti(c.logger)
-	} else if protocol == "hotstuff" {
+	} else if protocol == "hotstuff_2" {
 		return hotstuff_2.NewHotstuff_2(c.logger)
 	} else {
 		panic("Unknown protocol")

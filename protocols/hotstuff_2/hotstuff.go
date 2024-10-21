@@ -43,7 +43,6 @@ func (ba *Hotstuff_2) CopyConsensus(nodes []*common.Node) error {
 		// print output
 		fmt.Printf("Fab install Output: %s\n", output)
 	}
-
 	return nil
 }
 
