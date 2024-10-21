@@ -1,5 +1,2 @@
-num_replicas: 5
-num_clients: 3
-arrival_rate: 10000
 ports: 10000
-process_name: replica
+process_name: node

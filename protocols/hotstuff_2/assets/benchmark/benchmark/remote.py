@@ -87,7 +87,7 @@ class Bench:
         delete_logs = CommandMaker.clean_logs() if delete_logs else "true"
         cmd = [delete_logs, f"({CommandMaker.kill()} || true)"]
         try:
-            g = Group(*hosts, user="ubuntu", connect_kwargs=self.connect)
+            g = Group(*hosts, user=self.manager.user(), connect_kwargs=self.connect)
             g.run(" && ".join(cmd), hide=True)
         except GroupException as e:
             raise BenchError("Failed to kill nodes", FabricError(e))
@@ -97,18 +97,15 @@ class Bench:
 
         # Ensure there are enough hosts.
         hosts = self.manager.hosts()
-        if sum(len(x) for x in hosts.values()) < nodes:
+        if len(hosts) < nodes:
             return []
 
-        # Select the hosts in different data centers.
-        ordered = zip(*hosts.values())
-        ordered = [x for y in ordered for x in y]
-        return ordered[:nodes]
+        return hosts[:nodes]
 
     def _background_run(self, host, command, log_file):
         name = splitext(basename(log_file))[0]
         cmd = f'tmux new -d -s "{name}" "{command} |& tee {log_file}"'
-        c = Connection(host, user="ubuntu", connect_kwargs=self.connect)
+        c = Connection(host, user=self.manager.user(), connect_kwargs=self.connect)
         output = c.run(cmd, hide=True)
         self._check_stderr(output)
 
@@ -122,7 +119,7 @@ class Bench:
             f"(cd {self.settings.repo_name}/node && {CommandMaker.compile()})",
             CommandMaker.alias_binaries(f"./{self.settings.repo_name}/target/release/"),
         ]
-        g = Group(*hosts, user="ubuntu", connect_kwargs=self.connect)
+        g = Group(*hosts, user=self.manager.user(), connect_kwargs=self.connect)
         g.run(" && ".join(cmd), hide=True)
 
     def _config(self, hosts, node_parameters):
@@ -159,13 +156,13 @@ class Bench:
 
         # Cleanup all nodes.
         cmd = f"{CommandMaker.cleanup()} || true"
-        g = Group(*hosts, user="ubuntu", connect_kwargs=self.connect)
+        g = Group(*hosts, user=self.manager.user(), connect_kwargs=self.connect)
         g.run(cmd, hide=True)
 
         # Upload configuration files.
         progress = progress_bar(hosts, prefix="Uploading config files:")
         for i, host in enumerate(progress):
-            c = Connection(host, user="ubuntu", connect_kwargs=self.connect)
+            c = Connection(host, user=self.manager.user(), connect_kwargs=self.connect)
             c.put(PathMaker.committee_file(), ".")
             c.put(PathMaker.key_file(i), ".")
             c.put(PathMaker.parameters_file(), ".")
@@ -224,7 +221,7 @@ class Bench:
         # Download log files.
         progress = progress_bar(hosts, prefix="Downloading logs:")
         for i, host in enumerate(progress):
-            c = Connection(host, user="ubuntu", connect_kwargs=self.connect)
+            c = Connection(host, user=self.manager.user(), connect_kwargs=self.connect)
             c.get(PathMaker.node_log_file(i), local=PathMaker.node_log_file(i))
             c.get(PathMaker.client_log_file(i), local=PathMaker.client_log_file(i))
 
@@ -246,6 +243,8 @@ class Bench:
         if not selected_hosts:
             Print.warn("There are not enough instances available")
             return
+        else:
+            Print.info(f"Selected {len(selected_hosts)} instances")
 
         # Update nodes.
         try:
@@ -258,7 +257,7 @@ class Bench:
         for n in bench_parameters.nodes:
             for r in bench_parameters.rate:
                 Print.heading(f"\nRunning {n} nodes (input rate: {r:,} tx/s)")
-                hosts = selected_hosts[:n]
+                hosts = selected_hosts
 
                 # Upload all configuration files.
                 try:
@@ -268,10 +267,6 @@ class Bench:
                     Print.error(BenchError("Failed to configure nodes", e))
                     continue
 
-                # Do not boot faulty nodes.
-                faults = bench_parameters.faults
-                hosts = hosts[: n - faults]
-
                 # Run the benchmark.
                 for i in range(bench_parameters.runs):
                     Print.heading(f"Run {i+1}/{bench_parameters.runs}")
@@ -279,9 +274,9 @@ class Bench:
                         self._run_single(
                             hosts, r, bench_parameters, node_parameters, debug
                         )
-                        self._logs(hosts, faults).print(
+                        self._logs(hosts, 0).print(
                             PathMaker.result_file(
-                                faults, n, r, bench_parameters.tx_size
+                                0, n, r, bench_parameters.tx_size
                             )
                         )
                     except (
