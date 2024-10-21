@@ -1,0 +1,16 @@
+{
+    "key": {
+        "name": "pasindu",
+        "path": "/home/pasindu/Pictures/pasindu"
+    },
+    "ports": {
+        "consensus": 10000,
+        "mempool": 7000,
+        "front": 6000
+    },
+    "repo": {
+        "name": "hotstuff",
+        "url": "https://github.com/asonnino/hotstuff.git",
+        "branch": "main"
+    }
+}
