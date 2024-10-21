@@ -34,7 +34,11 @@ func (ba *Hotstuff_2) CopyConsensus(nodes []*common.Node) error {
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		panic(fmt.Sprintf("Failed to run fab install: %v\n%v", err, string(output)))
+	} else {
+		// print output
+		fmt.Printf("Fab install Output: %s\n", output)
 	}
+
 	return nil
 }
 
