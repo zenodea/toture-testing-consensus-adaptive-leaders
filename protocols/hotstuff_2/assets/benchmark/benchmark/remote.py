@@ -39,6 +39,7 @@ class Bench:
         self.manager = InstanceManager.make()
         self.settings = self.manager.settings
         try:
+            print("private key: "+ self.manager.settings.key_path)
             ctx.connect_kwargs.pkey = RSAKey.from_private_key_file(
                 self.manager.settings.key_path
             )
