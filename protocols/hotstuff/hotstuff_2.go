@@ -25,7 +25,7 @@ func NewHotstuff(logger *util.Logger) *Hotstuff {
 
 func (ba *Hotstuff) CopyConsensus(nodes []*common.Node) error {
 	println("Copying Hotstuff consensus to nodes using fabric")
-	err := os.Chdir("protocols/hotstuff_2/assets/benchmark")
+	err := os.Chdir("protocols/hotstuff/assets/benchmark")
 	if err != nil {
 		panic("Failed to change directory")
 	}
