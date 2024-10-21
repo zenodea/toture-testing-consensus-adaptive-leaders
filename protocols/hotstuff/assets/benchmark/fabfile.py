@@ -47,7 +47,7 @@ def install(ctx):
 
 
 @task
-def remote(ctx):
+def remote(ctx, pid):
     """Run benchmarks on AWS"""
     bench_params = {
         "nodes": [4],
@@ -70,7 +70,7 @@ def remote(ctx):
         },
     }
     try:
-        Bench(ctx).run(bench_params, node_params, debug=False)
+        Bench(ctx).run(bench_params, node_params, pid, debug=False)
     except BenchError as e:
         Print.error(e)
 

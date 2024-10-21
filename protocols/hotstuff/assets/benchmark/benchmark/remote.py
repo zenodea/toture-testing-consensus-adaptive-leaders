@@ -169,7 +169,7 @@ class Bench:
 
         return committee
 
-    def _run_single(self, hosts, rate, bench_parameters, node_parameters, debug=False):
+    def _run_single(self, hosts, rate, bench_parameters, node_parameters, pid, debug=False):
         Print.info("Booting testbed...")
 
         # Kill any potentially unfinished run and delete logs.
@@ -207,6 +207,11 @@ class Bench:
         Print.info("Waiting for the nodes to synchronize...")
         sleep(2 * node_parameters.timeout_delay / 1000)
 
+        # send a signal to pid
+        print("sending signal to pid: ", pid)
+        # subprocess.run(["kill", "-USR1", str(pid)])
+
+
         # Wait for all transactions to be processed.
         duration = bench_parameters.duration
         for _ in progress_bar(range(20), prefix=f"Running benchmark ({duration} sec):"):
@@ -229,7 +234,7 @@ class Bench:
         Print.info("Parsing logs and computing performance...")
         return LogParser.process(PathMaker.logs_path(), faults=faults)
 
-    def run(self, bench_parameters_dict, node_parameters_dict, debug=False):
+    def run(self, bench_parameters_dict, node_parameters_dict, pid, debug=False):
         assert isinstance(debug, bool)
         Print.heading("Starting remote benchmark")
         try:
@@ -272,7 +277,7 @@ class Bench:
                     Print.heading(f"Run {i+1}/{bench_parameters.runs}")
                     try:
                         self._run_single(
-                            hosts, r, bench_parameters, node_parameters, debug
+                            hosts, r, bench_parameters, node_parameters, pid, debug,
                         )
                         self._logs(hosts, 0).print(
                             PathMaker.result_file(
