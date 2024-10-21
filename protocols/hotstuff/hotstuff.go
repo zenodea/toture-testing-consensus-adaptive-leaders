@@ -57,7 +57,7 @@ func (ba *Hotstuff) Bootstrap(nodes []*common.Node, duration int, result chan ut
 	cmd := exec.Command("rm", "-r", "results/")
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		panic(fmt.Sprintf("Failed to delete results/ %v\n%v", err, string(output)))
+		fmt.Printf("Failed to delete results/ %v\n%v", err, string(output))
 	} else {
 		fmt.Printf("Deleted old results/ %s\n", output)
 	}
