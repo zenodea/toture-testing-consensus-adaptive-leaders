@@ -140,7 +140,7 @@ class BenchParameters:
         except ValueError:
             raise ConfigError('Invalid parameters type')
 
-        if min(self.nodes) <= self.faults:
+        if min(self.nodes) <= 0:
             raise ConfigError('There should be more nodes than faults')
 
 
