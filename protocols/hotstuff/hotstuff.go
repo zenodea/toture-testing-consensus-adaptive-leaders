@@ -109,7 +109,12 @@ func (ba *Hotstuff) Bootstrap(nodes []*common.Node, duration int, result chan ut
 	fmt.Printf("bootstrap complete for hotstuff")
 	wg.Wait()
 	fmt.Printf("finished running hotstuff")
-	result <- ba.GetPerformance()
+	p := ba.GetPerformance()
+	err = os.Chdir(("../../../"))
+	if err != nil {
+		panic("Failed to change directory")
+	}
+	result <- p
 }
 
 func (ba *Hotstuff) ExtractOptions(path string) protocols.ConsensusOptions {
