@@ -11,11 +11,9 @@ class Settings:
 
         self.key_name = key_name
         self.key_path = key_path
-
         self.consensus_port = consensus_port
         self.mempool_port = mempool_port
         self.front_port = front_port
-
         self.repo_name = repo_name
         self.repo_url = repo_url
         self.branch = branch
@@ -25,7 +23,7 @@ class Settings:
         try:
             with open(filename, 'r') as f:
                 data = load(f)
-
+            print("settings: "+ str(data))
             return cls(
                 data['key']['name'],
                 data['key']['path'],
