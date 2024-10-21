@@ -81,7 +81,7 @@ func (ba *Hotstuff) Bootstrap(nodes []*common.Node, duration int, result chan ut
 		cmd = exec.Command("fab", "remote", "--pid=", fmt.Sprintf("%v", os.Getpid()), "--attack-duration=", fmt.Sprintf("%v", duration), "--num-replicas", num_replicas)
 		output, err = cmd.CombinedOutput()
 		if err != nil {
-			panic(fmt.Sprintf("Failed to run fab remote: %v\n%v", err, string(output)))
+			panic(fmt.Sprintf("Failed to run %v: %v\n%v", cmd, err, string(output)))
 		} else {
 			// print output
 			fmt.Printf("Fab install Output: %s\n", output)
