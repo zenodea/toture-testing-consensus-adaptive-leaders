@@ -110,7 +110,7 @@ func (ba *Hotstuff) Bootstrap(nodes []*common.Node, duration int, result chan ut
 	wg.Wait()
 	fmt.Printf("finished running hotstuff")
 	p := ba.GetPerformance()
-	err = os.Chdir(("../../../"))
+	err = os.Chdir(("../../../../"))
 	if err != nil {
 		panic("Failed to change directory")
 	}
