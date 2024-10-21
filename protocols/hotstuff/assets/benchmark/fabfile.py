@@ -50,7 +50,7 @@ def install(ctx):
 def remote(ctx, pid=1, attack_duration=2, num_replicas=3):
     """Run benchmarks on AWS"""
     bench_params = {
-        "nodes": [num_replicas],
+        "nodes": [int(num_replicas)],
         "rate": [10_000],
         "tx_size": 512,
         "duration": int(attack_duration),
@@ -70,7 +70,7 @@ def remote(ctx, pid=1, attack_duration=2, num_replicas=3):
         },
     }
     try:
-        Bench(ctx).run(bench_params, node_params, pid, debug=False)
+        Bench(ctx).run(bench_params, node_params, int(pid), debug=False)
     except BenchError as e:
         Print.error(e)
 
