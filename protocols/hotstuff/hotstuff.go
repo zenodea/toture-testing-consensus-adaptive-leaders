@@ -7,6 +7,10 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"os/signal"
+	"path/filepath"
+	"sync"
+	"syscall"
 	"toture-test/consenbench/common"
 	"toture-test/protocols"
 	"toture-test/util"
@@ -44,7 +48,62 @@ func (ba *Hotstuff) CopyConsensus(nodes []*common.Node) error {
 }
 
 func (ba *Hotstuff) Bootstrap(nodes []*common.Node, duration int, result chan util.Performance, bootstrap_complete chan bool) {
+	println("Running Hotstuff consensus using fabric")
+	err := os.Chdir("protocols/hotstuff/assets/benchmark")
+	if err != nil {
+		panic("Failed to change directory")
+	}
+	// remove results directory and remake it
+	cmd := exec.Command("rm", "-r", "results/")
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		panic(fmt.Sprintf("Failed to delete results/ %v\n%v", err, string(output)))
+	} else {
+		fmt.Printf("Deleted old results/ %s\n", output)
+	}
+	cmd = exec.Command("mkdir", "-r", "results/")
+	output, err = cmd.CombinedOutput()
+	if err != nil {
+		panic(fmt.Sprintf("Failed to create results/ %v\n%v", err, string(output)))
+	} else {
+		fmt.Printf("Created  results/ %s\n", output)
+	}
 
+	var wg sync.WaitGroup
+	wg.Add(1)
+	go func() {
+		cmd = exec.Command("fab", "remote", "--pid=", fmt.Sprintf("%v", os.Getpid()), "--attack-duration=", fmt.Sprintf("%v", duration))
+		output, err = cmd.CombinedOutput()
+		if err != nil {
+			panic(fmt.Sprintf("Failed to run fab remote: %v\n%v", err, string(output)))
+		} else {
+			// print output
+			fmt.Printf("Fab install Output: %s\n", output)
+			wg.Done()
+		}
+	}()
+
+	sigs := make(chan os.Signal, 1)
+	done := make(chan bool, 1)
+
+	// Notify the channel of specific signals
+	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
+
+	// Goroutine to handle signals
+	go func() {
+		sig := <-sigs
+		fmt.Println()
+		fmt.Println("Received signal from fabric:", sig)
+		done <- true
+	}()
+
+	fmt.Println("Waiting for a signal from fabric (PID:", os.Getpid(), ")")
+	<-done
+	bootstrap_complete <- true
+	fmt.Printf("bootstrap complete for hotstuff")
+	wg.Wait()
+	fmt.Printf("finished running hotstuff")
+	result <- ba.GetPerformance()
 }
 
 func (ba *Hotstuff) ExtractOptions(path string) protocols.ConsensusOptions {
@@ -70,6 +129,36 @@ func (ba *Hotstuff) ExtractOptions(path string) protocols.ConsensusOptions {
 	return options
 }
 
-func (ba *Hotstuff) GetPerformance(outputs []string) util.Performance {
-	return util.Performance{}
+func (ba *Hotstuff) GetPerformance() util.Performance {
+	dirPath := "results/"
+
+	// Read the directory to get the list of files
+	files, err := ioutil.ReadDir(dirPath)
+	if err != nil {
+		log.Fatalf("Failed to read directory: %v", err)
+	}
+
+	// Check if there is exactly one file in the directory
+	if len(files) != 1 {
+		log.Fatalf("Expected exactly one file in the directory, but found %d", len(files))
+	}
+
+	// Get the file name
+	fileName := files[0].Name()
+
+	// Full file path
+	filePath := filepath.Join(dirPath, fileName)
+
+	// Read the file content
+	content, err := ioutil.ReadFile(filePath)
+	if err != nil {
+		log.Fatalf("Failed to read file: %v", err)
+	}
+
+	// Convert the content to a string
+	fileContent := string(content)
+
+	return util.Performance{
+		map[string]string{"summary": fileContent},
+	}
 }

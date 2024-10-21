@@ -7,6 +7,8 @@ from time import sleep
 from math import ceil
 from os.path import join
 import subprocess
+import os
+import signal
 
 from benchmark.config import (
     Committee,
@@ -205,11 +207,19 @@ class Bench:
 
         # Wait for the nodes to synchronize
         Print.info("Waiting for the nodes to synchronize...")
-        sleep(2 * node_parameters.timeout_delay / 1000)
+        sleep(5)
 
         # send a signal to pid
         print("sending signal to pid: ", pid)
-        # subprocess.run(["kill", "-USR1", str(pid)])
+        try:
+            os.kill(pid, signal.SIGTERM)  # Send the signal to the Go process
+            print(f"Signal {signal.SIGTERM} sent to process with PID {pid}")
+        except ProcessLookupError:
+            print(f"Process with PID {pid} does not exist.")
+        except PermissionError:
+            print(f"No permission to signal the process with PID {pid}.")
+        except Exception as e:
+            print(f"Failed to send signal: {e}")
 
 
         # Wait for all transactions to be processed.
