@@ -12,19 +12,19 @@ import (
 	"toture-test/util"
 )
 
-type Hotstuff_2 struct {
+type Hotstuff struct {
 	logger  *util.Logger
 	options protocols.ConsensusOptions
 }
 
-func NewHotstuff_2(logger *util.Logger) *Hotstuff_2 {
-	return &Hotstuff_2{
+func NewHotstuff(logger *util.Logger) *Hotstuff {
+	return &Hotstuff{
 		logger: logger,
 	}
 }
 
-func (ba *Hotstuff_2) CopyConsensus(nodes []*common.Node) error {
-	println("Copying Hotstuff_2 consensus to nodes using fabric")
+func (ba *Hotstuff) CopyConsensus(nodes []*common.Node) error {
+	println("Copying Hotstuff consensus to nodes using fabric")
 	err := os.Chdir("protocols/hotstuff_2/assets/benchmark")
 	if err != nil {
 		panic("Failed to change directory")
@@ -43,11 +43,11 @@ func (ba *Hotstuff_2) CopyConsensus(nodes []*common.Node) error {
 	return nil
 }
 
-func (ba *Hotstuff_2) Bootstrap(nodes []*common.Node, duration int, result chan util.Performance, bootstrap_complete chan bool) {
+func (ba *Hotstuff) Bootstrap(nodes []*common.Node, duration int, result chan util.Performance, bootstrap_complete chan bool) {
 
 }
 
-func (ba *Hotstuff_2) ExtractOptions(path string) protocols.ConsensusOptions {
+func (ba *Hotstuff) ExtractOptions(path string) protocols.ConsensusOptions {
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
 		log.Fatalf("Error reading file: %v", err)
@@ -64,12 +64,12 @@ func (ba *Hotstuff_2) ExtractOptions(path string) protocols.ConsensusOptions {
 		options.Option[key] = fmt.Sprintf("%v", value)
 	}
 
-	fmt.Printf("Hotstuff_2 options:\n %v\n", options.Option)
+	fmt.Printf("Hotstuff options:\n %v\n", options.Option)
 
 	ba.options = options
 	return options
 }
 
-func (ba *Hotstuff_2) GetPerformance(outputs []string) util.Performance {
+func (ba *Hotstuff) GetPerformance(outputs []string) util.Performance {
 	return util.Performance{}
 }
