@@ -1,4 +1,3 @@
-from os import error
 from fabric import Connection, ThreadingGroup as Group
 from fabric.exceptions import GroupException
 from paramiko import RSAKey
@@ -6,8 +5,9 @@ from paramiko.ssh_exception import PasswordRequiredException, SSHException
 from os.path import basename, splitext
 from time import sleep
 from math import ceil
-from os.path import join
 import subprocess
+import os
+import signal
 
 from benchmark.config import Committee, Key, NodeParameters, BenchParameters, ConfigError
 from benchmark.utils import BenchError, Print, PathMaker, progress_bar
@@ -68,13 +68,14 @@ class Bench:
 
             # This is missing from the Rocksdb installer (needed for Rocksdb).
             'sudo apt-get install -y clang',
+            "sudo rm -r hotstuff",
 
             # Clone the repo.
             f'(git clone {self.settings.repo_url} || (cd {self.settings.repo_name} ; git pull))'
         ]
         hosts = self.manager.hosts(flat=True)
         try:
-            g = Group(*hosts, user='ubuntu', connect_kwargs=self.connect)
+            g = Group(*hosts, user=self.manager.user(), connect_kwargs=self.connect)
             g.run(' && '.join(cmd), hide=True)
             Print.heading(f'Initialized testbed of {len(hosts)} nodes')
         except (GroupException, ExecutionError) as e:
@@ -88,7 +89,7 @@ class Bench:
         delete_logs = CommandMaker.clean_logs() if delete_logs else 'true'
         cmd = [delete_logs, f'({CommandMaker.kill()} || true)']
         try:
-            g = Group(*hosts, user='ubuntu', connect_kwargs=self.connect)
+            g = Group(*hosts, user=self.manager.user(), connect_kwargs=self.connect)
             g.run(' && '.join(cmd), hide=True)
         except GroupException as e:
             raise BenchError('Failed to kill nodes', FabricError(e))
@@ -98,18 +99,16 @@ class Bench:
 
         # Ensure there are enough hosts.
         hosts = self.manager.hosts()
-        if sum(len(x) for x in hosts.values()) < nodes:
+        if len(hosts) < nodes:
             return []
 
         # Select the hosts in different data centers.
-        ordered = zip(*hosts.values())
-        ordered = [x for y in ordered for x in y]
-        return ordered[:nodes]
+        return hosts[:nodes]
 
     def _background_run(self, host, command, log_file):
         name = splitext(basename(log_file))[0]
         cmd = f'tmux new -d -s "{name}" "{command} |& tee {log_file}"'
-        c = Connection(host, user='ubuntu', connect_kwargs=self.connect)
+        c = Connection(host, user=self.manager.user(), connect_kwargs=self.connect)
         output = c.run(cmd, hide=True)
         self._check_stderr(output)
 
@@ -127,7 +126,7 @@ class Bench:
                 f'./{self.settings.repo_name}/target/release/'
             )
         ]
-        g = Group(*hosts, user='ubuntu', connect_kwargs=self.connect)
+        g = Group(*hosts, user=self.manager.user(), connect_kwargs=self.connect)
         g.run(' && '.join(cmd), hide=True)
 
     def _config(self, hosts, node_parameters):
@@ -164,20 +163,20 @@ class Bench:
 
         # Cleanup all nodes.
         cmd = f'{CommandMaker.cleanup()} || true'
-        g = Group(*hosts, user='ubuntu', connect_kwargs=self.connect)
+        g = Group(*hosts, user=self.manager.user(), connect_kwargs=self.connect)
         g.run(cmd, hide=True)
 
         # Upload configuration files.
         progress = progress_bar(hosts, prefix='Uploading config files:')
         for i, host in enumerate(progress):
-            c = Connection(host, user='ubuntu', connect_kwargs=self.connect)
+            c = Connection(host, user=self.manager.user(), connect_kwargs=self.connect)
             c.put(PathMaker.committee_file(), '.')
             c.put(PathMaker.key_file(i), '.')
             c.put(PathMaker.parameters_file(), '.')
 
         return committee
 
-    def _run_single(self, hosts, rate, bench_parameters, node_parameters, debug=False):
+    def _run_single(self, hosts, rate, bench_parameters, node_parameters, pid, debug=False):
         Print.info('Booting testbed...')
 
         # Kill any potentially unfinished run and delete logs.
@@ -217,7 +216,20 @@ class Bench:
 
         # Wait for the nodes to synchronize
         Print.info('Waiting for the nodes to synchronize...')
-        sleep(2 * node_parameters.timeout_delay / 1000)
+        sleep(5)
+
+        print("sending signal to pid: ", pid)
+        try:
+            os.kill(pid, signal.SIGTERM)  # Send the signal to the Go process
+            print(f"Signal {signal.SIGTERM} sent to process with PID {pid}")
+        except ProcessLookupError:
+            print(f"Process with PID {pid} does not exist.")
+        except PermissionError:
+            print(f"No permission to signal the process with PID {pid}.")
+        except Exception as e:
+            print(f"Failed to send signal: {e}")
+
+
 
         # Wait for all transactions to be processed.
         duration = bench_parameters.duration
@@ -233,7 +245,7 @@ class Bench:
         # Download log files.
         progress = progress_bar(hosts, prefix='Downloading logs:')
         for i, host in enumerate(progress):
-            c = Connection(host, user='ubuntu', connect_kwargs=self.connect)
+            c = Connection(host, user=self.manager.user(), connect_kwargs=self.connect)
             c.get(PathMaker.node_log_file(i), local=PathMaker.node_log_file(i))
             c.get(
                 PathMaker.client_log_file(i), local=PathMaker.client_log_file(i)
@@ -243,7 +255,7 @@ class Bench:
         Print.info('Parsing logs and computing performance...')
         return LogParser.process(PathMaker.logs_path(), faults=faults)
 
-    def run(self, bench_parameters_dict, node_parameters_dict, debug=False):
+    def run(self, bench_parameters_dict, node_parameters_dict, pid, debug=False):
         assert isinstance(debug, bool)
         Print.heading('Starting remote benchmark')
         try:
@@ -288,7 +300,7 @@ class Bench:
                     Print.heading(f'Run {i+1}/{bench_parameters.runs}')
                     try:
                         self._run_single(
-                            hosts, r, bench_parameters, node_parameters, debug
+                            hosts, r, bench_parameters, node_parameters, pid, debug
                         )
                         self._logs(hosts, faults).print(PathMaker.result_file(
                             n, r, bench_parameters.tx_size, faults

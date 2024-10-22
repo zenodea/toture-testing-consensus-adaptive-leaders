@@ -1,10 +1,10 @@
 {
     "key": {
-        "name": "aws",
-        "path": "/absolute/key/path"
+        "name": "pasindu",
+        "path": "/home/pasindu/Pictures/pasindu"
     },
     "ports": {
-        "consensus": 8000,
+        "consensus": 10000,
         "mempool": 7000,
         "front": 6000
     },
@@ -12,9 +12,5 @@
         "name": "hotstuff",
         "url": "https://github.com/asonnino/hotstuff.git",
         "branch": "3-chain"
-    },
-    "instances": {
-        "type": "m5d.8xlarge",
-        "regions": ["us-east-1", "eu-north-1", "ap-southeast-2", "us-west-1", "ap-northeast-1"]
     }
 }

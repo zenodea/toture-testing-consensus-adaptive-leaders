@@ -28,8 +28,8 @@ func NewHotstuff_3(logger *util.Logger) *Hotstuff_3 {
 }
 
 func (ba *Hotstuff_3) CopyConsensus(nodes []*common.Node) error {
-	println("Copying Hotstuff_2 consensus to nodes using fabric")
-	err := os.Chdir("protocols/hotstuff_2/assets/benchmark")
+	println("Copying Hotstuff_3 consensus to nodes using fabric")
+	err := os.Chdir("protocols/hotstuff_3/assets/benchmark")
 	if err != nil {
 		panic("Failed to change directory")
 	}
@@ -47,8 +47,8 @@ func (ba *Hotstuff_3) CopyConsensus(nodes []*common.Node) error {
 }
 
 func (ba *Hotstuff_3) Bootstrap(nodes []*common.Node, duration int, result chan util.Performance, bootstrap_complete chan bool) {
-	println("Running Hotstuff_2 consensus using fabric")
-	err := os.Chdir("protocols/hotstuff_2/assets/benchmark")
+	println("Running Hotstuff_3 consensus using fabric")
+	err := os.Chdir("protocols/hotstuff_3/assets/benchmark")
 	if err != nil {
 		panic("Failed to change directory")
 	}
@@ -105,9 +105,9 @@ func (ba *Hotstuff_3) Bootstrap(nodes []*common.Node, duration int, result chan 
 	fmt.Println("Waiting for a signal from fabric (PID:", os.Getpid(), ")")
 	<-done
 	bootstrap_complete <- true
-	fmt.Printf("bootstrap complete for hotstuff")
+	fmt.Printf("bootstrap complete for hotstuff-3")
 	wg.Wait()
-	fmt.Printf("finished running hotstuff")
+	fmt.Printf("finished running hotstuff-3")
 	p := ba.GetPerformance()
 	err = os.Chdir(("../../../../"))
 	if err != nil {
@@ -133,7 +133,7 @@ func (ba *Hotstuff_3) ExtractOptions(path string) protocols.ConsensusOptions {
 		options.Option[key] = fmt.Sprintf("%v", value)
 	}
 
-	fmt.Printf("Hotstuff_2 options:\n %v\n", options.Option)
+	fmt.Printf("Hotstuff_3 options:\n %v\n", options.Option)
 
 	ba.options = options
 	return options
