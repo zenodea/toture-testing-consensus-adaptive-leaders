@@ -29,4 +29,4 @@ It allows plugging in different consensus algorithms and network topologies to t
 - Codial-Miners
 - Mysticeti
 - Jolteon
-- HotStuff
+- HotStuff (3 chain)
