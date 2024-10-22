@@ -73,7 +73,7 @@ class Bench:
             # Clone the repo.
             f'(git clone {self.settings.repo_url} || (cd {self.settings.repo_name} ; git pull))'
         ]
-        hosts = self.manager.hosts(flat=True)
+        hosts = self.manager.hosts()
         try:
             g = Group(*hosts, user=self.manager.user(), connect_kwargs=self.connect)
             g.run(' && '.join(cmd), hide=True)
@@ -85,7 +85,7 @@ class Bench:
     def kill(self, hosts=[], delete_logs=False):
         assert isinstance(hosts, list)
         assert isinstance(delete_logs, bool)
-        hosts = hosts if hosts else self.manager.hosts(flat=True)
+        hosts = hosts if hosts else self.manager.hosts()
         delete_logs = CommandMaker.clean_logs() if delete_logs else 'true'
         cmd = [delete_logs, f'({CommandMaker.kill()} || true)']
         try:
