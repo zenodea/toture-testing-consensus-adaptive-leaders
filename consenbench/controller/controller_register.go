@@ -7,6 +7,7 @@ import (
 	dedis_raft "toture-test/protocols/dedis_raft"
 	efficient "toture-test/protocols/efficient"
 	hotstuff_2 "toture-test/protocols/hotstuff_2"
+	hotstuff_3 "toture-test/protocols/hotstuff_3"
 	mahi "toture-test/protocols/mahi"
 	mysticeti "toture-test/protocols/mysticeti"
 	ping "toture-test/protocols/ping"
@@ -108,6 +109,8 @@ func (c *Controller) GetProtocolImpl(protocol string) protocols.Consensus {
 		return mysticeti.NewMysticeti(c.logger)
 	} else if protocol == "hotstuff_2" {
 		return hotstuff_2.NewHotstuff_2(c.logger)
+	} else if protocol == "hotstuff_3" {
+		return hotstuff_3.NewHotstuff_3(c.logger)
 	} else {
 		panic("Unknown protocol")
 	}
