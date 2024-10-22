@@ -6,9 +6,7 @@ class SettingsError(Exception):
 
 
 class Settings:
-    def __init__(self, key_name, key_path, consensus_port, mempool_port, front_port, repo_name,
-                 repo_url, branch, ):
-
+    def __init__(self, key_name, key_path, consensus_port, mempool_port, front_port, repo_name, repo_url, branch):
 
         self.key_name = key_name
         self.key_path = key_path

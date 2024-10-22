@@ -292,8 +292,7 @@ class Bench:
                     continue
 
                 # Do not boot faulty nodes.
-                faults = bench_parameters.faults
-                hosts = hosts[:n-faults]
+                faults = 0
 
                 # Run the benchmark.
                 for i in range(bench_parameters.runs):

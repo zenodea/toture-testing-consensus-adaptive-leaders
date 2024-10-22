@@ -9,3 +9,4 @@ venv/
 *.pyc
 *.zip
 *.pyc
+*.txt
