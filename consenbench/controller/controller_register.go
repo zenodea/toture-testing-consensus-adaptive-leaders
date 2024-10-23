@@ -15,6 +15,7 @@ import (
 	rabia "toture-test/protocols/rabia"
 	racs "toture-test/protocols/racs"
 	sadl_racs "toture-test/protocols/sadl_racs"
+	tusk "toture-test/protocols/tusk"
 )
 
 func (c *Controller) GetAttackImpl() Attack {
@@ -111,6 +112,8 @@ func (c *Controller) GetProtocolImpl(protocol string) protocols.Consensus {
 		return hotstuff_2.NewHotstuff_2(c.logger)
 	} else if protocol == "hotstuff_3" {
 		return hotstuff_3.NewHotstuff_3(c.logger)
+	} else if protocol == "tusk" {
+		return tusk.NewTusk(c.logger)
 	} else {
 		panic("Unknown protocol")
 	}
