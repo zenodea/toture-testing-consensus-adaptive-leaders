@@ -27,7 +27,7 @@ def remote(ctx, pid=1, attack_duration=2, num_replicas=3, debug=False):
         'rate': [10_000],
         'tx_size': 512,
         'duration': int(attack_duration),
-        'runs': 2,
+        'runs': 1,
     }
     node_params = {
         'header_size': 1_000,  # bytes
