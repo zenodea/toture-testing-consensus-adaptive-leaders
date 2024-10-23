@@ -3,6 +3,7 @@ package controller
 import (
 	"toture-test/protocols"
 	baxos "toture-test/protocols/baxos"
+	bullshark "toture-test/protocols/bullshark"
 	dedis_paxos "toture-test/protocols/dedis_paxos"
 	dedis_raft "toture-test/protocols/dedis_raft"
 	efficient "toture-test/protocols/efficient"
@@ -114,6 +115,8 @@ func (c *Controller) GetProtocolImpl(protocol string) protocols.Consensus {
 		return hotstuff_3.NewHotstuff_3(c.logger)
 	} else if protocol == "tusk" {
 		return tusk.NewTusk(c.logger)
+	} else if protocol == "bullshark" {
+		return bullshark.NewBullshark(c.logger)
 	} else {
 		panic("Unknown protocol")
 	}

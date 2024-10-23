@@ -8,20 +8,7 @@ class SettingsError(Exception):
 
 class Settings:
     def __init__(self, key_name, key_path, base_port, repo_name, repo_url,
-                 branch, instance_type, aws_regions):
-        inputs_str = [
-            key_name, key_path, repo_name, repo_url, branch, instance_type
-        ]
-        if isinstance(aws_regions, list):
-            regions = aws_regions
-        else:
-            regions = [aws_regions]
-        inputs_str += regions
-        ok = all(isinstance(x, str) for x in inputs_str)
-        ok &= isinstance(base_port, int)
-        ok &= len(regions) > 0
-        if not ok:
-            raise SettingsError('Invalid settings types')
+                 branch):
 
         self.key_name = key_name
         self.key_path = key_path
@@ -32,8 +19,6 @@ class Settings:
         self.repo_url = repo_url
         self.branch = branch
 
-        self.instance_type = instance_type
-        self.aws_regions = regions
 
     @classmethod
     def load(cls, filename):
@@ -48,8 +33,6 @@ class Settings:
                 data['repo']['name'],
                 data['repo']['url'],
                 data['repo']['branch'],
-                data['instances']['type'],
-                data['instances']['regions'],
             )
         except (OSError, JSONDecodeError) as e:
             raise SettingsError(str(e))
