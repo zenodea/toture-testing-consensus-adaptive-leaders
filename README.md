@@ -30,3 +30,4 @@ It allows plugging in different consensus algorithms and network topologies to t
 - Mysticeti
 - Jolteon
 - HotStuff (3 chain)
+- Tusk
