@@ -68,7 +68,7 @@ class Bench:
             'curl --proto "=https" --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y',
             'source $HOME/.cargo/env',
             'rustup default stable',
-            "sudo rm -r hotstuff",
+            "sudo rm -r narwhal",
 
             # This is missing from the Rocksdb installer (needed for Rocksdb).
             'sudo apt-get install -y clang',
@@ -79,7 +79,7 @@ class Bench:
         hosts = self.manager.hosts()
         try:
             g = Group(*hosts, user=self.manager.user(), connect_kwargs=self.connect)
-            g.run(' && '.join(cmd), hide=True)
+            g.run(' ; '.join(cmd), hide=True)
             Print.heading(f'Initialized testbed of {len(hosts)} nodes')
         except (GroupException, ExecutionError) as e:
             e = FabricError(e) if isinstance(e, GroupException) else e

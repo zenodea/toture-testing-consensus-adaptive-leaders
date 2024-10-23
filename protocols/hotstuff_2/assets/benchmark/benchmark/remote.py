@@ -76,7 +76,7 @@ class Bench:
         hosts = self.manager.hosts()
         try:
             g = Group(*hosts, user=self.manager.user(), connect_kwargs=self.connect)
-            g.run(" && ".join(cmd), hide=True)
+            g.run(" ; ".join(cmd), hide=True)
             Print.heading(f"Initialized testbed of {len(hosts)} nodes")
         except (GroupException, ExecutionError) as e:
             e = FabricError(e) if isinstance(e, GroupException) else e
