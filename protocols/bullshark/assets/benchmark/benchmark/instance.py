@@ -61,6 +61,6 @@ class InstanceManager:
         # Extract nodes' information
         nodes = data.get('nodes', [])
         user = nodes[1]['Username']
-        print("user" + str(user))
+        print("user:" + str(user))
         return user
 

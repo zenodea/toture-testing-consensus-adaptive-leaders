@@ -31,3 +31,4 @@ It allows plugging in different consensus algorithms and network topologies to t
 - Jolteon
 - HotStuff (3 chain)
 - Tusk
+- Bullshark
