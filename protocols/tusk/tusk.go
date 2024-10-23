@@ -105,7 +105,7 @@ func (ba *Tusk) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 	fmt.Println("Waiting for a signal from fabric (PID:", os.Getpid(), ")")
 	<-done
 	bootstrap_complete <- true
-	fmt.Printf("bootstrap complete for tusk")
+	fmt.Printf("bootstrap complete for tusk\n")
 	wg.Wait()
 	fmt.Printf("finished running tusk")
 	p := ba.GetPerformance()
