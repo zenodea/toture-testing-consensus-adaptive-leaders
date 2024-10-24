@@ -7,6 +7,7 @@ import (
 	dedis_paxos "toture-test/protocols/dedis_paxos"
 	dedis_raft "toture-test/protocols/dedis_raft"
 	efficient "toture-test/protocols/efficient"
+	etcd "toture-test/protocols/etcd"
 	hotstuff_2 "toture-test/protocols/hotstuff_2"
 	hotstuff_3 "toture-test/protocols/hotstuff_3"
 	mahi "toture-test/protocols/mahi"
@@ -117,6 +118,8 @@ func (c *Controller) GetProtocolImpl(protocol string) protocols.Consensus {
 		return tusk.NewTusk(c.logger)
 	} else if protocol == "bullshark" {
 		return bullshark.NewBullshark(c.logger)
+	} else if protocol == "etcd" {
+		return etcd.NewETCD(c.logger)
 	} else {
 		panic("Unknown protocol")
 	}
