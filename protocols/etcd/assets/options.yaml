@@ -1,0 +1,4 @@
+ports: 2380
+process_name: etcd
+num_replicas: 8
+arrival_rate: 10000
