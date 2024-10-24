@@ -5,8 +5,7 @@ import etcd3
 
 etcd = etcd3.client()
 
-# Variables
-requests_per_second = int(sys.argv[2])  # Requests per second
+
 key_prefix = "benchmark_key"
 value = "benchmark_value"
 

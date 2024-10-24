@@ -32,11 +32,6 @@ func (ba *ETCD) CopyConsensus(nodes []*common.Node) error {
 func (ba *ETCD) Bootstrap(nodes []*common.Node, duration int, result chan util.Performance, bootstrap_complete chan bool) {
 	println("Running ETCD Raft")
 
-	arrival_rate, ok := ba.options.Option["arrival_rate"]
-	if !ok {
-		panic("error while parsing arrival_rate")
-	}
-
 	num_replicas, ok := ba.options.Option["num_replicas"]
 	if !ok {
 		panic("error while parsing num_replicas")
@@ -75,7 +70,7 @@ func (ba *ETCD) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 			nodes[j].Put_Load("protocols/etcd/assets/client.py", fmt.Sprintf("%vetcd/client.py", nodes[j].HomeDir))
 			for k := 0; k < 10; k++ {
 				go func() {
-					output := nodes[j].ExecCmd(fmt.Sprintf("python3 %vetcd/client.py %v %v", nodes[j].HomeDir, duration, arrival_rate))
+					output := nodes[j].ExecCmd(fmt.Sprintf("python3 %vetcd/client.py %v", nodes[j].HomeDir, duration))
 					outputMutex.Lock()
 					outputs = append(outputs, output)
 					outputMutex.Unlock()
@@ -95,11 +90,12 @@ func (ba *ETCD) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 	for j := 0; j < num_replicas_int; j++ {
 		go func(i int) {
 			nodes[i].ExecCmd("pkill -f etcd")
-			nodes[i].ExecCmd("pkill -f client")
+			nodes[i].ExecCmd("pkill -f client.py")
 			wg1.Done()
 		}(j)
 	}
 	wg1.Wait()
+	println("ETCD Raft killed")
 
 	p := ba.GetPerformance(outputs)
 	result <- p
