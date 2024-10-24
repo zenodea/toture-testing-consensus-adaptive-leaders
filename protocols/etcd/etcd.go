@@ -56,7 +56,6 @@ func (ba *ETCD) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 	for i := 0; i < num_replicas_int; i++ {
 		go func(j int) {
 			nodes[j].ExecCmd(fmt.Sprintf("sudo pkill -f etcd"))
-			nodes[j].ExecCmd(fmt.Sprintf("sudo rm -rf %v*\n", nodes[j].HomeDir))
 			nodes[j].ExecCmd(fmt.Sprintf("sudo rm -f /usr/local/bin/etcd;sudo rm -f /usr/local/bin/etcdctl; sudo rm -f /usr/local/bin/etcdutl"))
 			nodes[j].ExecCmd(fmt.Sprintf("sudo systemctl stop etcd; sudo systemctl disable etcd; sudo rm -f /etc/systemd/system/etcd.service"))
 			nodes[j].ExecCmd(fmt.Sprintf("sudo rm -rf %vetcd/; sudo rm -r /var/lib/etcd; sudo rm -r /tmp/etcd", nodes[j].HomeDir))
