@@ -39,7 +39,6 @@ def benchmark():
         send_request(i)
         i += 1
 
-
 benchmark()
 
 # Calculate results

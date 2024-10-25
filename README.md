@@ -33,3 +33,4 @@ It allows plugging in different consensus algorithms and network topologies to t
 - Tusk
 - Bullshark
 - ETCD Raft
+- Zoo Keeper

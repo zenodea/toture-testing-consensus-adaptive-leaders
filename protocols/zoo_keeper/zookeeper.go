@@ -63,6 +63,21 @@ func (ba *ZooKeeper) Bootstrap(nodes []*common.Node, duration int, result chan u
 		panic("error while parsing num_replicas")
 	}
 
+	tickTime, ok := ba.options.Option["tickTime"]
+	if !ok {
+		panic("error while parsing tickTime")
+	}
+
+	initLimit, ok := ba.options.Option["initLimit"]
+	if !ok {
+		panic("error while parsing initLimit")
+	}
+
+	syncLimit, ok := ba.options.Option["syncLimit"]
+	if !ok {
+		panic("error while parsing syncLimit")
+	}
+
 	num_clients_int, _ := strconv.Atoi(num_clients)
 	num_replicas_int, _ := strconv.Atoi(num_replicas)
 
@@ -72,7 +87,7 @@ func (ba *ZooKeeper) Bootstrap(nodes []*common.Node, duration int, result chan u
 	var wg sync.WaitGroup
 	wg.Add(num_replicas_int)
 
-	ZOO_CFG_CONTENT := fmt.Sprintf("tickTime=2000\ndataDir=%vapache-zookeeper-3.8.1-bin/data\nclientPort=2181\ninitLimit=5\nsyncLimit=2\n", nodes[0].HomeDir)
+	ZOO_CFG_CONTENT := fmt.Sprintf("tickTime=%v\ndataDir=%vapache-zookeeper-3.8.1-bin/data\nclientPort=2181\ninitLimit=%v\nsyncLimit=%v\n", tickTime, nodes[0].HomeDir, initLimit, syncLimit)
 	for i := 0; i < num_replicas_int; i++ {
 		ZOO_CFG_CONTENT += fmt.Sprintf("server.%d=%v:2888:3888\n", i+1, nodes[i].Ip)
 	}
@@ -88,6 +103,7 @@ func (ba *ZooKeeper) Bootstrap(nodes []*common.Node, duration int, result chan u
 			nodes[j].ExecCmd(fmt.Sprintf("mkdir -p %vapache-zookeeper-3.8.1-bin/data", nodes[j].HomeDir))
 			nodes[j].ExecCmd(fmt.Sprintf("echo -e \"%v\" > %vapache-zookeeper-3.8.1-bin/conf/zoo.cfg", ZOO_CFG_CONTENT, nodes[j].HomeDir))
 			nodes[j].ExecCmd(fmt.Sprintf("echo \"%v\" > %vapache-zookeeper-3.8.1-bin/data/myid", j+1, nodes[j].HomeDir))
+
 			nodes[j].Put_Load(fmt.Sprintf("protocols/zoo_keeper/assets/client.py"), fmt.Sprintf("%v", nodes[j].HomeDir))
 
 			go nodes[j].ExecCmd(fmt.Sprintf("%vapache-zookeeper-3.8.1-bin/bin/zkServer.sh start", nodes[j].HomeDir))
@@ -111,7 +127,7 @@ func (ba *ZooKeeper) Bootstrap(nodes []*common.Node, duration int, result chan u
 	bootstrap_complete <- true
 	fmt.Printf("bootstrap complete for zookeeper\n")
 	time.Sleep(time.Duration(2*duration) * time.Second)
-	fmt.Printf("finished running zookeeper")
+	fmt.Printf("finished running zookeeper\n")
 	var wg1 sync.WaitGroup
 	wg1.Add(num_replicas_int)
 	for j := 0; j < num_replicas_int; j++ {
