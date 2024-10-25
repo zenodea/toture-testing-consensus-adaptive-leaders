@@ -28,20 +28,19 @@ DURATION = sys.argv[1]
 # Function to benchmark requests
 def benchmark():
     i = 1
+    start_time = time.time()
     while time.time() - start_time < int(DURATION):
         send_request(i)
         i = i + 1
 
 
-# Start benchmark
-start_time = time.time()
 benchmark()
-end_time = time.time()
+
 
 # Calculate results
-total_time = end_time - start_time
+total_time = DURATION
 average_latency = sum(latencies) / len(latencies) if latencies else 0
-throughput = len(latencies) / total_time
+throughput = len(latencies) / int(DURATION)
 
 
 print(f"{average_latency * 1000:.6f},{throughput:.2f}")
