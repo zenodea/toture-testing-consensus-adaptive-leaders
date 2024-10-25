@@ -134,8 +134,8 @@ func (ba *ETCD) GetPerformance(outputs []string) util.Performance {
 	sum_latency := 0.0
 	entries := 0.0
 	for _, output := range outputs {
-		if len(output) > 0 && len(strings.Split(output, ",")) >= 2 {
-			lat, tx := strings.Split(output, ",")[0], strings.Split(output, ",")[1]
+		if len(output) > 0 && strings.Contains(output, "perf") && len(strings.Split(output, ",")) >= 3 {
+			lat, tx := strings.Split(output, ",")[1], strings.Split(output, ",")[2]
 			latency, _ := strconv.ParseFloat(lat, 64)
 			throughput, _ := strconv.ParseFloat(tx, 64)
 			sum_latency += latency

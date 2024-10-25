@@ -43,4 +43,4 @@ average_latency = sum(latencies) / len(latencies) if latencies else 0
 throughput = len(latencies) / int(DURATION)
 
 
-print(f"{average_latency * 1000:.6f},{throughput:.2f}")
+print(f"perf,{average_latency * 1000:.6f},{throughput:.2f}")
