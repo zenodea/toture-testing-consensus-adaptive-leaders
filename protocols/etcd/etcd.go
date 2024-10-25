@@ -63,7 +63,7 @@ func (ba *ETCD) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 			nodes[j].ExecCmd(fmt.Sprintf("mkdir -p %vetcd/data", nodes[j].HomeDir))
 			nodes[j].ExecCmd(fmt.Sprintf("wget -q %v && tar xzvf etcd-%v-linux-amd64.tar.gz", ETCD_DOWNLOAD_URL, ETCD_VERSION))
 			nodes[j].ExecCmd(fmt.Sprintf("mv etcd-%v-linux-amd64/etcd* %vetcd/", ETCD_VERSION, nodes[j].HomeDir))
-			nodes[j].ExecCmd(fmt.Sprintf("rm -rf etcd-%v-linux-amd64", ETCD_VERSION))
+			nodes[j].ExecCmd(fmt.Sprintf("rm -rf etcd-%v-linux-amd64*", ETCD_VERSION))
 			nodes[j].ExecCmd(fmt.Sprintf("sudo apt update ; sudo apt install -y python3 python3-pip"))
 			nodes[j].ExecCmd(fmt.Sprintf("pip3 install etcd3"))
 			nodes[j].ExecCmd(fmt.Sprintf("pip3 install protobuf==3.19.6"))
