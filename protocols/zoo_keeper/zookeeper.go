@@ -82,7 +82,7 @@ func (ba *ZooKeeper) Bootstrap(nodes []*common.Node, duration int, result chan u
 			nodes[j].ExecCmd(fmt.Sprintf("mkdir -p %vapache-zookeeper-3.8.1-bin/data", nodes[j].HomeDir))
 			nodes[j].ExecCmd(fmt.Sprintf("echo -e \"%v\" > %vapache-zookeeper-3.8.1-bin/conf/zoo.cfg", ZOO_CFG_CONTENT, nodes[j].HomeDir))
 			nodes[j].ExecCmd(fmt.Sprintf("echo \"%v\" > %vapache-zookeeper-3.8.1-bin/data/myid", j+1, nodes[j].HomeDir))
-			nodes[j].Put_Load(fmt.Sprintf("zoo_keeper/assets/client.py"), fmt.Sprintf("%v", nodes[j].HomeDir))
+			nodes[j].Put_Load(fmt.Sprintf("protocols/zoo_keeper/assets/client.py"), fmt.Sprintf("%v", nodes[j].HomeDir))
 
 			go nodes[j].ExecCmd(fmt.Sprintf("%vapache-zookeeper-3.8.1-bin/bin/zkServer.sh start", nodes[j].HomeDir))
 
