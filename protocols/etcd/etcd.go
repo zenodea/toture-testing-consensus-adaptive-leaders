@@ -67,7 +67,7 @@ func (ba *ETCD) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 			nodes[j].ExecCmd(fmt.Sprintf("sudo apt update ; sudo apt install -y python3 python3-pip"))
 			nodes[j].ExecCmd(fmt.Sprintf("pip3 install etcd3"))
 			nodes[j].ExecCmd(fmt.Sprintf("pip3 install protobuf==3.19.6"))
-			go nodes[j].ExecCmd(fmt.Sprintf("ETCD_LOG_LEVEL=fatal ; %vetcd/etcd --name infra%v --initial-advertise-peer-urls http://%v:2380 --listen-peer-urls http://%v:2380 --listen-client-urls http://%v:2379,http://127.0.0.1:2379 --advertise-client-urls http://%v:2379 --initial-cluster-token etcd-cluster-1 --initial-cluster %v --initial-cluster-state new", nodes[j].HomeDir, j, nodes[j].Ip, nodes[j].Ip, nodes[j].Ip, nodes[j].Ip, CLUSTER))
+			go nodes[j].ExecCmd(fmt.Sprintf("%vetcd/etcd --log-level error --name infra%v --initial-advertise-peer-urls http://%v:2380 --listen-peer-urls http://%v:2380 --listen-client-urls http://%v:2379,http://127.0.0.1:2379 --advertise-client-urls http://%v:2379 --initial-cluster-token etcd-cluster-1 --initial-cluster %v --initial-cluster-state new", nodes[j].HomeDir, j, nodes[j].Ip, nodes[j].Ip, nodes[j].Ip, nodes[j].Ip, CLUSTER))
 			nodes[j].Put_Load("protocols/etcd/assets/client.py", fmt.Sprintf("%vetcd/client.py", nodes[j].HomeDir))
 			for k := 0; k < 10; k++ {
 				go func() {
