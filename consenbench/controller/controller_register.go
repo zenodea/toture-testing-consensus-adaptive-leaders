@@ -18,6 +18,7 @@ import (
 	racs "toture-test/protocols/racs"
 	sadl_racs "toture-test/protocols/sadl_racs"
 	tusk "toture-test/protocols/tusk"
+	zoo_keeper "toture-test/protocols/zoo_keeper"
 )
 
 func (c *Controller) GetAttackImpl() Attack {
@@ -120,6 +121,8 @@ func (c *Controller) GetProtocolImpl(protocol string) protocols.Consensus {
 		return bullshark.NewBullshark(c.logger)
 	} else if protocol == "etcd" {
 		return etcd.NewETCD(c.logger)
+	} else if protocol == "zoo_keeper" {
+		return zoo_keeper.NewZooKeeper(c.logger)
 	} else {
 		panic("Unknown protocol")
 	}
