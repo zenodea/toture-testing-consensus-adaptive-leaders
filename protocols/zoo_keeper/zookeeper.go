@@ -95,6 +95,7 @@ func (ba *ZooKeeper) Bootstrap(nodes []*common.Node, duration int, result chan u
 					outputs = append(outputs, output)
 					outputMutex.Unlock()
 				}()
+				time.Sleep(1)
 			}
 			time.Sleep(2 * time.Second)
 			wg.Done()
