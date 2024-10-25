@@ -16,7 +16,7 @@ It allows plugging in different consensus algorithms and network topologies to t
 ## Supported consensus algorithms
 
 - Raft
-- Paxos (2 versions)
+- DEDIS Paxos and Efficient Paxos
 - Baxos
 - Rabia
 - RACS
@@ -32,3 +32,4 @@ It allows plugging in different consensus algorithms and network topologies to t
 - HotStuff (3 chain)
 - Tusk
 - Bullshark
+- ETCD Raft

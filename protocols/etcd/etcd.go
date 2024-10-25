@@ -69,7 +69,7 @@ func (ba *ETCD) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 			nodes[j].ExecCmd(fmt.Sprintf("pip3 install protobuf==3.19.6"))
 			go nodes[j].ExecCmd(fmt.Sprintf("%vetcd/etcd --log-level error --name infra%v --initial-advertise-peer-urls http://%v:2380 --listen-peer-urls http://%v:2380 --listen-client-urls http://%v:2379,http://127.0.0.1:2379 --advertise-client-urls http://%v:2379 --initial-cluster-token etcd-cluster-1 --initial-cluster %v --initial-cluster-state new", nodes[j].HomeDir, j, nodes[j].Ip, nodes[j].Ip, nodes[j].Ip, nodes[j].Ip, CLUSTER))
 			nodes[j].Put_Load("protocols/etcd/assets/client.py", fmt.Sprintf("%vetcd/client.py", nodes[j].HomeDir))
-			for k := 0; k < 10; k++ {
+			for k := 0; k < 7; k++ {
 				go func() {
 					output := nodes[j].ExecCmd(fmt.Sprintf("python3 %vetcd/client.py %v", nodes[j].HomeDir, duration))
 					outputMutex.Lock()
@@ -97,7 +97,6 @@ func (ba *ETCD) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 	}
 	wg1.Wait()
 	println("ETCD Raft killed")
-
 	p := ba.GetPerformance(outputs)
 	result <- p
 }
@@ -126,10 +125,6 @@ func (ba *ETCD) ExtractOptions(path string) protocols.ConsensusOptions {
 }
 
 func (ba *ETCD) GetPerformance(outputs []string) util.Performance {
-	fmt.Printf("ETCD outputs: %v\n", outputs)
-	// each enty in outputs is a one line string that is tx,latency
-	// we need to extract the tx and latency values and calculate the throughput and latency
-	// we will return the average throughput and latency
 	sum_throughput := 0.0
 	sum_latency := 0.0
 	entries := 0.0
