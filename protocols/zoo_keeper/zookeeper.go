@@ -53,11 +53,17 @@ func (ba *ZooKeeper) CopyConsensus(nodes []*common.Node) error {
 func (ba *ZooKeeper) Bootstrap(nodes []*common.Node, duration int, result chan util.Performance, bootstrap_complete chan bool) {
 	println("Running ZooKeeper Paxos")
 
+	num_clients, ok := ba.options.Option["num_clients"]
+	if !ok {
+		panic("error while parsing num_clients")
+	}
+
 	num_replicas, ok := ba.options.Option["num_replicas"]
 	if !ok {
 		panic("error while parsing num_replicas")
 	}
 
+	num_clients_int, _ := strconv.Atoi(num_clients)
 	num_replicas_int, _ := strconv.Atoi(num_replicas)
 
 	outputs := make([]string, 0)
@@ -88,7 +94,7 @@ func (ba *ZooKeeper) Bootstrap(nodes []*common.Node, duration int, result chan u
 
 			time.Sleep(5)
 
-			for k := 0; k < 20; k++ {
+			for k := 0; k < num_clients_int; k++ {
 				go func() {
 					output := nodes[j].ExecCmd(fmt.Sprintf("python3 %vclient.py %v", nodes[j].HomeDir, duration))
 					outputMutex.Lock()

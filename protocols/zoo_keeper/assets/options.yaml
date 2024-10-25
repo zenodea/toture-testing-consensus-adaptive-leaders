@@ -1,3 +1,4 @@
 ports: 2888
 process_name: QuorumPeerMain
 num_replicas: 9
+num_clients: 9
