@@ -75,7 +75,7 @@ func (ba *ZooKeeper) Bootstrap(nodes []*common.Node, duration int, result chan u
 	for i := 0; i < num_replicas_int; i++ {
 		go func(j int) {
 			nodes[j].ExecCmd(fmt.Sprintf("pkill -f QuorumPeerMain"))
-			nodes[j].ExecCmd(fmt.Sprintf("sudo rm -f %vapache-zookeeper*", nodes[j].HomeDir))
+			nodes[j].ExecCmd(fmt.Sprintf("sudo rm -r -f %vapache-zookeeper*", nodes[j].HomeDir))
 			nodes[j].ExecCmd(fmt.Sprintf("wget https://archive.apache.org/dist/zookeeper/zookeeper-3.8.1/apache-zookeeper-3.8.1-bin.tar.gz -P %v", nodes[j].HomeDir))
 			nodes[j].ExecCmd(fmt.Sprintf("tar -xzf %vapache-zookeeper-3.8.1-bin.tar.gz", nodes[j].HomeDir))
 			nodes[j].ExecCmd(fmt.Sprintf("rm %vapache-zookeeper-3.8.1-bin.tar.gz", nodes[j].HomeDir))
