@@ -39,6 +39,13 @@ func (ba *ETCD) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 
 	num_replicas_int, _ := strconv.Atoi(num_replicas)
 
+	num_clients, ok := ba.options.Option["num_clients"]
+	if !ok {
+		panic("error while parsing num_clients")
+	}
+
+	num_clients_int, _ := strconv.Atoi(num_clients)
+
 	outputs := make([]string, 0)
 	outputMutex := &sync.Mutex{}
 
@@ -69,7 +76,7 @@ func (ba *ETCD) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 			nodes[j].ExecCmd(fmt.Sprintf("pip3 install protobuf==3.19.6"))
 			go nodes[j].ExecCmd(fmt.Sprintf("%vetcd/etcd --log-level error --name infra%v --initial-advertise-peer-urls http://%v:2380 --listen-peer-urls http://%v:2380 --listen-client-urls http://%v:2379,http://127.0.0.1:2379 --advertise-client-urls http://%v:2379 --initial-cluster-token etcd-cluster-1 --initial-cluster %v --initial-cluster-state new", nodes[j].HomeDir, j, nodes[j].Ip, nodes[j].Ip, nodes[j].Ip, nodes[j].Ip, CLUSTER))
 			nodes[j].Put_Load("protocols/etcd/assets/client.py", fmt.Sprintf("%vetcd/client.py", nodes[j].HomeDir))
-			for k := 0; k < 7; k++ {
+			for k := 0; k < num_clients_int; k++ {
 				go func() {
 					output := nodes[j].ExecCmd(fmt.Sprintf("python3 %vetcd/client.py %v", nodes[j].HomeDir, duration))
 					outputMutex.Lock()

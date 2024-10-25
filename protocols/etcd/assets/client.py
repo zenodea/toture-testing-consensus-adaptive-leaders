@@ -1,9 +1,11 @@
 import sys
 import time
+import random
 
 import etcd3
 
 etcd = etcd3.client()
+random.seed(time.time())
 
 key_prefix = "ark_key"
 value = "k_value"
@@ -16,7 +18,7 @@ latencies = []
 def send_request(i):
     start_time_r = time.time()
     try:
-        etcd.put(f"{key_prefix}_{i}", value)
+        etcd.put(f"{key_prefix}_{i}_{str(random.randint(1, 10000000))}", value)
         latency = time.time() - start_time_r
         latencies.append(latency)
     except Exception as e:
