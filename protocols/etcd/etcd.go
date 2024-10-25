@@ -126,7 +126,7 @@ func (ba *ETCD) ExtractOptions(path string) protocols.ConsensusOptions {
 }
 
 func (ba *ETCD) GetPerformance(outputs []string) util.Performance {
-
+	fmt.Printf("ETCD outputs: %v\n", outputs)
 	// each enty in outputs is a one line string that is tx,latency
 	// we need to extract the tx and latency values and calculate the throughput and latency
 	// we will return the average throughput and latency
