@@ -2,6 +2,9 @@ package main
 
 import (
 	"flag"
+	"fmt"
+	"os"
+	"time"
 	"toture-test/consenbench/client"
 	"toture-test/consenbench/controller"
 )
@@ -23,6 +26,14 @@ func main() {
 	consensus_algorithm := flag.String("consensus_algorithm", "raft", "consensus algorithm to run")
 
 	flag.Parse()
+
+	exit_timeout := time.Duration(10*(*attack_duration)) * time.Second
+	exitTimer := time.AfterFunc(exit_timeout, func() {
+		fmt.Println("Program exceeded maximum runtime, exiting forcefully.")
+		os.Exit(1)
+	})
+
+	defer exitTimer.Stop()
 
 	if *is_controller {
 		options := controller.ControllerOptions{

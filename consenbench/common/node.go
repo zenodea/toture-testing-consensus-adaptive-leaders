@@ -43,7 +43,7 @@ func (n *Node) InitNode(logger *util.Logger) {
 // Execute a command on the node
 
 func (n *Node) ExecCmd(cmd string) string {
-	sshCmd := exec.Command("ssh", "-i", n.PrivateKeyPath, fmt.Sprintf("%s@%s", n.Username, n.Ip), cmd)
+	sshCmd := exec.Command("ssh", "-o", "StrictHostKeyChecking=no", "-i", n.PrivateKeyPath, fmt.Sprintf("%s@%s", n.Username, n.Ip), cmd)
 	output, err := sshCmd.CombinedOutput()
 	if err != nil {
 		fmt.Printf("FAILED to execute %v via SSH, err:%v, output:%v for node:%v\n\n", fmt.Sprintf("%v", sshCmd), err, string(output), n.Id)
