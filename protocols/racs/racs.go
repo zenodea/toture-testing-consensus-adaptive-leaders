@@ -140,7 +140,7 @@ func (ba *Racs) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 
 	for j := 0; j < int(num_replicas); j++ {
 		go func(i int) {
-			nodes[i].ExecCmd("." + replica_path + " --name " + strconv.Itoa(i+1) + " --viewTimeout " + view_timeout_time + " --logFilePath " + fmt.Sprintf("%vbench/logs/", nodes[i].HomeDir) + " --config " + fmt.Sprintf("%vbench/ip_config.yaml", nodes[i].HomeDir) + " --pipelineLength " + pipeline_length)
+			nodes[i].ExecCmd("." + replica_path + " --name " + strconv.Itoa(i+1) + " --viewTimeout " + view_timeout_time + " --logFilePath " + fmt.Sprintf("%vbench/logs/", nodes[i].HomeDir) + " --config " + fmt.Sprintf("%vbench/ip_config.yaml", nodes[i].HomeDir) + " --pipelineLength " + pipeline_length + " --networkbatchTime 0")
 		}(j)
 	}
 
