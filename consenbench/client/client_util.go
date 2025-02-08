@@ -69,7 +69,7 @@ func RunCommand(name string, arg []string, logger *util.Logger) error {
 
 	// Start the command
 	if err := cmd.Start(); err != nil {
-		fmt.Println("Error starting command:", err)
+		logger.Debug("Error running command:"+fmt.Sprintf("%v %v", name, arg)+" "+err.Error(), 5)
 		return err
 	}
 
@@ -91,7 +91,7 @@ func RunCommand(name string, arg []string, logger *util.Logger) error {
 	// Wait for the command to complete
 	err := cmd.Wait()
 	if err != nil {
-		fmt.Println("Error running command:", err)
+		logger.Debug("Error running command:"+fmt.Sprintf("%v %v", name, arg)+" "+err.Error(), 5)
 		return err
 	}
 

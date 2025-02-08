@@ -204,12 +204,12 @@ func (a *PartitionAttack_4) Attack(nodes []*AttackNode, links [][]*AttackLink, o
 					continue
 				}
 				if i == node_id {
-					links[i][j].SetLoss(100)
+					links[j][i].SetLoss(100)
 					fmt.Printf("setting loss between %v and %v\n", i, j)
 				}
 			}
 		}
-		time.Sleep(1 * time.Second)
+		time.Sleep(2 * time.Second)
 		fmt.Printf("resetting attack\n")
 		for i := 0; i < len(nodes); i++ {
 			for j := 0; j < len(nodes); j++ {
@@ -217,12 +217,12 @@ func (a *PartitionAttack_4) Attack(nodes []*AttackNode, links [][]*AttackLink, o
 					continue
 				}
 				if i == node_id {
-					links[i][j].SetLoss(0)
+					links[j][i].SetLoss(0)
 					fmt.Printf("resetting loss between %v and %v\n", i, j)
 				}
 			}
 		}
-		time.Sleep(3 * time.Second)
+		//time.Sleep(3 * time.Second)
 	}
 
 	fmt.Print("Partition attack 4 complete\n")
