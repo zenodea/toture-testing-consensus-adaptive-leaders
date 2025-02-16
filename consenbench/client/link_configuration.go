@@ -10,8 +10,8 @@ import (
 type NetEmAttacker struct {
 	Id                 int
 	IP                 string
+	Classid            string
 	Handle             string
-	ParentBand         string
 	NextNetEmCommands  [][]string
 	DelayPackets       int
 	LossPackets        int
@@ -28,7 +28,8 @@ type NetEmAttacker struct {
 func (c *Client) NetInit(id_ip []string, ports_under_attack []string, device string) {
 	RunCommand("tc", []string{"filter", "del", "dev", c.Options.Device}, c.logger)
 	RunCommand("tc", []string{"qdisc", "del", "dev", c.Options.Device, "root"}, c.logger)
-	RunCommand("tc", []string{"qdisc", "add", "dev", c.Options.Device, "root", "handle", "1:", "prio", "bands", strconv.Itoa(len(id_ip) + 5)}, c.logger)
+	RunCommand("tc", []string{"qdisc", "add", "dev", c.Options.Device, "root", "handle", "1:", "htb", "default", strconv.Itoa(len(id_ip) + 5)}, c.logger)
+	RunCommand("tc", []string{"class", "add", "dev", c.Options.Device, "parent 1:", "classid 1:1", "htb", "rate", "1gbit", "ceil", "1gbit"}, c.logger)
 	c.InitializeNetEmClients(id_ip, c.logger, ports_under_attack, device)
 }
 
@@ -43,8 +44,8 @@ func (c *Client) InitializeNetEmClients(id_ip []string, logger *util.Logger, Por
 		c.Attacker.NetEmAttackers[id_int] = &NetEmAttacker{
 			Id:                 id_int,
 			IP:                 ip,
+			Classid:            "1:" + strconv.Itoa((id_int+1)*10),
 			Handle:             strconv.Itoa((id_int + 1) * 10),
-			ParentBand:         "1:" + strconv.Itoa((id_int + 1)),
 			NextNetEmCommands:  [][]string{},
 			DelayPackets:       0,
 			LossPackets:        0,
@@ -58,6 +59,8 @@ func (c *Client) InitializeNetEmClients(id_ip []string, logger *util.Logger, Por
 			Prio:               strconv.Itoa((id_int + 1)),
 		}
 
+		RunCommand("tc", []string{"class", "add", "dev", c.Options.Device, "parent 1:1", "classid", c.Attacker.NetEmAttackers[id_int].Classid, "htb", "rate", "1gbit", "ceil", "1gbit", "prio", c.Attacker.NetEmAttackers[id_int].Prio}, c.logger)
+		c.Attacker.NetEmAttackers[id_int].applyHandleToEachPort()
 		debug := fmt.Sprintf("Initialized net em attacker with %v ", c.Attacker.NetEmAttackers[id_int])
 		c.logger.Debug(debug, 5)
 	}
@@ -83,9 +86,8 @@ func (c *NetEmAttacker) SetNewHandler() error {
 		defer c.decrementDelay()
 	}
 
-	err := RunCommand("tc", []string{"qdisc", "add", "dev", c.Device, "parent", c.ParentBand, "handle", c.Handle + ":", "netem", "delay", strconv.Itoa(c.DelayPackets) + "ms", "loss", strconv.Itoa(c.LossPackets) + "%", "duplicate", strconv.Itoa(c.DuplicatePackets) + "%", "reorder", strconv.Itoa(c.ReorderPackets) + "%", "50%", "corrupt", strconv.Itoa(c.CorruptPackets) + "%", "rate", strconv.Itoa(c.Rate) + "kbit"}, c.logger)
-	c.applyHandleToEachPort()
-	c.NextNetEmCommands = append(c.NextNetEmCommands, []string{"tc", "qdisc", "del", "dev", c.Device, "parent", c.ParentBand, "handle", c.Handle + ":", "netem", "delay", strconv.Itoa(c.DelayPackets) + "ms", "loss", strconv.Itoa(c.LossPackets) + "%", "duplicate", strconv.Itoa(c.DuplicatePackets) + "%", "reorder", strconv.Itoa(c.ReorderPackets) + "%", "50%", "corrupt", strconv.Itoa(c.CorruptPackets) + "%", "rate", strconv.Itoa(c.Rate) + "kbit"})
+	err := RunCommand("tc", []string{"qdisc", "add", "dev", c.Device, "parent", c.Classid, "handle", c.Handle + ":", "netem", "delay", strconv.Itoa(c.DelayPackets) + "ms", "loss", strconv.Itoa(c.LossPackets) + "%", "duplicate", strconv.Itoa(c.DuplicatePackets) + "%", "reorder", strconv.Itoa(c.ReorderPackets) + "%", "50%", "corrupt", strconv.Itoa(c.CorruptPackets) + "%", "rate", strconv.Itoa(c.Rate) + "kbit"}, c.logger)
+	c.NextNetEmCommands = append(c.NextNetEmCommands, []string{"tc", "qdisc", "del", "dev", c.Device, "parent", c.Classid, "handle", c.Handle + ":", "netem", "delay", strconv.Itoa(c.DelayPackets) + "ms", "loss", strconv.Itoa(c.LossPackets) + "%", "duplicate", strconv.Itoa(c.DuplicatePackets) + "%", "reorder", strconv.Itoa(c.ReorderPackets) + "%", "50%", "corrupt", strconv.Itoa(c.CorruptPackets) + "%", "rate", strconv.Itoa(c.Rate) + "kbit"})
 	c.logger.Debug("Set new net em handler", 3)
 	return err
 }
@@ -95,9 +97,7 @@ func (c *NetEmAttacker) SetNewHandler() error {
 func (c *NetEmAttacker) applyHandleToEachPort() {
 
 	for _, port := range c.Ports_under_attack {
-		RunCommand("tc", []string{"filter", "add", "dev", c.Device, "protocol", "ip", "parent", "1:0", "prio", c.Prio, "u32", "match", "ip", "dst", c.IP + "/32", "match", "ip", "dport", port, "0xffff", "flowid", c.ParentBand}, c.logger)
-		c.NextNetEmCommands = append(c.NextNetEmCommands, []string{"tc", "filter", "del", "dev", c.Device, "protocol", "ip", "parent", "1:0", "prio", c.Prio, "u32", "match", "ip", "dst", c.IP + "/32", "match", "ip", "dport", port, "0xffff", "flowid", c.ParentBand})
-
+		RunCommand("tc", []string{"filter", "add", "dev", c.Device, "protocol", "ip", "parent", "1:", "prio", c.Prio, "u32", "match", "ip", "dst", c.IP + "/32", "match", "ip", "dport", port, "0xffff", "flowid", c.Classid}, c.logger)
 	}
 }
 

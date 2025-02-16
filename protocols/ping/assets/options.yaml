@@ -1,5 +1,5 @@
 replica_path: protocols/ping/assets/dummy
 stats_path: protocols/ping/assets/stats
-num_replicas: 5
+num_replicas: 15
 ports: 10000
 process_name: dummy
