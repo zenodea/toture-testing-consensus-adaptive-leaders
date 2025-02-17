@@ -129,7 +129,7 @@ func (ba *ZooKeeper) Bootstrap(nodes []*common.Node, duration int, result chan u
 	wg.Wait()
 	bootstrap_complete <- true
 	fmt.Printf("bootstrap complete for zookeeper\n")
-	time.Sleep(time.Duration(2*duration) * time.Second)
+	time.Sleep(time.Duration(3*duration) * time.Second)
 	fmt.Printf("finished running zookeeper\n")
 	var wg1 sync.WaitGroup
 	wg1.Add(num_replicas_int)

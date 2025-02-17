@@ -98,7 +98,7 @@ func (ba *ETCD) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 	wg.Wait()
 	bootstrap_complete <- true
 	fmt.Printf("bootstrap complete for etcd\n")
-	time.Sleep(time.Duration(2*duration) * time.Second)
+	time.Sleep(time.Duration(3*duration) * time.Second)
 	fmt.Printf("finished running etcd")
 	var wg1 sync.WaitGroup
 	wg1.Add(num_replicas_int)
