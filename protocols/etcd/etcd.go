@@ -5,6 +5,9 @@ import (
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"log"
+	"os"
+	"os/exec"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"sync"
@@ -74,16 +77,18 @@ func (ba *ETCD) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 			nodes[j].ExecCmd(fmt.Sprintf("sudo apt update ; sudo apt install -y python3 python3-pip"))
 			nodes[j].ExecCmd(fmt.Sprintf("pip3 install etcd3"))
 			nodes[j].ExecCmd(fmt.Sprintf("pip3 install protobuf==3.19.6"))
+			nodes[j].ExecCmd(fmt.Sprintf("rm -r %vbench/logs/", nodes[j].HomeDir))
+			nodes[j].ExecCmd(fmt.Sprintf("mkdir -p %vbench/logs/", nodes[j].HomeDir))
 			go nodes[j].ExecCmd(fmt.Sprintf("%vetcd/etcd --log-level error --name infra%v --initial-advertise-peer-urls http://%v:2380 --listen-peer-urls http://%v:2380 --listen-client-urls http://%v:2379,http://127.0.0.1:2379 --advertise-client-urls http://%v:2379 --initial-cluster-token etcd-cluster-1 --initial-cluster %v --initial-cluster-state new", nodes[j].HomeDir, j, nodes[j].Ip, nodes[j].Ip, nodes[j].Ip, nodes[j].Ip, CLUSTER))
 			nodes[j].Put_Load("protocols/etcd/assets/client.py", fmt.Sprintf("%vetcd/client.py", nodes[j].HomeDir))
-			for k := 0; k < num_clients_int; k++ {
-				go func() {
-					output := nodes[j].ExecCmd(fmt.Sprintf("python3 %vetcd/client.py %v", nodes[j].HomeDir, duration))
-					outputMutex.Lock()
-					outputs = append(outputs, output)
-					outputMutex.Unlock()
-				}()
-			}
+
+			go func() {
+				output := nodes[j].ExecCmd(fmt.Sprintf("python3 %vetcd/client.py %v %v %v %v", nodes[j].HomeDir, duration, num_clients_int, j, nodes[j].HomeDir+"bench/logs/"))
+				outputMutex.Lock()
+				outputs = append(outputs, output)
+				outputMutex.Unlock()
+			}()
+
 			time.Sleep(5 * time.Second)
 			wg.Done()
 		}(i)
@@ -104,6 +109,51 @@ func (ba *ETCD) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 	}
 	wg1.Wait()
 	println("ETCD Raft killed")
+
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		panic("error getting home directory:" + err.Error())
+	}
+
+	sshCmd := exec.Command("rm", []string{"-r", filepath.Join(homeDir, "toture-testing-consensus/logs")}...)
+	output, err := sshCmd.CombinedOutput()
+	if err != nil {
+		print("error while deleting logs/ " + err.Error() + " " + string(output) + "\n")
+	} else {
+		print("deleted local logs/ successfully\n" + string(output) + "\n")
+	}
+
+	sshCmd = exec.Command("mkdir", []string{"-p", filepath.Join(homeDir, "toture-testing-consensus/logs")}...)
+	output, err = sshCmd.CombinedOutput()
+	if err != nil {
+		panic("Error while creating logs/ " + err.Error() + " " + string(output) + "\n")
+	} else {
+		print("created logs/ successfully\n" + string(output) + "\n")
+	}
+
+	var wg2 sync.WaitGroup
+	wg2.Add(num_replicas_int)
+
+	for j := 0; j < num_replicas_int; j++ {
+		go func(i int) {
+			for k := 0; k < num_clients_int; k++ {
+				nodes[i].Get_Load(fmt.Sprintf("%vbench/logs/%v_%v.log", nodes[i].HomeDir, i, k), "logs/")
+			}
+			wg2.Done()
+		}(j)
+
+	}
+	wg2.Wait()
+	fmt.Println("Downloaded all the etcd client logs")
+
+	sshCmd = exec.Command("python3", []string{"protocols/etcd/assets/summary.py", filepath.Join(homeDir, "toture-testing-consensus/logs/"), filepath.Join(homeDir, "toture-testing-consensus/logs/throughput.log")}...)
+	output, err = sshCmd.CombinedOutput()
+	if err != nil {
+		print("error while running summary " + err.Error() + " " + string(output) + "\n")
+	} else {
+		print("summary ran successfully\n" + string(output) + "\n")
+	}
+
 	p := ba.GetPerformance(outputs)
 	result <- p
 }

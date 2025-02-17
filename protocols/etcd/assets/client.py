@@ -5,8 +5,10 @@ import time
 
 import etcd3
 
-NUM_INSTANCES = 100
 DURATION = int(sys.argv[1])
+NUM_INSTANCES = int(int(sys.argv[2]))
+ID = sys.argv[3]
+LOG_PATH = sys.argv[4]
 
 
 def run_instance(instance_id):
@@ -17,6 +19,7 @@ def run_instance(instance_id):
     value = "k_value"
 
     latencies = []
+    logs = []
 
     def send_request(i):
         start_time_r = time.time()
@@ -24,6 +27,7 @@ def run_instance(instance_id):
             etcd.put(f"{key_prefix}_{i}_{random.randint(1, 10000000)}", value)
             latency = time.time() - start_time_r
             latencies.append(latency)
+            logs.append(str(start_time_r) + "," + str(time.time()) + "\n")
         except Exception as e:
             pass
 
@@ -33,6 +37,9 @@ def run_instance(instance_id):
         send_request(i)
         i += 1
 
+    file = open(LOG_PATH + ID + "_" + str(instance_id) + ".log", "w")
+    file.writelines(logs)
+    file.close()
     return latencies
 
 
