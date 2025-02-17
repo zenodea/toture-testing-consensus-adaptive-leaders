@@ -82,6 +82,8 @@ func (ba *ETCD) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 			go nodes[j].ExecCmd(fmt.Sprintf("%vetcd/etcd --log-level error --name infra%v --initial-advertise-peer-urls http://%v:2380 --listen-peer-urls http://%v:2380 --listen-client-urls http://%v:2379,http://127.0.0.1:2379 --advertise-client-urls http://%v:2379 --initial-cluster-token etcd-cluster-1 --initial-cluster %v --initial-cluster-state new", nodes[j].HomeDir, j, nodes[j].Ip, nodes[j].Ip, nodes[j].Ip, nodes[j].Ip, CLUSTER))
 			nodes[j].Put_Load("protocols/etcd/assets/client.py", fmt.Sprintf("%vetcd/client.py", nodes[j].HomeDir))
 
+			time.Sleep(5 * time.Second)
+
 			go func() {
 				output := nodes[j].ExecCmd(fmt.Sprintf("python3 %vetcd/client.py %v %v %v %v", nodes[j].HomeDir, duration, num_clients_int, j, nodes[j].HomeDir+"bench/logs/"))
 				outputMutex.Lock()
@@ -96,7 +98,7 @@ func (ba *ETCD) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 	wg.Wait()
 	bootstrap_complete <- true
 	fmt.Printf("bootstrap complete for etcd\n")
-	time.Sleep(time.Duration(2*duration) * time.Second)
+	time.Sleep(time.Duration(3*duration) * time.Second)
 	fmt.Printf("finished running etcd")
 	var wg1 sync.WaitGroup
 	wg1.Add(num_replicas_int)

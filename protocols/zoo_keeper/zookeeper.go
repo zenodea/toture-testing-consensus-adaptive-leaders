@@ -5,6 +5,9 @@ import (
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"log"
+	"os"
+	"os/exec"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"sync"
@@ -103,30 +106,30 @@ func (ba *ZooKeeper) Bootstrap(nodes []*common.Node, duration int, result chan u
 			nodes[j].ExecCmd(fmt.Sprintf("mkdir -p %vapache-zookeeper-3.8.1-bin/data", nodes[j].HomeDir))
 			nodes[j].ExecCmd(fmt.Sprintf("echo -e \"%v\" > %vapache-zookeeper-3.8.1-bin/conf/zoo.cfg", ZOO_CFG_CONTENT, nodes[j].HomeDir))
 			nodes[j].ExecCmd(fmt.Sprintf("echo \"%v\" > %vapache-zookeeper-3.8.1-bin/data/myid", j+1, nodes[j].HomeDir))
+			nodes[j].ExecCmd(fmt.Sprintf("rm -r %vbench/logs/", nodes[j].HomeDir))
+			nodes[j].ExecCmd(fmt.Sprintf("mkdir -p %vbench/logs/", nodes[j].HomeDir))
 
 			nodes[j].Put_Load(fmt.Sprintf("protocols/zoo_keeper/assets/client.py"), fmt.Sprintf("%v", nodes[j].HomeDir))
 
 			go nodes[j].ExecCmd(fmt.Sprintf("%vapache-zookeeper-3.8.1-bin/bin/zkServer.sh start", nodes[j].HomeDir))
 
-			time.Sleep(5)
+			time.Sleep(5 * time.Second)
 
-			for k := 0; k < num_clients_int; k++ {
-				go func() {
-					output := nodes[j].ExecCmd(fmt.Sprintf("python3 %vclient.py %v", nodes[j].HomeDir, duration))
-					outputMutex.Lock()
-					outputs = append(outputs, output)
-					outputMutex.Unlock()
-				}()
-				time.Sleep(1)
-			}
-			time.Sleep(2 * time.Second)
+			go func() {
+				output := nodes[j].ExecCmd(fmt.Sprintf("python3 %vclient.py %v %v %v %v ", nodes[j].HomeDir, duration, num_clients_int, j, nodes[j].HomeDir+"bench/logs/"))
+				outputMutex.Lock()
+				outputs = append(outputs, output)
+				outputMutex.Unlock()
+			}()
+
+			time.Sleep(5 * time.Second)
 			wg.Done()
 		}(i)
 	}
 	wg.Wait()
 	bootstrap_complete <- true
 	fmt.Printf("bootstrap complete for zookeeper\n")
-	time.Sleep(time.Duration(2*duration) * time.Second)
+	time.Sleep(time.Duration(3*duration) * time.Second)
 	fmt.Printf("finished running zookeeper\n")
 	var wg1 sync.WaitGroup
 	wg1.Add(num_replicas_int)
@@ -139,6 +142,51 @@ func (ba *ZooKeeper) Bootstrap(nodes []*common.Node, duration int, result chan u
 	}
 	wg1.Wait()
 	println("ZooKeeper killed")
+
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		panic("error getting home directory:" + err.Error())
+	}
+
+	sshCmd := exec.Command("rm", []string{"-r", filepath.Join(homeDir, "toture-testing-consensus/logs")}...)
+	output, err := sshCmd.CombinedOutput()
+	if err != nil {
+		print("error while deleting logs/ " + err.Error() + " " + string(output) + "\n")
+	} else {
+		print("deleted local logs/ successfully\n" + string(output) + "\n")
+	}
+
+	sshCmd = exec.Command("mkdir", []string{"-p", filepath.Join(homeDir, "toture-testing-consensus/logs")}...)
+	output, err = sshCmd.CombinedOutput()
+	if err != nil {
+		panic("Error while creating logs/ " + err.Error() + " " + string(output) + "\n")
+	} else {
+		print("created logs/ successfully\n" + string(output) + "\n")
+	}
+
+	var wg2 sync.WaitGroup
+	wg2.Add(num_replicas_int)
+
+	for j := 0; j < num_replicas_int; j++ {
+		go func(i int) {
+			for k := 0; k < num_clients_int; k++ {
+				nodes[i].Get_Load(fmt.Sprintf("%vbench/logs/%v_%v.log", nodes[i].HomeDir, i, k), "logs/")
+			}
+			wg2.Done()
+		}(j)
+
+	}
+	wg2.Wait()
+	fmt.Println("Downloaded all the zoo keepeter client logs")
+
+	sshCmd = exec.Command("python3", []string{"protocols/zoo_keeper/assets/summary.py", filepath.Join(homeDir, "toture-testing-consensus/logs/"), filepath.Join(homeDir, "toture-testing-consensus/logs/throughput.log")}...)
+	output, err = sshCmd.CombinedOutput()
+	if err != nil {
+		print("error while running summary " + err.Error() + " " + string(output) + "\n")
+	} else {
+		print("summary ran successfully\n" + string(output) + "\n")
+	}
+
 	p := ba.GetPerformance(outputs)
 	result <- p
 }
