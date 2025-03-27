@@ -282,8 +282,29 @@ func (ba *Efficient) ExtractOptions(path string) protocols.ConsensusOptions {
 	}
 
 	options := protocols.ConsensusOptions{Option: make(map[string]string)}
+
 	for key, value := range config {
 		options.Option[key] = fmt.Sprintf("%v", value)
+	}
+
+	_, ok := options.Option["exec"]
+	if !ok {
+		options.Option["exec"] = ""
+	}
+
+	_, ok = options.Option["dreply"]
+	if !ok {
+		options.Option["dreply"] = ""
+	}
+
+	_, ok = options.Option["durable"]
+	if !ok {
+		options.Option["durable"] = ""
+	}
+
+	_, ok = options.Option["thrifty"]
+	if !ok {
+		options.Option["thrifty"] = ""
 	}
 
 	fmt.Printf("efficient options:\n %v\n", options.Option)
