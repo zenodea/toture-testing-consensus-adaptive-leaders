@@ -26,6 +26,7 @@ func (a *CrashAttack_1) Attack(nodes []*AttackNode, links [][]*AttackLink, oracl
 	leader := oracle.GetTopNLeaders()[0]
 	fmt.Printf("attacking leader node %v\n", leader)
 	nodes[leader].Kill()
+	time.Sleep(time.Duration(duration-10) * time.Second)
 	fmt.Print(" attack complete\n")
 }
 

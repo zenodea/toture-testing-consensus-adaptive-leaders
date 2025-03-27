@@ -282,7 +282,6 @@ func (ba *Efficient) ExtractOptions(path string) protocols.ConsensusOptions {
 	}
 
 	options := protocols.ConsensusOptions{Option: make(map[string]string)}
-
 	for key, value := range config {
 		options.Option[key] = fmt.Sprintf("%v", value)
 	}
