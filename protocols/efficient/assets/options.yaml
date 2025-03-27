@@ -9,3 +9,10 @@ process_name: epaxos_server
 pipeline_length: 1
 view_timeout_time: 1000000
 algo: -e
+exec: -exec
+dreply: -dreply
+durable: -durable
+thrifty: -thrifty
+w: 100
+c: 2
+

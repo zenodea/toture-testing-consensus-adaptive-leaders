@@ -106,6 +106,36 @@ func (ba *Efficient) Bootstrap(nodes []*common.Node, duration int, result chan u
 		panic(err.Error() + " while parsing algo")
 	}
 
+	execF, ok := ba.options.Option["exec"]
+	if !ok {
+		panic(err.Error() + " while parsing exec")
+	}
+
+	dreply, ok := ba.options.Option["dreply"]
+	if !ok {
+		panic(err.Error() + " while parsing dreply")
+	}
+
+	durable, ok := ba.options.Option["durable"]
+	if !ok {
+		panic(err.Error() + " while parsing durable")
+	}
+
+	thrifty, ok := ba.options.Option["thrifty"]
+	if !ok {
+		panic(err.Error() + " while parsing thrifty")
+	}
+
+	writes, ok := ba.options.Option["w"]
+	if !ok {
+		panic(err.Error() + " while parsing w")
+	}
+
+	conflicts, ok := ba.options.Option["c"]
+	if !ok {
+		panic(err.Error() + " while parsing c")
+	}
+
 	var wg sync.WaitGroup
 	wg.Add(int(num_replicas + num_clients))
 	for i := 0; i < int(num_replicas+num_clients); i++ {
@@ -129,7 +159,7 @@ func (ba *Efficient) Bootstrap(nodes []*common.Node, duration int, result chan u
 	fmt.Print("Started the master\n")
 
 	for i := 0; i < int(num_replicas); i++ {
-		go nodes[i].ExecCmd("." + replica_path + " -port 10000 " + " -maddr " + nodes[0].Ip + " -addr " + nodes[i].Ip + " -batchSize 3000 " + " -batchTime 5000 " + " -pipeline " + pipeline_length + " -exec  -dreply " + algo)
+		go nodes[i].ExecCmd("." + replica_path + " -port 10000 " + " -maddr " + nodes[0].Ip + " -addr " + nodes[i].Ip + " -batchSize 3000 " + " -batchTime 5000 " + " -pipeline " + pipeline_length + " " + algo + " " + execF + " " + dreply + " " + durable + " " + thrifty)
 		time.Sleep(5 * time.Second)
 	}
 
@@ -142,9 +172,9 @@ func (ba *Efficient) Bootstrap(nodes []*common.Node, duration int, result chan u
 	for j := int(num_replicas); j < int(num_replicas+num_clients); j++ {
 		go func(i int, k int) {
 			if algo != "-pa" {
-				clientOutputs[i-int(num_replicas)] = nodes[i].ExecCmd("." + ctl_path + " -name " + strconv.Itoa(50+k) + " -maddr " + nodes[0].Ip + " -w 50 -c 2 -clientBatchSize 50  -logFilePath " + fmt.Sprintf("%vbench/logs/", nodes[i].HomeDir) + " -arrivalRate  " + arrival_rate + " -testDuration " + strconv.Itoa(duration) + " -leaderTimeout " + view_timeout_time + " -defaultReplica " + strconv.Itoa(i-int(num_replicas)))
+				clientOutputs[i-int(num_replicas)] = nodes[i].ExecCmd("." + ctl_path + " -name " + strconv.Itoa(50+k) + " -maddr " + nodes[0].Ip + "  -clientBatchSize 50  -logFilePath " + fmt.Sprintf("%vbench/logs/", nodes[i].HomeDir) + " -arrivalRate  " + arrival_rate + " -testDuration " + strconv.Itoa(duration) + " -leaderTimeout " + view_timeout_time + " -defaultReplica " + strconv.Itoa(i-int(num_replicas)) + " -w " + writes + " -c " + conflicts)
 			} else {
-				clientOutputs[i-int(num_replicas)] = nodes[i].ExecCmd("." + ctl_path + " -name " + strconv.Itoa(50+k) + " -maddr " + nodes[0].Ip + " -w 50 -c 2 -clientBatchSize 50  -logFilePath " + fmt.Sprintf("%vbench/logs/", nodes[i].HomeDir) + " -arrivalRate  " + arrival_rate + " -testDuration " + strconv.Itoa(duration) + " -leaderTimeout " + view_timeout_time + " -defaultReplica " + strconv.Itoa(i-int(num_replicas)) + " -l")
+				clientOutputs[i-int(num_replicas)] = nodes[i].ExecCmd("." + ctl_path + " -name " + strconv.Itoa(50+k) + " -maddr " + nodes[0].Ip + "  -clientBatchSize 50  -logFilePath " + fmt.Sprintf("%vbench/logs/", nodes[i].HomeDir) + " -arrivalRate  " + arrival_rate + " -testDuration " + strconv.Itoa(duration) + " -leaderTimeout " + view_timeout_time + " -defaultReplica " + strconv.Itoa(i-int(num_replicas)) + " -w " + writes + " -c " + conflicts + " -l")
 			}
 		}(j, m)
 		m++
