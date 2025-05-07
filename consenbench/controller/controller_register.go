@@ -2,7 +2,6 @@ package controller
 
 import (
 	"toture-test/protocols"
-	baxos "toture-test/protocols/baxos"
 	bullshark "toture-test/protocols/bullshark"
 	dedis_paxos "toture-test/protocols/dedis_paxos"
 	dedis_raft "toture-test/protocols/dedis_raft"
@@ -89,9 +88,7 @@ func (c *Controller) GetAttackImpl() Attack {
 // as you add more protocols, you need to add the protocol here
 
 func (c *Controller) GetProtocolImpl(protocol string) protocols.Consensus {
-	if protocol == "baxos" {
-		return baxos.NewBaxos(c.logger)
-	} else if protocol == "ping" {
+	if protocol == "ping" {
 		return ping.NewPing(c.logger)
 	} else if protocol == "dedis_paxos" {
 		return dedis_paxos.NewDedis_Paxos(c.logger)
