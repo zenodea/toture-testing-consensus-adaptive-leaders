@@ -136,7 +136,7 @@ def progress_bar(iterable, prefix='', suffix='', decimals=1, length=30, fill='â–
         percent = formatter.format(100 * (iteration / float(total)))
         filledLength = int(length * iteration // total)
         bar = fill * filledLength + '-' * (length - filledLength)
-        print(f'\r{prefix} |{bar}| {percent}% {suffix}', end=print_end)
+        # print(f'\r{prefix} |{bar}| {percent}% {suffix}', end=print_end)
 
     printProgressBar(0)
     for i, item in enumerate(iterable):
