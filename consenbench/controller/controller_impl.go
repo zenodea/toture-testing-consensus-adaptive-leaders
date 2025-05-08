@@ -17,6 +17,8 @@ func (c *Controller) BootstrapClients() error {
 
 	c.InitiliazeNodes()
 
+	c.logger.Debug(fmt.Sprintf("Copying the client binary to all nodes"), 0)
+
 	var wg sync.WaitGroup
 	wg.Add(len(c.Nodes))
 	// copy the client binary to all the nodes
@@ -31,6 +33,7 @@ func (c *Controller) BootstrapClients() error {
 			c.Nodes[i].ExecCmd(fmt.Sprintf("mkdir -p %vbench", c.Nodes[i].HomeDir))
 			c.Nodes[i].Put_Load("consenbench/bin/bench", fmt.Sprintf("%vbench/", c.Nodes[i].HomeDir))
 			c.Nodes[i].Put_Load("consenbench/assets/ip.yaml", fmt.Sprintf("%vbench/", c.Nodes[i].HomeDir))
+			c.logger.Debug(fmt.Sprintf("Done copying the client binary to %v", i), 0)
 			wg.Done()
 		}(j)
 	}
