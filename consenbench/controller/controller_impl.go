@@ -24,16 +24,12 @@ func (c *Controller) BootstrapClients() error {
 	// copy the client binary to all the nodes
 	for j := 0; j < len(c.Nodes); j++ {
 		go func(i int) {
-			c.Nodes[i].ExecCmd(fmt.Sprintf("sudo apt update"))
-			c.Nodes[i].ExecCmd(fmt.Sprintf("sudo apt install iproute2"))
-			c.Nodes[i].ExecCmd(fmt.Sprintf("sudo setcap cap_net_admin,cap_net_raw+ep $(which tc)"))
-			c.Nodes[i].ExecCmd(fmt.Sprintf("getcap $(which tc)"))
 			c.Nodes[i].ExecCmd(fmt.Sprintf("pkill -KILL -f bench"))
 			c.Nodes[i].ExecCmd(fmt.Sprintf("rm -r %vbench", c.Nodes[i].HomeDir))
 			c.Nodes[i].ExecCmd(fmt.Sprintf("mkdir -p %vbench", c.Nodes[i].HomeDir))
 			c.Nodes[i].Put_Load("consenbench/bin/bench", fmt.Sprintf("%vbench/", c.Nodes[i].HomeDir))
 			c.Nodes[i].Put_Load("consenbench/assets/ip.yaml", fmt.Sprintf("%vbench/", c.Nodes[i].HomeDir))
-			c.logger.Debug(fmt.Sprintf("Done copying the client binary to %v", i), 0)
+			c.logger.Debug(fmt.Sprintf("done copying the client binary to %v", i), 0)
 			wg.Done()
 		}(j)
 	}
