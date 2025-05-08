@@ -71,7 +71,13 @@ class Bench:
             "sudo rm -r hotstuff",
 
             # Clone the repo.
-            f'(git clone {self.settings.repo_url} || (cd {self.settings.repo_name} ; git pull))'
+            f'(git clone {self.settings.repo_url} || (cd {self.settings.repo_name} ; git pull))',
+            f'(cd {self.settings.repo_name} && git checkout -f {self.settings.branch})',
+            'source $HOME/.cargo/env',
+            f'(cd {self.settings.repo_name}/node && {CommandMaker.compile()})',
+            CommandMaker.alias_binaries(
+                f'./{self.settings.repo_name}/target/release/'
+            )
         ]
         hosts = self.manager.hosts()
         try:
@@ -116,16 +122,7 @@ class Bench:
         Print.info(
             f'Updating {len(hosts)} nodes (branch "{self.settings.branch}")...'
         )
-        cmd = [
-            f'(cd {self.settings.repo_name} && git fetch -f)',
-            f'(cd {self.settings.repo_name} && git checkout -f {self.settings.branch})',
-            f'(cd {self.settings.repo_name} && git pull -f)',
-            'source $HOME/.cargo/env',
-            f'(cd {self.settings.repo_name}/node && {CommandMaker.compile()})',
-            CommandMaker.alias_binaries(
-                f'./{self.settings.repo_name}/target/release/'
-            )
-        ]
+        cmd = []
         g = Group(*hosts, user=self.manager.user(), connect_kwargs=self.connect)
         g.run(' && '.join(cmd), hide=True)
 
@@ -270,12 +267,12 @@ class Bench:
             Print.warn('There are not enough instances available')
             return
 
-        # Update nodes.
-        try:
-            self._update(selected_hosts)
-        except (GroupException, ExecutionError) as e:
-            e = FabricError(e) if isinstance(e, GroupException) else e
-            raise BenchError('Failed to update nodes', e)
+        # # Update nodes.
+        # try:
+        #     self._update(selected_hosts)
+        # except (GroupException, ExecutionError) as e:
+        #     e = FabricError(e) if isinstance(e, GroupException) else e
+        #     raise BenchError('Failed to update nodes', e)
 
         # Run benchmarks.
         for n in bench_parameters.nodes:
