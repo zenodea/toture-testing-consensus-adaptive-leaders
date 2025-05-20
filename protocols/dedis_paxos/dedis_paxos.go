@@ -123,6 +123,41 @@ func (ba *Dedis_Paxos) Bootstrap(nodes []*common.Node, duration int, result chan
 		panic(err.Error() + " while parsing pipeline_length")
 	}
 
+	replica_batch_size, ok := ba.options.Option["replica_batch_size"]
+	if !ok {
+		panic("replica_batch_size not found in options")
+	}
+
+	replica_batch_time, ok := ba.options.Option["replica_batch_time"]
+	if !ok {
+		panic("replica_batch_time not found in options")
+	}
+
+	key_len, ok := ba.options.Option["key_len"]
+	if !ok {
+		panic("key_len not found in options")
+	}
+
+	val_len, ok := ba.options.Option["val_len"]
+	if !ok {
+		panic("val_len not found in options")
+	}
+
+	client_batch_size, ok := ba.options.Option["client_batch_size"]
+	if !ok {
+		panic("client_batch_size not found in options")
+	}
+
+	client_batch_time, ok := ba.options.Option["client_batch_time"]
+	if !ok {
+		panic("client_batch_time not found in options")
+	}
+
+	client_window, ok := ba.options.Option["client_window"]
+	if !ok {
+		panic("client_window not found in options")
+	}
+
 	var wg sync.WaitGroup
 	wg.Add(int(num_replicas + num_clients))
 	for i := 0; i < int(num_replicas+num_clients); i++ {
@@ -140,7 +175,7 @@ func (ba *Dedis_Paxos) Bootstrap(nodes []*common.Node, duration int, result chan
 
 	for j := 0; j < int(num_replicas); j++ {
 		go func(i int) {
-			nodes[i].ExecCmd("." + replica_path + " --name " + strconv.Itoa(i+1) + " --consAlgo paxos " + " --viewTimeout " + view_timeout_time + " --pipelineLength " + pipeline_length + " --logFilePath " + fmt.Sprintf("%vbench/logs/", nodes[i].HomeDir) + " --config " + fmt.Sprintf("%vbench/ip_config.yaml", nodes[i].HomeDir))
+			nodes[i].ExecCmd("." + replica_path + " --name " + strconv.Itoa(i+1) + " --consAlgo paxos " + " --viewTimeout " + view_timeout_time + " --pipelineLength " + pipeline_length + " --logFilePath " + fmt.Sprintf("%vbench/logs/", nodes[i].HomeDir) + " --config " + fmt.Sprintf("%vbench/ip_config.yaml", nodes[i].HomeDir) + "  --replica_batch_size " + replica_batch_size + "  --replica_batch_time " + replica_batch_time + "  --key_len " + key_len + "  --val_len " + val_len)
 		}(j)
 	}
 
@@ -164,7 +199,7 @@ func (ba *Dedis_Paxos) Bootstrap(nodes []*common.Node, duration int, result chan
 	m := 1
 	for j := int(num_replicas); j < int(num_replicas+num_clients); j++ {
 		go func(i int, k int) {
-			clientOutputs[i-int(num_replicas)] = nodes[i].ExecCmd("." + ctl_path + " --name " + strconv.Itoa(50+k) + " --logFilePath " + fmt.Sprintf("%vbench/logs/", nodes[i].HomeDir) + " --config " + fmt.Sprintf("%vbench/ip_config.yaml", nodes[i].HomeDir) + " --requestType request --arrivalRate  " + arrival_rate + " --testDuration " + strconv.Itoa(duration))
+			clientOutputs[i-int(num_replicas)] = nodes[i].ExecCmd("." + ctl_path + " --name " + strconv.Itoa(50+k) + " --logFilePath " + fmt.Sprintf("%vbench/logs/", nodes[i].HomeDir) + " --config " + fmt.Sprintf("%vbench/ip_config.yaml", nodes[i].HomeDir) + " --requestType request --arrivalRate  " + arrival_rate + " --testDuration " + strconv.Itoa(duration) + "  --client_batch_size " + client_batch_size + "  --client_batch_time " + client_batch_time + "  --key_len " + key_len + "  --val_len " + val_len + "  --client_window " + client_window)
 		}(j, m)
 		m++
 	}
