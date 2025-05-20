@@ -53,8 +53,6 @@ func (ba *ETCD) CopyConsensus(nodes []*common.Node) error {
 			nodes[j].ExecCmd(fmt.Sprintf("wget -q %v && tar xzvf etcd-%v-linux-amd64.tar.gz", ETCD_DOWNLOAD_URL, ETCD_VERSION))
 			nodes[j].ExecCmd(fmt.Sprintf("mv etcd-%v-linux-amd64/etcd* %vetcd/", ETCD_VERSION, nodes[j].HomeDir))
 			nodes[j].ExecCmd(fmt.Sprintf("rm -rf etcd-%v-linux-amd64*", ETCD_VERSION))
-			nodes[j].ExecCmd(fmt.Sprintf("rm -r %vbench/logs/", nodes[j].HomeDir))
-			nodes[j].ExecCmd(fmt.Sprintf("mkdir -p %vbench/logs/", nodes[j].HomeDir))
 			nodes[j].Put_Load("protocols/etcd/assets/client.py", fmt.Sprintf("%vetcd/client.py", nodes[j].HomeDir))
 		}(i)
 	}
@@ -92,6 +90,8 @@ func (ba *ETCD) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 
 	for i := 0; i < num_replicas_int; i++ {
 		go func(j int) {
+			nodes[j].ExecCmd(fmt.Sprintf("rm -r %vbench/logs/", nodes[j].HomeDir))
+			nodes[j].ExecCmd(fmt.Sprintf("mkdir -p %vbench/logs/", nodes[j].HomeDir))
 			go nodes[j].ExecCmd(fmt.Sprintf("%vetcd/etcd --log-level error --name infra%v --initial-advertise-peer-urls http://%v:2380 --listen-peer-urls http://%v:2380 --listen-client-urls http://%v:2379,http://127.0.0.1:2379 --advertise-client-urls http://%v:2379 --initial-cluster-token etcd-cluster-1 --initial-cluster %v --initial-cluster-state new", nodes[j].HomeDir, j, nodes[j].Ip, nodes[j].Ip, nodes[j].Ip, nodes[j].Ip, CLUSTER))
 
 			time.Sleep(5 * time.Second)
