@@ -5,9 +5,6 @@ GO_VERSION="1.19"
 
 cmd=$(cat <<'EOF'
 set -e
-sudo apt-mark hold grub-efi-amd64 grub-pc grub-common
-export DEBIAN_FRONTEND=noninteractive
-sudo dpkg --configure -a
 sudo apt update
 sudo apt install -y git iproute2 build-essential clang pkg-config libssl-dev python3 python3-pip openjdk-11-jdk
 sudo rm -rf /usr/local/go
