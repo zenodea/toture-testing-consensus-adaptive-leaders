@@ -43,9 +43,7 @@ func (ba *ZooKeeper) CopyConsensus(nodes []*common.Node) error {
 
 	for i := 0; i < num_replicas_int; i++ {
 		go func(j int) {
-			nodes[j].ExecCmd(fmt.Sprintf("java -version || sudo apt update && sudo apt install -y openjdk-11-jdk"))
 			nodes[j].ExecCmd(fmt.Sprintf("pkill -f QuorumPeerMain"))
-			nodes[j].ExecCmd(fmt.Sprintf("sudo apt update; sudo apt install -y python3-pip; pip3 install kazoo"))
 			wg.Done()
 		}(i)
 	}
