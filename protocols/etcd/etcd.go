@@ -29,6 +29,35 @@ func NewETCD(logger *util.Logger) *ETCD {
 }
 
 func (ba *ETCD) CopyConsensus(nodes []*common.Node) error {
+	num_replicas, ok := ba.options.Option["num_replicas"]
+	if !ok {
+		panic("error while parsing num_replicas")
+	}
+
+	num_replicas_int, _ := strconv.Atoi(num_replicas)
+
+	var wg sync.WaitGroup
+	wg.Add(num_replicas_int)
+
+	ETCD_VERSION := "v3.5.9"
+	ETCD_DOWNLOAD_URL := fmt.Sprintf("https://github.com/etcd-io/etcd/releases/download/%v/etcd-%v-linux-amd64.tar.gz", ETCD_VERSION, ETCD_VERSION)
+
+	for i := 0; i < num_replicas_int; i++ {
+		go func(j int) {
+			nodes[j].ExecCmd(fmt.Sprintf("sudo pkill -f etcd"))
+			nodes[j].ExecCmd(fmt.Sprintf("sudo rm -f /usr/local/bin/etcd;sudo rm -f /usr/local/bin/etcdctl; sudo rm -f /usr/local/bin/etcdutl"))
+			nodes[j].ExecCmd(fmt.Sprintf("sudo systemctl stop etcd; sudo systemctl disable etcd; sudo rm -f /etc/systemd/system/etcd.service"))
+			nodes[j].ExecCmd(fmt.Sprintf("sudo rm -rf %vetcd/; sudo rm -r /var/lib/etcd; sudo rm -r /tmp/etcd", nodes[j].HomeDir))
+			nodes[j].ExecCmd(fmt.Sprintf("sudo rm -rf %vinfra%v.etcd/", nodes[j].HomeDir, j))
+			nodes[j].ExecCmd(fmt.Sprintf("mkdir -p %vetcd/data", nodes[j].HomeDir))
+			nodes[j].ExecCmd(fmt.Sprintf("wget -q %v && tar xzvf etcd-%v-linux-amd64.tar.gz", ETCD_DOWNLOAD_URL, ETCD_VERSION))
+			nodes[j].ExecCmd(fmt.Sprintf("mv etcd-%v-linux-amd64/etcd* %vetcd/", ETCD_VERSION, nodes[j].HomeDir))
+			nodes[j].ExecCmd(fmt.Sprintf("rm -rf etcd-%v-linux-amd64*", ETCD_VERSION))
+			nodes[j].ExecCmd(fmt.Sprintf("rm -r %vbench/logs/", nodes[j].HomeDir))
+			nodes[j].ExecCmd(fmt.Sprintf("mkdir -p %vbench/logs/", nodes[j].HomeDir))
+			nodes[j].Put_Load("protocols/etcd/assets/client.py", fmt.Sprintf("%vetcd/client.py", nodes[j].HomeDir))
+		}(i)
+	}
 	return nil
 }
 
@@ -55,8 +84,6 @@ func (ba *ETCD) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 	var wg sync.WaitGroup
 	wg.Add(num_replicas_int)
 
-	ETCD_VERSION := "v3.5.9"
-	ETCD_DOWNLOAD_URL := fmt.Sprintf("https://github.com/etcd-io/etcd/releases/download/%v/etcd-%v-linux-amd64.tar.gz", ETCD_VERSION, ETCD_VERSION)
 	CLUSTER := ""
 	for i := 0; i < num_replicas_int; i++ {
 		CLUSTER += fmt.Sprintf("infra%d=http://%v:2380,", i, nodes[i].Ip)
@@ -65,22 +92,7 @@ func (ba *ETCD) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 
 	for i := 0; i < num_replicas_int; i++ {
 		go func(j int) {
-			nodes[j].ExecCmd(fmt.Sprintf("sudo pkill -f etcd"))
-			nodes[j].ExecCmd(fmt.Sprintf("sudo rm -f /usr/local/bin/etcd;sudo rm -f /usr/local/bin/etcdctl; sudo rm -f /usr/local/bin/etcdutl"))
-			nodes[j].ExecCmd(fmt.Sprintf("sudo systemctl stop etcd; sudo systemctl disable etcd; sudo rm -f /etc/systemd/system/etcd.service"))
-			nodes[j].ExecCmd(fmt.Sprintf("sudo rm -rf %vetcd/; sudo rm -r /var/lib/etcd; sudo rm -r /tmp/etcd", nodes[j].HomeDir))
-			nodes[j].ExecCmd(fmt.Sprintf("sudo rm -rf %vinfra%v.etcd/", nodes[j].HomeDir, j))
-			nodes[j].ExecCmd(fmt.Sprintf("mkdir -p %vetcd/data", nodes[j].HomeDir))
-			nodes[j].ExecCmd(fmt.Sprintf("wget -q %v && tar xzvf etcd-%v-linux-amd64.tar.gz", ETCD_DOWNLOAD_URL, ETCD_VERSION))
-			nodes[j].ExecCmd(fmt.Sprintf("mv etcd-%v-linux-amd64/etcd* %vetcd/", ETCD_VERSION, nodes[j].HomeDir))
-			nodes[j].ExecCmd(fmt.Sprintf("rm -rf etcd-%v-linux-amd64*", ETCD_VERSION))
-			nodes[j].ExecCmd(fmt.Sprintf("sudo apt update ; sudo apt install -y python3 python3-pip"))
-			nodes[j].ExecCmd(fmt.Sprintf("pip3 install etcd3"))
-			nodes[j].ExecCmd(fmt.Sprintf("pip3 install protobuf==3.19.6"))
-			nodes[j].ExecCmd(fmt.Sprintf("rm -r %vbench/logs/", nodes[j].HomeDir))
-			nodes[j].ExecCmd(fmt.Sprintf("mkdir -p %vbench/logs/", nodes[j].HomeDir))
 			go nodes[j].ExecCmd(fmt.Sprintf("%vetcd/etcd --log-level error --name infra%v --initial-advertise-peer-urls http://%v:2380 --listen-peer-urls http://%v:2380 --listen-client-urls http://%v:2379,http://127.0.0.1:2379 --advertise-client-urls http://%v:2379 --initial-cluster-token etcd-cluster-1 --initial-cluster %v --initial-cluster-state new", nodes[j].HomeDir, j, nodes[j].Ip, nodes[j].Ip, nodes[j].Ip, nodes[j].Ip, CLUSTER))
-			nodes[j].Put_Load("protocols/etcd/assets/client.py", fmt.Sprintf("%vetcd/client.py", nodes[j].HomeDir))
 
 			time.Sleep(5 * time.Second)
 
