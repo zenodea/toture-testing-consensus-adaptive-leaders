@@ -7,3 +7,11 @@ ports: 10000
 process_name: replica
 pipeline_length: 10
 view_timeout_time: 1000000
+network_batch_time: 2
+replica_batch_size: 50
+replica_batch_time: 5000
+key_len: 8
+val_len: 8
+client_batch_size: 50
+client_batch_time: 500
+client_window: 1000
