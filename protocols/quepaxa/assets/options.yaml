@@ -9,3 +9,11 @@ pipeline_length: 1
 leader_timeout: 1000000
 server_mode: 0
 leader_mode: 0
+replica_batch_size: 50
+replica_batch_time: 5000
+key_len: 8
+request_propagation_time: 5
+val_len: 8
+client_batch_size: 50
+client_batch_time: 50
+client_window: 1000

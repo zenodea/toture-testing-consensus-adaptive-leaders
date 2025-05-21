@@ -133,6 +133,46 @@ func (ba *QuePaxa) Bootstrap(nodes []*common.Node, duration int, result chan uti
 		panic(err.Error() + " while parsing leader_mode")
 	}
 
+	replica_batch_size, ok := ba.options.Option["replica_batch_size"]
+	if !ok {
+		panic(err.Error() + " while parsing replica_batch_size")
+	}
+
+	replica_batch_time, ok := ba.options.Option["replica_batch_time"]
+	if !ok {
+		panic(err.Error() + " while parsing replica_batch_time")
+	}
+
+	key_len, ok := ba.options.Option["key_len"]
+	if !ok {
+		panic(err.Error() + " while parsing key_len")
+	}
+
+	request_propagation_time, ok := ba.options.Option["request_propagation_time"]
+	if !ok {
+		panic(err.Error() + " while parsing request_propagation_time")
+	}
+
+	val_len, ok := ba.options.Option["val_len"]
+	if !ok {
+		panic(err.Error() + " while parsing val_len")
+	}
+
+	client_batch_size, ok := ba.options.Option["client_batch_size"]
+	if !ok {
+		panic(err.Error() + " while parsing client_batch_size")
+	}
+
+	client_batch_time, ok := ba.options.Option["client_batch_time"]
+	if !ok {
+		panic(err.Error() + " while parsing client_batch_time")
+	}
+
+	client_window, ok := ba.options.Option["client_window"]
+	if !ok {
+		panic(err.Error() + " while parsing client_window")
+	}
+
 	var wg sync.WaitGroup
 	wg.Add(int(num_replicas + num_clients))
 	for i := 0; i < int(num_replicas+num_clients); i++ {
@@ -150,7 +190,7 @@ func (ba *QuePaxa) Bootstrap(nodes []*common.Node, duration int, result chan uti
 
 	for j := 0; j < int(num_replicas); j++ {
 		go func(i int) {
-			nodes[i].ExecCmd("." + replica_path + " --name " + strconv.Itoa(i+1) + " --config " + fmt.Sprintf("%vbench/ip_config.yaml", nodes[i].HomeDir) + " --leaderTimeout " + leader_timeout + " --pipelineLength " + pipeline_length + " --leaderMode " + leader_mode + " --serverMode " + server_mode)
+			nodes[i].ExecCmd("." + replica_path + " --name " + strconv.Itoa(i+1) + " --config " + fmt.Sprintf("%vbench/ip_config.yaml", nodes[i].HomeDir) + " --leaderTimeout " + leader_timeout + " --pipelineLength " + pipeline_length + " --leaderMode " + leader_mode + " --serverMode " + server_mode + " --batchSize " + replica_batch_size + " --batchTime " + replica_batch_time + " --keyLen " + key_len + " --requestPropagationTime " + request_propagation_time + " --valLen  " + val_len)
 		}(j)
 	}
 
@@ -168,7 +208,7 @@ func (ba *QuePaxa) Bootstrap(nodes []*common.Node, duration int, result chan uti
 	m := 1
 	for j := int(num_replicas); j < int(num_replicas+num_clients); j++ {
 		go func(i int, k int) {
-			clientOutputs[i-int(num_replicas)] = nodes[i].ExecCmd("." + ctl_path + " --name " + strconv.Itoa(50+k) + " --config " + fmt.Sprintf("%vbench/ip_config.yaml", nodes[i].HomeDir) + " --logFilePath " + fmt.Sprintf("%vbench/logs/", nodes[i].HomeDir) + " --requestType request --arrivalRate  " + arrival_rate + " --testDuration " + strconv.Itoa(duration) + " --batchTime 5000")
+			clientOutputs[i-int(num_replicas)] = nodes[i].ExecCmd("." + ctl_path + " --name " + strconv.Itoa(50+k) + " --config " + fmt.Sprintf("%vbench/ip_config.yaml", nodes[i].HomeDir) + " --logFilePath " + fmt.Sprintf("%vbench/logs/", nodes[i].HomeDir) + " --requestType request --arrivalRate  " + arrival_rate + " --testDuration " + strconv.Itoa(duration) + " --batchSize " + client_batch_size + " --batchTime " + client_batch_time + " --keyLen " + key_len + " --valLen  " + val_len + " --window " + client_window)
 		}(j, m)
 		m++
 	}
