@@ -87,6 +87,21 @@ func (ba *Rabia) Bootstrap(nodes []*common.Node, duration int, result chan util.
 		panic(err.Error() + " while parsing arrival_rate")
 	}
 
+	rabia_client_batch_size, ok := ba.options.Option["rabia_client_batch_size"]
+	if !ok {
+		panic(err.Error() + " while parsing rabia_client_batch_size")
+	}
+
+	rabia_proxy_batch_size, ok := ba.options.Option["rabia_proxy_batch_size"]
+	if !ok {
+		panic(err.Error() + " while parsing rabia_proxy_batch_size")
+	}
+
+	rabia_proxy_batch_timeout, ok := ba.options.Option["rabia_proxy_batch_timeout"]
+	if !ok {
+		panic(err.Error() + " while parsing rabia_proxy_batch_timeout")
+	}
+
 	var wg sync.WaitGroup
 	wg.Add(int(num_replicas + num_clients))
 	for i := 0; i < int(num_replicas+num_clients); i++ {
@@ -113,7 +128,9 @@ func (ba *Rabia) Bootstrap(nodes []*common.Node, duration int, result chan util.
 
 	for j := 0; j < int(num_replicas); j++ {
 		go func(i int) {
-			export_command := fmt.Sprintf("export LogFilePath=%vbench/logs/ RC_Ctrl=%v RC_Folder=%v/bench/ RC_LLevel=\"warn\" Rabia_ClosedLoop=false Rabia_NServers=%v Rabia_NFaulty=0 Rabia_NClients=%v Rabia_NConcurrency=1 Rabia_ClientBatchSize=50 Rabia_ClientTimeout=%v Rabia_ClientThinkTime=0 Rabia_ClientNRequests=0 Rabia_ClientArrivalRate=%v Rabia_ProxyBatchSize=50 Rabia_ProxyBatchTimeout=5 Rabia_NetworkBatchSize=0 Rabia_NetworkBatchTimeout=0 RC_Peers=%v Rabia_StorageMode=0", nodes[i].HomeDir, Controller, nodes[i].HomeDir, NServers, NClients, duration, arrival_rate, RC_Peers_N)
+			export_command := fmt.Sprintf(
+				"export LogFilePath=%vbench/logs/ RC_Ctrl=%v RC_Folder=%v/bench/ RC_LLevel=\"warn\" Rabia_ClosedLoop=false Rabia_NServers=%v Rabia_NFaulty=0 Rabia_NClients=%v Rabia_NConcurrency=1 Rabia_ClientBatchSize=%v Rabia_ClientTimeout=%v Rabia_ClientThinkTime=0 Rabia_ClientNRequests=0 Rabia_ClientArrivalRate=%v Rabia_ProxyBatchSize=%v Rabia_ProxyBatchTimeout=%v Rabia_NetworkBatchSize=0 Rabia_NetworkBatchTimeout=0 RC_Peers=%v Rabia_StorageMode=0",
+				nodes[i].HomeDir, Controller, nodes[i].HomeDir, NServers, NClients, rabia_client_batch_size, duration, arrival_rate, rabia_proxy_batch_size, rabia_proxy_batch_timeout, RC_Peers_N)
 			svr_export := fmt.Sprintf("export RC_Role=svr RC_Index=%v RC_SvrIp=\"%v\" RC_PPort=\"11000\" RC_NPort=\"10000\"", i, nodes[i].Ip)
 			nodes[i].ExecCmd(svr_export + ";" + export_command + ";" + "." + rabia_path)
 			if i == 0 {
@@ -131,7 +148,8 @@ func (ba *Rabia) Bootstrap(nodes []*common.Node, duration int, result chan util.
 	m := 0
 	for j := int(num_replicas); j < int(num_replicas+num_clients); j++ {
 		go func(i int, k int) {
-			export_command := fmt.Sprintf("export LogFilePath=%vbench/logs/ RC_Ctrl=%v RC_Folder=%v/bench/ RC_LLevel=\"warn\" Rabia_ClosedLoop=false Rabia_NServers=%v Rabia_NFaulty=0 Rabia_NClients=%v Rabia_NConcurrency=1 Rabia_ClientBatchSize=50 Rabia_ClientTimeout=%v Rabia_ClientThinkTime=0 Rabia_ClientNRequests=0 Rabia_ClientArrivalRate=%v Rabia_ProxyBatchSize=50 Rabia_ProxyBatchTimeout=5 Rabia_NetworkBatchSize=0 Rabia_NetworkBatchTimeout=0 RC_Peers=%v Rabia_StorageMode=0", nodes[i].HomeDir, Controller, nodes[i].HomeDir, NServers, NClients, duration, arrival_rate, RC_Peers_N)
+			export_command := fmt.Sprintf("export LogFilePath=%vbench/logs/ RC_Ctrl=%v RC_Folder=%v/bench/ RC_LLevel=\"warn\" Rabia_ClosedLoop=false Rabia_NServers=%v Rabia_NFaulty=0 Rabia_NClients=%v Rabia_NConcurrency=1 Rabia_ClientBatchSize=%v Rabia_ClientTimeout=%v Rabia_ClientThinkTime=0 Rabia_ClientNRequests=0 Rabia_ClientArrivalRate=%v Rabia_ProxyBatchSize=%v Rabia_ProxyBatchTimeout=%v Rabia_NetworkBatchSize=0 Rabia_NetworkBatchTimeout=0 RC_Peers=%v Rabia_StorageMode=0",
+				nodes[i].HomeDir, Controller, nodes[i].HomeDir, NServers, NClients, rabia_client_batch_size, duration, arrival_rate, rabia_proxy_batch_size, rabia_proxy_batch_timeout, RC_Peers_N)
 			cli_export := fmt.Sprintf("export RC_Role=cli RC_Index=%v RC_Proxy=\"%v:11000\"", k, nodes[int64(i)-num_replicas].Ip)
 			clientOutputs[i-int(num_replicas)] = nodes[i].ExecCmd(cli_export + ";" + export_command + ";" + "." + rabia_path)
 			if i == int(num_replicas) {
@@ -145,7 +163,8 @@ func (ba *Rabia) Bootstrap(nodes []*common.Node, duration int, result chan util.
 	fmt.Print("Started all the clients\n")
 
 	crl_export := fmt.Sprintf("export RC_Role=ctrl")
-	export_command := fmt.Sprintf("export LogFilePath=%vbench/logs/ RC_Ctrl=%v RC_Folder=%v/bench/ RC_LLevel=\"warn\" Rabia_ClosedLoop=false Rabia_NServers=%v Rabia_NFaulty=0 Rabia_NClients=%v Rabia_NConcurrency=1 Rabia_ClientBatchSize=50 Rabia_ClientTimeout=%v Rabia_ClientThinkTime=0 Rabia_ClientNRequests=0 Rabia_ClientArrivalRate=%v Rabia_ProxyBatchSize=50 Rabia_ProxyBatchTimeout=5 Rabia_NetworkBatchSize=0 Rabia_NetworkBatchTimeout=0 RC_Peers=%v Rabia_StorageMode=0", nodes[0].HomeDir, Controller, nodes[0].HomeDir, NServers, NClients, duration, arrival_rate, RC_Peers_N)
+	export_command := fmt.Sprintf("export LogFilePath=%vbench/logs/ RC_Ctrl=%v RC_Folder=%v/bench/ RC_LLevel=\"warn\" Rabia_ClosedLoop=false Rabia_NServers=%v Rabia_NFaulty=0 Rabia_NClients=%v Rabia_NConcurrency=1 Rabia_ClientBatchSize=%v Rabia_ClientTimeout=%v Rabia_ClientThinkTime=0 Rabia_ClientNRequests=0 Rabia_ClientArrivalRate=%v Rabia_ProxyBatchSize=%v Rabia_ProxyBatchTimeout=%v Rabia_NetworkBatchSize=0 Rabia_NetworkBatchTimeout=0 RC_Peers=%v Rabia_StorageMode=0",
+		nodes[0].HomeDir, Controller, nodes[0].HomeDir, NServers, NClients, rabia_client_batch_size, duration, arrival_rate, rabia_proxy_batch_size, rabia_proxy_batch_timeout, RC_Peers_N)
 	go nodes[0].ExecCmd(crl_export + ";" + export_command + ";" + "." + rabia_path)
 	fmt.Printf("export_command: %v\n\n\n", export_command)
 	fmt.Printf("crl_export: %v\n\n\n", crl_export)
