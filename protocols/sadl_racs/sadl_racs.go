@@ -180,7 +180,7 @@ func (ba *Sadl_Racs) Bootstrap(nodes []*common.Node, duration int, result chan u
 
 	for j := 0; j < int(num_replicas); j++ {
 		go func(i int) {
-			nodes[i].ExecCmd("." + replica_path + " --name " + strconv.Itoa(i+1) + " --consAlgo async " + " --viewTimeout " + view_timeout_time + " --logFilePath " + fmt.Sprintf("%vbench/logs/", nodes[i].HomeDir) + " --config " + fmt.Sprintf("%vbench/ip_config.yaml", nodes[i].HomeDir) + " --batchSize " + replica_batch_size + " --batchTime " + replica_batch_time + " --keyLen " + key_len + " --broadcastMode " + broadcast_mode + " --networkBatchTime " + network_batch_time + " --valLen " + val_len)
+			nodes[i].ExecCmd("." + replica_path + " --name " + strconv.Itoa(i+1) + " --consAlgo async " + " --viewTimeout " + view_timeout_time + " --logFilePath " + fmt.Sprintf("%vbench/logs/", nodes[i].HomeDir) + " --config " + fmt.Sprintf("%vbench/ip_config.yaml", nodes[i].HomeDir) + " --batchSize " + replica_batch_size + " --batchTime " + replica_batch_time + " --keyLen " + key_len + " --mode " + broadcast_mode + " --networkBatchTime " + network_batch_time + " --valLen " + val_len)
 		}(j)
 	}
 
