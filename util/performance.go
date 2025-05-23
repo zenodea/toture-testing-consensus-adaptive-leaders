@@ -35,14 +35,20 @@ func NewPerformanceWithOptions(options map[string]string) Performance {
 // retrieve the current CPU usage percentage.
 
 func GetCPUUsage() float64 {
-	percentages, err := cpu.Percent(time.Second, false)
+	percentages, err := cpu.Percent(time.Second, true) // true means per CPU core
 	if err != nil {
 		panic(err.Error())
 	}
 	if len(percentages) == 0 {
 		panic("no CPU usage data")
 	}
-	return percentages[0]
+
+	// Calculate the average CPU usage across all cores
+	var total float64
+	for _, p := range percentages {
+		total += p
+	}
+	return total / float64(len(percentages)) // Return the average
 }
 
 // retrieve the current memory usage percentage.
