@@ -48,7 +48,7 @@ func GetCPUUsage() float64 {
 	for _, p := range percentages {
 		total += p
 	}
-	return total / float64(len(percentages)) // Return the average
+	return total // Return the average
 }
 
 // retrieve the current memory usage percentage.
