@@ -106,3 +106,69 @@ func (a *RaftAttack2) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle 
 
 	fmt.Print("RaftAttack2 complete\n")
 }
+
+type RaftAttack3 struct {
+	logger *util.Logger
+}
+
+func NewRaftAttack3(logger *util.Logger) *RaftAttack3 {
+	return &RaftAttack3{
+		logger: logger,
+	}
+}
+
+func (a *RaftAttack3) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
+	fmt.Printf("Running RaftAttack3 leader is connected to a majority connected node for %v seconds\n", duration)
+	start_time := time.Now()
+
+	leaeder_node := oracle.GetTopNLeaders()[0]
+	connected_node := (leaeder_node + 1) % len(nodes)
+
+	fmt.Printf("attacking leader node %v\n", leaeder_node)
+
+	for j := 0; j < len(nodes); j++ {
+		if j == leaeder_node || j == connected_node {
+			continue
+		}
+		links[leaeder_node][j].SetLoss(100)
+		fmt.Printf("setting loss between %v and %v\n", leaeder_node, j)
+	}
+
+	fmt.Printf("attacking all nodes \n")
+
+	for i := 0; i < len(nodes); i++ {
+		for j := 0; j < len(nodes); j++ {
+			if i == j || i == leaeder_node || i == connected_node || j == connected_node {
+				continue
+			} else {
+				links[i][j].SetLoss(100)
+			}
+		}
+	}
+
+	for time.Now().Sub(start_time).Seconds() < float64(duration-10) {
+
+	}
+
+	fmt.Printf("resetting attack\n")
+
+	for j := 0; j < len(nodes); j++ {
+		if j == leaeder_node || j == connected_node {
+			continue
+		}
+		links[leaeder_node][j].SetLoss(0)
+		fmt.Printf("setting loss between %v and %v\n", leaeder_node, j)
+	}
+
+	for i := 0; i < len(nodes); i++ {
+		for j := 0; j < len(nodes); j++ {
+			if i == j || i == leaeder_node || i == connected_node || j == connected_node {
+				continue
+			} else {
+				links[i][j].SetLoss(0)
+			}
+		}
+	}
+
+	fmt.Print("RaftAttack3 complete\n")
+}
