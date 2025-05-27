@@ -227,3 +227,47 @@ func (a *RaftAttack4) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle 
 	}
 	fmt.Print("RaftAttack4 complete\n")
 }
+
+type RaftAttack5 struct {
+	logger *util.Logger
+}
+
+func NewRaftAttack5(logger *util.Logger) *RaftAttack5 {
+	return &RaftAttack5{
+		logger: logger,
+	}
+}
+
+func (a *RaftAttack5) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
+
+	fmt.Printf("Running RaftAttack5 leader high delay but no view changes for %v seconds\n", duration)
+
+	start_time := time.Now()
+
+	leaeder_node := oracle.GetTopNLeaders()[0]
+
+	fmt.Printf("attacking leader node %v\n", leaeder_node)
+
+	for j := 0; j < len(nodes); j++ {
+		if j == leaeder_node {
+			continue
+		}
+		links[leaeder_node][j].SetDelay(100)
+		fmt.Printf("setting delay between %v and %v\n", leaeder_node, j)
+	}
+
+	for time.Now().Sub(start_time).Seconds() < float64(duration-10) {
+		fmt.Printf("The leader order is %v\n", oracle.GetTopNLeaders())
+		time.Sleep(500 * time.Millisecond)
+	}
+
+	for j := 0; j < len(nodes); j++ {
+		if j == leaeder_node {
+			continue
+		}
+		links[leaeder_node][j].SetDelay(0)
+		fmt.Printf("setting delay between %v and %v\n", leaeder_node, j)
+	}
+
+	fmt.Print("RaftAttack5 complete\n")
+}
