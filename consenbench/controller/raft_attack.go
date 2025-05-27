@@ -271,3 +271,45 @@ func (a *RaftAttack5) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle 
 
 	fmt.Print("RaftAttack5 complete\n")
 }
+
+type RaftAttack6 struct {
+	logger *util.Logger
+}
+
+func NewRaftAttack6(logger *util.Logger) *RaftAttack6 {
+	return &RaftAttack6{
+		logger: logger,
+	}
+}
+
+func (a *RaftAttack6) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
+
+	fmt.Printf("Running RaftAttack6 all links have close to view timeout delay for %v seconds\n", duration)
+
+	start_time := time.Now()
+
+	for i := 0; i < len(nodes); i++ {
+		for j := 0; j < len(nodes); j++ {
+			if i == j {
+				continue
+			}
+			links[i][j].SetDelay(450)
+		}
+	}
+
+	for time.Now().Sub(start_time).Seconds() < float64(duration-10) {
+		fmt.Printf("The leader order is %v\n", oracle.GetTopNLeaders())
+		time.Sleep(500 * time.Millisecond)
+	}
+
+	for i := 0; i < len(nodes); i++ {
+		for j := 0; j < len(nodes); j++ {
+			if i == j {
+				continue
+			}
+			links[i][j].SetDelay(0)
+		}
+	}
+
+	fmt.Print("RaftAttack6 complete\n")
+}
