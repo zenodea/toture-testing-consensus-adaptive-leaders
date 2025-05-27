@@ -313,3 +313,29 @@ func (a *RaftAttack6) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle 
 
 	fmt.Print("RaftAttack6 complete\n")
 }
+
+type RaftAttack7 struct {
+	logger *util.Logger
+}
+
+func NewRaftAttack7(logger *util.Logger) *RaftAttack7 {
+	return &RaftAttack7{
+		logger: logger,
+	}
+}
+
+func (a *RaftAttack7) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
+
+	fmt.Printf("Running RaftAttack7 one straggler for %v seconds\n", duration)
+
+	start_time := time.Now()
+
+	for time.Now().Sub(start_time).Seconds() < float64(duration-10) {
+		fmt.Printf("The leader order is %v\n", oracle.GetTopNLeaders())
+		nodes[0].Pause()
+		time.Sleep(2 * time.Second)
+		nodes[0].Continue()
+	}
+
+	fmt.Print("RaftAttack7 complete\n")
+}
