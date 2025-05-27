@@ -341,3 +341,64 @@ func (a *RaftAttack7) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle 
 
 	fmt.Print("RaftAttack7 complete\n")
 }
+
+type RaftAttack8 struct {
+	logger *util.Logger
+}
+
+func NewRaftAttack8(logger *util.Logger) *RaftAttack8 {
+	return &RaftAttack8{
+		logger: logger,
+	}
+}
+
+func (a *RaftAttack8) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
+
+	fmt.Printf("Running RaftAttack8 straggler in closest majority for %v seconds\n", duration)
+
+	start_time := time.Now()
+
+	n := len(nodes)
+	m := n/2 + 1
+
+	for i := 0; i < len(nodes); i++ {
+		for j := 0; j < len(nodes); j++ {
+			if i == j {
+				continue
+			}
+			if i < m && j < m {
+				continue
+			}
+			if i >= m && j >= m {
+				continue
+			}
+			links[i][j].SetDelay(50)
+		}
+	}
+	// run for just 10 seconds
+
+	for time.Now().Sub(start_time).Seconds() < float64(10) {
+		fmt.Printf("The leader order is %v\n", oracle.GetTopNLeaders())
+		time.Sleep(500 * time.Millisecond)
+	}
+
+	nodes[0].Pause() // straggler in majority
+
+	for time.Now().Sub(start_time).Seconds() < float64(duration-20) {
+		fmt.Printf("The leader order is %v\n", oracle.GetTopNLeaders())
+		time.Sleep(500 * time.Millisecond)
+	}
+
+	nodes[0].Continue()
+
+	for i := 0; i < len(nodes); i++ {
+		for j := 0; j < len(nodes); j++ {
+			if i == j {
+				continue
+			}
+			links[i][j].SetDelay(0)
+		}
+	}
+
+	fmt.Print("RaftAttack8 complete\n")
+}
