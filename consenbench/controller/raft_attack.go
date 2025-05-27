@@ -389,9 +389,9 @@ func (a *RaftAttack8) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle 
 
 	for time.Now().Sub(start_time).Seconds() < float64(duration-20) {
 		fmt.Printf("The leader order is %v\n", oracle.GetTopNLeaders())
-		//nodes[0].Pause() // straggler in majority
+		nodes[0].Pause() // straggler in majority
 		time.Sleep(1 * time.Second)
-		//nodes[0].Continue() // straggler in majority
+		nodes[0].Continue() // straggler in majority
 	}
 
 	nodes[0].Continue()
