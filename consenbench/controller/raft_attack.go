@@ -142,12 +142,14 @@ func (a *RaftAttack3) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle 
 				continue
 			} else {
 				links[i][j].SetLoss(100)
+				fmt.Printf("setting loss between %v and %v\n", i, j)
 			}
 		}
 	}
 
 	for time.Now().Sub(start_time).Seconds() < float64(duration-10) {
-
+		fmt.Printf("The leader order is %v\n", oracle.GetTopNLeaders())
+		time.Sleep(500 * time.Millisecond)
 	}
 
 	fmt.Printf("resetting attack\n")
@@ -166,6 +168,7 @@ func (a *RaftAttack3) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle 
 				continue
 			} else {
 				links[i][j].SetLoss(0)
+				fmt.Printf("setting loss between %v and %v\n", i, j)
 			}
 		}
 	}
