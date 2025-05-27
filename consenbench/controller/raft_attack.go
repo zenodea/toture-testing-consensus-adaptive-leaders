@@ -333,7 +333,7 @@ func (a *RaftAttack7) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle 
 	for time.Now().Sub(start_time).Seconds() < float64(duration-10) {
 		fmt.Printf("The leader order is %v\n", oracle.GetTopNLeaders())
 		nodes[0].Pause()
-		time.Sleep(2 * time.Second)
+		time.Sleep(5 * time.Second)
 		nodes[0].Continue()
 	}
 
