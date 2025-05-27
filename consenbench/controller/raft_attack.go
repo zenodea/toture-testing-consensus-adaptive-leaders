@@ -17,10 +17,10 @@ func NewRaftAttack1(logger *util.Logger) *RaftAttack1 {
 }
 
 func (a *RaftAttack1) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
-	fmt.Printf("Running RaftAttack1 leader node parition simplex  for %v seconds\n", duration)
+	fmt.Printf("Running RaftAttack1 continous leader node parition simplex  for %v seconds\n", duration)
 	start_time := time.Now()
 
-	for time.Now().Sub(start_time).Seconds() < float64(duration-15) {
+	for time.Now().Sub(start_time).Seconds() < float64(duration-10) {
 		// select the leader
 		node_id := oracle.GetTopNLeaders()[0]
 		// set all outgoing links to of leader to high loss
@@ -54,4 +54,55 @@ func (a *RaftAttack1) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle 
 	}
 
 	fmt.Print("RaftAttack1 complete\n")
+}
+
+type RaftAttack2 struct {
+	logger *util.Logger
+}
+
+func NewRaftAttack2(logger *util.Logger) *RaftAttack2 {
+	return &RaftAttack2{
+		logger: logger,
+	}
+}
+
+func (a *RaftAttack2) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
+	fmt.Printf("Running RaftAttack2 once leader node parition simplex  for %v seconds\n", duration)
+	start_time := time.Now()
+
+	node_id := oracle.GetTopNLeaders()[0]
+	// set all outgoing links to of leader to high loss
+	fmt.Printf("attacking leader node %v\n", node_id)
+	for i := 0; i < len(nodes); i++ {
+		if i == node_id {
+			for j := 0; j < len(nodes); j++ {
+				if i == j {
+					continue
+				}
+				links[i][j].SetLoss(100)
+				fmt.Printf("setting loss between %v and %v\n", i, j)
+			}
+		}
+	}
+	time.Sleep(2 * time.Second)
+
+	fmt.Printf("resetting attack\n")
+
+	for i := 0; i < len(nodes); i++ {
+		if i == node_id {
+			for j := 0; j < len(nodes); j++ {
+				if i == j {
+					continue
+				}
+				links[i][j].SetLoss(0)
+				fmt.Printf("resetting loss between %v and %v\n", i, j)
+			}
+		}
+	}
+
+	for time.Now().Sub(start_time).Seconds() < float64(duration-10) {
+
+	}
+
+	fmt.Print("RaftAttack2 complete\n")
 }

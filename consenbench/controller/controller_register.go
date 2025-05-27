@@ -82,6 +82,8 @@ func (c *Controller) GetAttackImpl() Attack {
 		return NewDriftAttack_3(c.logger)
 	case "raft_1":
 		return NewRaftAttack1(c.logger)
+	case "raft_2":
+		return NewRaftAttack2(c.logger)
 	default:
 		panic("Unknown attack: " + c.Options.Attack)
 	}
