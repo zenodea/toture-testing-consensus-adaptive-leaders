@@ -175,3 +175,55 @@ func (a *RaftAttack3) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle 
 
 	fmt.Print("RaftAttack3 complete\n")
 }
+
+type RaftAttack4 struct {
+	logger *util.Logger
+}
+
+func NewRaftAttack4(logger *util.Logger) *RaftAttack4 {
+	return &RaftAttack4{
+		logger: logger,
+	}
+}
+
+func (a *RaftAttack4) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
+
+	fmt.Printf("Running RaftAttack4 in each epoch only one quorum connected node for %v seconds\n", duration)
+
+	start_time := time.Now()
+	good_node := 0
+
+	for time.Now().Sub(start_time).Seconds() < float64(duration-10) {
+
+		good_node = (good_node + 1) % len(nodes)
+
+		fmt.Printf("attacking all nodes except %v \n", good_node)
+
+		for i := 0; i < len(nodes); i++ {
+			for j := 0; j < len(nodes); j++ {
+				if i == j || i == good_node || j == good_node {
+					continue
+				} else {
+					links[i][j].SetLoss(100)
+					fmt.Printf("setting loss between %v and %v\n", i, j)
+				}
+			}
+		}
+
+		time.Sleep(2 * time.Second)
+
+		fmt.Printf("resetting attack\n")
+
+		for i := 0; i < len(nodes); i++ {
+			for j := 0; j < len(nodes); j++ {
+				if i == j || i == good_node || j == good_node {
+					continue
+				} else {
+					links[i][j].SetLoss(0)
+					fmt.Printf("setting loss between %v and %v\n", i, j)
+				}
+			}
+		}
+	}
+	fmt.Print("RaftAttack4 complete\n")
+}
