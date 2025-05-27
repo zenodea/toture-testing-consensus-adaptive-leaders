@@ -326,15 +326,17 @@ func NewRaftAttack7(logger *util.Logger) *RaftAttack7 {
 
 func (a *RaftAttack7) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
 
-	fmt.Printf("Running RaftAttack7 one straggler for %v seconds\n", duration)
+	fmt.Printf("Running RaftAttack7 two stragglers for %v seconds\n", duration)
 
 	start_time := time.Now()
 
 	for time.Now().Sub(start_time).Seconds() < float64(duration-10) {
 		fmt.Printf("The leader order is %v\n", oracle.GetTopNLeaders())
 		nodes[0].Pause()
+		nodes[1].Pause()
 		time.Sleep(5 * time.Second)
 		nodes[0].Continue()
+		nodes[1].Continue()
 	}
 
 	fmt.Print("RaftAttack7 complete\n")
