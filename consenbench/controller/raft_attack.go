@@ -372,11 +372,11 @@ func (a *RaftAttack8) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle 
 			if i >= m && j >= m {
 				continue
 			}
-			links[i][j].SetDelay(50)
+			links[i][j].SetDelay(10)
 		}
 	}
 
-	fmt.Printf("majority and minority set")
+	fmt.Printf("majority and minority set\n")
 
 	// run for just 10 seconds
 
@@ -385,13 +385,13 @@ func (a *RaftAttack8) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle 
 		time.Sleep(500 * time.Millisecond)
 	}
 
-	fmt.Printf("Setting node 0 straggler")
+	fmt.Printf("Setting node 0 straggler\n")
 
 	for time.Now().Sub(start_time).Seconds() < float64(duration-20) {
 		fmt.Printf("The leader order is %v\n", oracle.GetTopNLeaders())
-		nodes[0].Pause() // straggler in majority
+		//nodes[0].Pause() // straggler in majority
 		time.Sleep(1 * time.Second)
-		nodes[0].Continue() // straggler in majority
+		//nodes[0].Continue() // straggler in majority
 	}
 
 	nodes[0].Continue()
