@@ -407,3 +407,38 @@ func (a *RaftAttack8) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle 
 
 	fmt.Print("RaftAttack8 complete\n")
 }
+
+type RaftAttack9 struct {
+	logger *util.Logger
+}
+
+func NewRaftAttack9(logger *util.Logger) *RaftAttack9 {
+	return &RaftAttack9{
+		logger: logger,
+	}
+}
+
+func (a *RaftAttack9) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
+
+	fmt.Printf("Running RaftAttack9 leader crash for %v seconds\n", duration)
+
+	start_time := time.Now()
+
+	// run for just 10 seconds
+
+	for time.Now().Sub(start_time).Seconds() < float64(10) {
+		fmt.Printf("The leader order is %v\n", oracle.GetTopNLeaders())
+		time.Sleep(500 * time.Millisecond)
+	}
+
+	fmt.Printf("killing leader\n")
+
+	nodes[oracle.GetTopNLeaders()[0]].Kill()
+
+	for time.Now().Sub(start_time).Seconds() < float64(duration-20) {
+		fmt.Printf("The leader order is %v\n", oracle.GetTopNLeaders())
+		time.Sleep(500 * time.Millisecond)
+	}
+
+	fmt.Print("RaftAttack9 complete\n")
+}
