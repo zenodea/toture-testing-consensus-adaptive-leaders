@@ -54,8 +54,10 @@ func (ba *ETCD) CopyConsensus(nodes []*common.Node) error {
 			nodes[j].ExecCmd(fmt.Sprintf("mv etcd-%v-linux-amd64/etcd* %vetcd/", ETCD_VERSION, nodes[j].HomeDir))
 			nodes[j].ExecCmd(fmt.Sprintf("rm -rf etcd-%v-linux-amd64*", ETCD_VERSION))
 			nodes[j].Put_Load("protocols/etcd/assets/client.py", fmt.Sprintf("%vetcd/client.py", nodes[j].HomeDir))
+			wg.Done()
 		}(i)
 	}
+	wg.Wait()
 	return nil
 }
 
