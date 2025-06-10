@@ -51,7 +51,8 @@ plt.ylabel('Throughput (requests/sec)')
 plt.title('Time vs Throughput')
 plt.grid(True)
 plt.tight_layout()
-plt.savefig(OUTPUT_FILE_ROOT + "_throughput.pdf")
+plt.savefig(OUTPUT_FILE_ROOT + "throughput.pdf")
+print("Generated throughput plot.")
 
 # Plot latency
 plt.figure(figsize=(10, 5))
@@ -61,7 +62,5 @@ plt.ylabel('Latency (ms)')
 plt.title('Time vs Latency')
 plt.grid(True)
 plt.tight_layout()
-plt.savefig(OUTPUT_FILE_ROOT + "_latency.pdf")
-
-
-
+plt.savefig(OUTPUT_FILE_ROOT + "latency.pdf")
+print("Generated latency plot.")
