@@ -1,5 +1,5 @@
 num_replicas: 8
-load: 1000
+load: 100000
 ports: 1500
 number_of_leaders: 1
 transaction_size: 512
