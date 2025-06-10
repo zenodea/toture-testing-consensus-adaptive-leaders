@@ -177,7 +177,7 @@ func (ba *ZooKeeper) Bootstrap(nodes []*common.Node, duration int, result chan u
 	wg2.Wait()
 	fmt.Println("Downloaded all the zoo keepeter client logs")
 
-	sshCmd = exec.Command("python3", []string{"protocols/zoo_keeper/assets/summary.py", filepath.Join(homeDir, "toture-testing-consensus/logs/"), filepath.Join(homeDir, "toture-testing-consensus/logs/throughput.log")}...)
+	sshCmd = exec.Command("python3", []string{"protocols/zoo_keeper/assets/summary.py", filepath.Join(homeDir, "toture-testing-consensus/logs/"), filepath.Join(homeDir, "toture-testing-consensus/logs/")}...)
 	output, err = sshCmd.CombinedOutput()
 	if err != nil {
 		print("error while running summary " + err.Error() + " " + string(output) + "\n")
