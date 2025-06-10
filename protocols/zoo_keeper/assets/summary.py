@@ -1,6 +1,8 @@
 import glob
 import os
 import sys
+import matplotlib.pyplot as plt
+from collections import defaultdict
 
 INPUT_DIR = sys.argv[1]
 OUTPUT_FILE = sys.argv[2]
@@ -26,15 +28,39 @@ print("Min Start time: " + str(min_start_time) + "\n")
 max_end_time = max(end for _, end in all_requests)
 test_time = int(max_end_time - min_start_time)
 
-print("throughput: " + str(len(all_requests) / test_time) + "\n")
+# Throughput: count of requests per second
+throughput_by_sec = defaultdict(int)
+latency_by_sec = defaultdict(list)
 
-binned_requests = [0] * (test_time + 1)
+for start, end in all_requests:
+    sec = int(end - min_start_time)
+    latency = (end - start) * 1000  # convert to milliseconds
+    throughput_by_sec[sec] += 1
+    latency_by_sec[sec].append(latency)
 
-for _, end in all_requests:
-    bin_index = int(end - min_start_time)
-    if 0 <= bin_index and bin_index < len(binned_requests):
-        binned_requests[bin_index] += 1
+# Sort by time
+time_series = sorted(throughput_by_sec.keys())
+throughput_values = [throughput_by_sec[t] for t in time_series]
+avg_latency_values = [sum(latency_by_sec[t]) / len(latency_by_sec[t]) for t in time_series]
 
-with open(OUTPUT_FILE, "w") as output:
-    for second, count in enumerate(binned_requests):
-        output.write(f"{second}, {count}\n")
+# Plot throughput
+plt.figure(figsize=(10, 5))
+plt.plot(time_series, throughput_values, marker='o', label='Throughput (req/s)')
+plt.xlabel('Time (s)')
+plt.ylabel('Throughput (requests/sec)')
+plt.title('Time vs Throughput')
+plt.grid(True)
+plt.tight_layout()
+plt.savefig(OUTPUT_FILE + "/throughput.pdf")
+print("Generated throughput plot in " + OUTPUT_FILE + "/throughput.pdf")
+
+# Plot latency
+plt.figure(figsize=(10, 5))
+plt.plot(time_series, avg_latency_values, marker='o', color='orange', label='Avg Latency (ms)')
+plt.xlabel('Time (s)')
+plt.ylabel('Latency (ms)')
+plt.title('Time vs Latency')
+plt.grid(True)
+plt.tight_layout()
+plt.savefig(OUTPUT_FILE + "/latency.pdf")
+print("Generated latency plot in " + OUTPUT_FILE + "/latency.pdf")
