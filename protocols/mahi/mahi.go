@@ -207,8 +207,10 @@ func (ba *Mahi) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 
 	command := "protocols/mahi/assets/performance_graph.py"
 	outputs := []string{}
+	files := []string{}
 	for j := 0; j < int(num_replicas); j++ {
 		logFile := filepath.Join(homeDir, fmt.Sprintf("toture-testing-consensus/logs/client-times-%v.txt", j))
+		files = append(files, logFile)
 
 		sshCmd = exec.Command("python3", []string{command, "mahi-" + strconv.Itoa(j), logFile}...)
 		output, err = sshCmd.CombinedOutput()
@@ -218,6 +220,14 @@ func (ba *Mahi) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 			print("Mahi Performance graph generated successfully\n" + string(output) + "\n")
 			outputs = append(outputs, string(output))
 		}
+	}
+
+	sshCmd = exec.Command("python3", append([]string{command, "mahi"}, files...)...)
+	output, err = sshCmd.CombinedOutput()
+	if err != nil {
+		print("Error while generating performance graph " + err.Error() + " " + string(output) + "\n")
+	} else {
+		print("Mahi Performance graph generated successfully\n" + string(output) + "\n")
 	}
 
 	fmt.Printf("Mahi Mahi Performance:\n %v\n", outputs)
