@@ -158,7 +158,7 @@ func (ba *Mahi) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 
 	bootstrap_complete <- true
 
-	time.Sleep(time.Duration(duration) * time.Second)
+	time.Sleep(time.Duration(3*duration) * time.Second)
 
 	var wg2 sync.WaitGroup
 	wg2.Add(int(num_replicas))
