@@ -197,8 +197,10 @@ func (ba *Mysticeti) Bootstrap(nodes []*common.Node, duration int, result chan u
 
 	command := "protocols/mysticeti/assets/performance_graph.py"
 	outputs := []string{}
+	logFiles := []string{}
 	for j := 0; j < int(num_replicas); j++ {
 		logFile := filepath.Join(homeDir, fmt.Sprintf("toture-testing-consensus/logs/client-times-%v.txt", j))
+		logFiles = append(logFiles, logFile)
 
 		sshCmd = exec.Command("python3", []string{command, "mysticeti-" + strconv.Itoa(j), logFile}...)
 		output, err = sshCmd.CombinedOutput()
@@ -208,6 +210,14 @@ func (ba *Mysticeti) Bootstrap(nodes []*common.Node, duration int, result chan u
 			print("Mysticeti Performance graph generated successfully\n" + string(output) + "\n")
 			outputs = append(outputs, string(output))
 		}
+	}
+
+	sshCmd = exec.Command("python3", append([]string{command, "mysticeti"}, logFiles...)...)
+	output, err = sshCmd.CombinedOutput()
+	if err != nil {
+		print("Error while generating performance graph " + err.Error() + " " + string(output) + "\n")
+	} else {
+		print("Mysticeti Performance graph generated successfully\n" + string(output) + "\n")
 	}
 
 	fmt.Printf("Mystecity Mystecity Performance:\n %v\n", outputs)
