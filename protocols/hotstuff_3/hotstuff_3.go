@@ -83,7 +83,7 @@ func (ba *Hotstuff_3) Bootstrap(nodes []*common.Node, duration int, result chan 
 			panic(fmt.Sprintf("Failed to run %v: %v\n%v", cmd, err, string(output)))
 		} else {
 			// print output
-			fmt.Printf("Fab install Output: %s\n", output)
+			fmt.Printf("Fab remote Output: %s\n", output)
 			wg.Done()
 		}
 	}()
