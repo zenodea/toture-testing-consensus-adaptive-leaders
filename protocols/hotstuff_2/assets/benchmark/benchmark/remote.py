@@ -61,15 +61,6 @@ class Bench:
     def install(self):
         Print.info("Installing rust and cloning the repo...")
         cmd = [
-            "sudo apt-get update",
-            "sudo apt-get -y upgrade",
-            "sudo apt-get -y autoremove",
-            "sudo apt-get -y install build-essential",
-            "sudo apt-get -y install cmake",
-            'curl --proto "=https" --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y',
-            "source $HOME/.cargo/env",
-            "rustup default stable",
-            "sudo apt-get install -y clang",
             "sudo rm -r hotstuff",
             f"(git clone {self.settings.repo_url} || (cd {self.settings.repo_name} ; git pull))",
             f"(cd {self.settings.repo_name} && git checkout -f {self.settings.branch})",
