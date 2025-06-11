@@ -1,6 +1,7 @@
 import sys
-import matplotlib.pyplot as plt
 from collections import defaultdict
+
+import matplotlib.pyplot as plt
 
 
 def extract_start_end_pairs(filenames):
@@ -25,7 +26,7 @@ def extract_start_end_pairs(filenames):
     return start_end_pairs
 
 
-def calculate_throughput_latency(start_end_pairs):
+def calculate_throughput_latency(start_end_pairs, n):
     """Calculate per second throughput and average latency from start and end times."""
     throughput = defaultdict(int)
     latency_sum = defaultdict(int)
@@ -50,24 +51,24 @@ def calculate_throughput_latency(start_end_pairs):
     total_requests = sum(throughput.values())
     total_latency = sum(latency_sum.values())
     total_seconds = len(throughput)
-    overall_throughput = total_requests / total_seconds
+    overall_throughput = total_requests / total_seconds / n
     overall_average_latency = total_latency / total_requests / 1000
     print(f"{overall_throughput:.2f} {overall_average_latency:.2f} ")
 
     return throughput, average_latency
 
 
-def plot_throughput(throughput):
+def plot_throughput(throughput, n):
     """Plot per second throughput."""
     seconds = sorted(throughput.keys())
-    throughput_values = [throughput[sec] for sec in seconds]
+    throughput_values = [throughput[sec] / n for sec in seconds]
 
     plt.figure(figsize=(10, 6))
     plt.plot(seconds, throughput_values, marker='o')
     plt.xlabel('Seconds')
     plt.ylabel('Requests per second')
     plt.grid(True)
-    plt.savefig("logs/"+sys.argv[1]+"-throughput.pdf")
+    plt.savefig("logs/" + sys.argv[1] + "-throughput.pdf")
 
 
 def plot_latency(average_latency):
@@ -80,7 +81,7 @@ def plot_latency(average_latency):
     plt.xlabel('Seconds')
     plt.ylabel('Average Latency (ms)')
     plt.grid(True)
-    plt.savefig("logs/"+sys.argv[1]+"-latency.pdf")
+    plt.savefig("logs/" + sys.argv[1] + "-latency.pdf")
 
 
 def main():
@@ -94,9 +95,9 @@ def main():
         print("No valid data found.")
         return
 
-    throughput, average_latency = calculate_throughput_latency(start_end_pairs)
+    throughput, average_latency = calculate_throughput_latency(start_end_pairs, len(filenames))
 
-    plot_throughput(throughput)
+    plot_throughput(throughput, len(filenames))
     plot_latency(average_latency)
 
 
