@@ -247,25 +247,36 @@ class LogParser:
         return cls(clients, nodes, faults)
 
     def plot_time_series(self, output_prefix='hotstuff_2'):
-        # --- 1. Throughput: use all committed transactions (BPS or TPS) ---
+        import matplotlib.pyplot as plt
+
+        # --- 1. Throughput: use committed transactions per second ---
         commit_times = list(self.commits.values())
         commit_times.sort()
 
-        # Bin into 1-second intervals
-        window = 1.0  # 1 second
         if not commit_times:
             print("No commit data available.")
             return
 
+        window = 1.0  # seconds
+        tx_size = self.size[0]  # from client log: bytes per transaction
+
+        # Convert batch sizes to transaction counts
+        tx_counts = {
+            batch_id: batch_size // tx_size
+            for batch_id, batch_size in self.sizes.items()
+        }
+
         start_time = int(min(commit_times))
         end_time = int(max(commit_times)) + 1
+        num_bins = end_time - start_time
 
-        tps_times = list(range(start_time, end_time))
-        tps_values = [0] * len(tps_times)
+        tps_times = [start_time + i for i in range(num_bins)]
+        tps_values = [0] * num_bins
 
-        for ts in commit_times:
-            bin_index = int((ts - start_time) // window)
-            tps_values[bin_index] += 1
+        for batch_id, ts in self.commits.items():
+            if batch_id in tx_counts:
+                bin_index = int(ts) - start_time
+                tps_values[bin_index] += tx_counts[batch_id]
 
         # --- 2. Latency: only from sampled transactions ---
         latency_pairs = []
@@ -316,4 +327,5 @@ class LogParser:
         plt.legend()
         plt.tight_layout()
         plt.savefig(f"{output_prefix}_latency.pdf")
+
 
