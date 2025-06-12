@@ -315,7 +315,7 @@ class LogParser:
         plt.grid(True)
         plt.legend()
         plt.tight_layout()
-        plt.savefig(f"{output_prefix}_throughput.pdf")
+        plt.savefig(f"../../../../logs/{output_prefix}_throughput.pdf")
 
         # --- Plot latency ---
         plt.figure()
@@ -326,6 +326,6 @@ class LogParser:
         plt.grid(True)
         plt.legend()
         plt.tight_layout()
-        plt.savefig(f"{output_prefix}_latency.pdf")
+        plt.savefig(f"../../../../logs/{output_prefix}_latency.pdf")
 
 
