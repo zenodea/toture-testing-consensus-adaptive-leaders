@@ -16,7 +16,6 @@ It allows plugging in different consensus algorithms and network topologies to t
 ## Supported consensus algorithms
 
 - Raft
-- DEDIS Paxos and Efficient Paxos
 - Rabia
 - RACS
 - SADL-RACS
