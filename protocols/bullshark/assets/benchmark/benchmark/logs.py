@@ -238,6 +238,7 @@ class LogParser:
         assert isinstance(filename, str)
         with open(filename, 'a') as f:
             f.write(self.result())
+        self.plot_time_series()
 
     @classmethod
     def process(cls, directory, faults=0):
@@ -257,3 +258,86 @@ class LogParser:
                 workers += [f.read()]
 
         return cls(clients, primaries, workers, faults=faults)
+
+    def plot_time_series(self, output_prefix='bullshark'):
+        import matplotlib.pyplot as plt
+
+        # --- 1. Throughput per second (based on committed batches) ---
+        if not self.commits or not self.sizes:
+            print("No commit or size data available.")
+            return
+
+        tx_size = self.size[0]
+        commit_times = list(self.commits.values())
+        commit_times.sort()
+
+        # Convert batch sizes to transaction counts
+        tx_counts = {
+            batch_id: self.sizes[batch_id] // tx_size
+            for batch_id in self.commits
+            if batch_id in self.sizes
+        }
+
+        start_time = int(min(commit_times))
+        end_time = int(max(commit_times)) + 1
+        num_bins = end_time - start_time
+
+        tps_times = [i for i in range(num_bins)]  # start from 0
+        tps_values = [0] * num_bins
+
+        for batch_id, ts in self.commits.items():
+            if batch_id in tx_counts:
+                bin_index = int(ts) - start_time
+                if 0 <= bin_index < num_bins:
+                    tps_values[bin_index] += tx_counts[batch_id]
+
+        # --- 2. Latency per second (based on sampled transactions) ---
+        latency_pairs = []
+        for sent, received in zip(self.sent_samples, self.received_samples):
+            for tx_id, batch_id in received.items():
+                if batch_id in self.commits and tx_id in sent:
+                    latency_pairs.append((sent[tx_id], self.commits[batch_id]))
+
+        latency_times = []
+        latency_values = []
+
+        if latency_pairs:
+            latency_pairs.sort()
+            l_start_time = int(min(s for s, _ in latency_pairs))
+            l_end_time = int(max(s for s, _ in latency_pairs)) + 1
+            l_num_bins = l_end_time - l_start_time
+
+            latency_bins = [[] for _ in range(l_num_bins)]
+
+            for s, e in latency_pairs:
+                bin_index = int(s) - l_start_time
+                if 0 <= bin_index < l_num_bins:
+                    latency_bins[bin_index].append((e - s) * 1000)  # ms
+
+            for i in range(l_num_bins):
+                latency_times.append(i)
+                values = latency_bins[i]
+                avg = sum(values) / len(values) if values else 0
+                latency_values.append(avg)
+
+        # --- Plot throughput ---
+        plt.figure()
+        plt.plot(tps_times, tps_values, label="Throughput (TPS)", color='blue')
+        plt.xlabel("Time (s)")
+        plt.ylabel("Transactions/sec")
+        plt.title("Time vs Throughput")
+        plt.grid(True)
+        plt.legend()
+        plt.tight_layout()
+        plt.savefig(f"../../../../logs/{output_prefix}_throughput.pdf")
+
+        # --- Plot latency ---
+        plt.figure()
+        plt.plot(latency_times, latency_values, label="Latency (ms)", color='orange')
+        plt.xlabel("Time (s)")
+        plt.ylabel("Latency (ms)")
+        plt.title("Time vs Latency")
+        plt.grid(True)
+        plt.legend()
+        plt.tight_layout()
+        plt.savefig(f"../../../../logs/{output_prefix}_latency.pdf")
