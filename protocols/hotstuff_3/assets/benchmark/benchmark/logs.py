@@ -4,6 +4,7 @@ from multiprocessing import Pool
 from os.path import join
 from re import findall, search
 from statistics import mean
+import matplotlib.pyplot as plt
 
 from benchmark.utils import Print
 
@@ -208,6 +209,7 @@ class LogParser:
         assert isinstance(filename, str)
         with open(filename, 'a') as f:
             f.write(self.result())
+            self.plot_time_series()
 
     @classmethod
     def process(cls, directory, faults=0):
@@ -223,3 +225,85 @@ class LogParser:
                 nodes += [f.read()]
 
         return cls(clients, nodes, faults=faults)
+
+    def plot_time_series(self, output_prefix='hotstuff_2'):
+        import matplotlib.pyplot as plt
+
+        # --- 1. Throughput: use committed transactions per second ---
+        commit_times = list(self.commits.values())
+        commit_times.sort()
+
+        if not commit_times:
+            print("No commit data available.")
+            return
+
+        window = 1.0  # seconds
+        tx_size = self.size[0]  # from client log: bytes per transaction
+
+        # Convert batch sizes to transaction counts
+        tx_counts = {
+            batch_id: batch_size // tx_size
+            for batch_id, batch_size in self.sizes.items()
+        }
+
+        start_time = int(min(commit_times))
+        end_time = int(max(commit_times)) + 1
+        num_bins = end_time - start_time
+
+        tps_times = [i for i in range(num_bins)]  # start from 0
+        tps_values = [0] * num_bins
+
+        for batch_id, ts in self.commits.items():
+            if batch_id in tx_counts:
+                bin_index = int(ts) - start_time
+                tps_values[bin_index] += tx_counts[batch_id]
+
+        # --- 2. Latency: only from sampled transactions ---
+        latency_pairs = []
+        for sent, received in zip(self.sent_samples, self.received_samples):
+            for tx_id, batch_id in received.items():
+                if batch_id in self.commits and tx_id in sent:
+                    latency_pairs.append((sent[tx_id], self.commits[batch_id]))
+
+        latency_times = []
+        latency_values = []
+
+        if latency_pairs:
+            latency_pairs.sort()
+            l_start_time = int(min(s for s, _ in latency_pairs))
+            l_end_time = int(max(s for s, _ in latency_pairs)) + 1
+
+            latency_bins = list(range(l_start_time, l_end_time))
+            latency_bucket = {t: [] for t in latency_bins}
+
+            for s, e in latency_pairs:
+                bin_t = int(s)
+                latency_bucket[bin_t].append((e - s) * 1000)  # ms
+
+            for t in latency_bins:
+                latency_times.append(t - l_start_time)  # shift to 0 start
+                latencies = latency_bucket[t]
+                avg_latency = sum(latencies) / len(latencies) if latencies else 0
+                latency_values.append(avg_latency)
+
+        # --- Plot throughput ---
+        plt.figure()
+        plt.plot(tps_times, tps_values, label="Throughput (TPS)", color='blue')
+        plt.xlabel("Time (s)")
+        plt.ylabel("Transactions/sec")
+        plt.title("Time vs Throughput")
+        plt.grid(True)
+        plt.legend()
+        plt.tight_layout()
+        plt.savefig(f"../../../../logs/{output_prefix}_throughput.pdf")
+
+        # --- Plot latency ---
+        plt.figure()
+        plt.plot(latency_times, latency_values, label="Latency (ms)", color='orange')
+        plt.xlabel("Time (s)")
+        plt.ylabel("Latency (ms)")
+        plt.title("Time vs Latency")
+        plt.grid(True)
+        plt.legend()
+        plt.tight_layout()
+        plt.savefig(f"../../../../logs/{output_prefix}_latency.pdf")
