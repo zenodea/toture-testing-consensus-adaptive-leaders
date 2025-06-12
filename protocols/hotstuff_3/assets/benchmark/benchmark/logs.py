@@ -226,7 +226,7 @@ class LogParser:
 
         return cls(clients, nodes, faults=faults)
 
-    def plot_time_series(self, output_prefix='hotstuff_2'):
+    def plot_time_series(self, output_prefix='hotstuff_3'):
         import matplotlib.pyplot as plt
 
         # --- 1. Throughput: use committed transactions per second ---
