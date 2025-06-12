@@ -4,6 +4,7 @@ from multiprocessing import Pool
 from os.path import join
 from re import findall, search
 from statistics import mean
+import matplotlib.pyplot as plt
 
 from benchmark.utils import Print
 
@@ -228,6 +229,7 @@ class LogParser:
         assert isinstance(filename, str)
         with open(filename, 'a') as f:
             f.write(self.result())
+        self.plot_time_series()
 
     @classmethod
     def process(cls, directory, faults):
@@ -243,3 +245,75 @@ class LogParser:
                 nodes += [f.read()]
 
         return cls(clients, nodes, faults)
+
+    def plot_time_series(self, output_prefix='hotstuff_2'):
+        # --- 1. Throughput: use all committed transactions (BPS or TPS) ---
+        commit_times = list(self.commits.values())
+        commit_times.sort()
+
+        # Bin into 1-second intervals
+        window = 1.0  # 1 second
+        if not commit_times:
+            print("No commit data available.")
+            return
+
+        start_time = int(min(commit_times))
+        end_time = int(max(commit_times)) + 1
+
+        tps_times = list(range(start_time, end_time))
+        tps_values = [0] * len(tps_times)
+
+        for ts in commit_times:
+            bin_index = int((ts - start_time) // window)
+            tps_values[bin_index] += 1
+
+        # --- 2. Latency: only from sampled transactions ---
+        latency_pairs = []
+        for sent, received in zip(self.sent_samples, self.received_samples):
+            for tx_id, batch_id in received.items():
+                if batch_id in self.commits and tx_id in sent:
+                    latency_pairs.append((sent[tx_id], self.commits[batch_id]))
+
+        latency_times = []
+        latency_values = []
+
+        if latency_pairs:
+            latency_pairs.sort()
+            l_start_time = int(min(s for s, _ in latency_pairs))
+            l_end_time = int(max(s for s, _ in latency_pairs)) + 1
+
+            latency_bins = list(range(l_start_time, l_end_time))
+            latency_bucket = {t: [] for t in latency_bins}
+
+            for s, e in latency_pairs:
+                bin_t = int(s)
+                latency_bucket[bin_t].append((e - s) * 1000)  # ms
+
+            for t in latency_bins:
+                latency_times.append(t)
+                latencies = latency_bucket[t]
+                avg_latency = sum(latencies) / len(latencies) if latencies else 0
+                latency_values.append(avg_latency)
+
+        # --- Plot throughput ---
+        plt.figure()
+        plt.plot(tps_times, tps_values, label="Throughput (TPS)", color='blue')
+        plt.xlabel("Time (s)")
+        plt.ylabel("Transactions/sec")
+        plt.title("Time vs Throughput")
+        plt.grid(True)
+        plt.legend()
+        plt.tight_layout()
+        plt.savefig(f"{output_prefix}_throughput.pdf")
+
+        # --- Plot latency ---
+        plt.figure()
+        plt.plot(latency_times, latency_values, label="Latency (ms)", color='orange')
+        plt.xlabel("Time (s)")
+        plt.ylabel("Latency (ms)")
+        plt.title("Time vs Latency")
+        plt.grid(True)
+        plt.legend()
+        plt.tight_layout()
+        plt.savefig(f"{output_prefix}_latency.pdf")
+
