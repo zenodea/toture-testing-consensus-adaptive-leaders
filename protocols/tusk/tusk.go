@@ -74,6 +74,27 @@ func (ba *Tusk) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 
 	}
 
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		panic("error getting home directory:" + err.Error())
+	}
+
+	sshCmd := exec.Command("rm", []string{"-r", filepath.Join(homeDir, "toture-testing-consensus/logs")}...)
+	output, err = sshCmd.CombinedOutput()
+	if err != nil {
+		print("error while deleting logs/ " + err.Error() + " " + string(output) + "\n")
+	} else {
+		print("deleted local logs/ successfully\n" + string(output) + "\n")
+	}
+
+	sshCmd = exec.Command("mkdir", []string{"-p", filepath.Join(homeDir, "toture-testing-consensus/logs")}...)
+	output, err = sshCmd.CombinedOutput()
+	if err != nil {
+		panic("Error while creating logs/ " + err.Error() + " " + string(output) + "\n")
+	} else {
+		print("created logs/ successfully\n" + string(output) + "\n")
+	}
+
 	var wg sync.WaitGroup
 	wg.Add(1)
 	go func() {
