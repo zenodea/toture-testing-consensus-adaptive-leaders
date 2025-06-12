@@ -270,7 +270,7 @@ class LogParser:
         end_time = int(max(commit_times)) + 1
         num_bins = end_time - start_time
 
-        tps_times = [start_time + i for i in range(num_bins)]
+        tps_times = [i for i in range(num_bins)]  # start from 0
         tps_values = [0] * num_bins
 
         for batch_id, ts in self.commits.items():
@@ -301,7 +301,7 @@ class LogParser:
                 latency_bucket[bin_t].append((e - s) * 1000)  # ms
 
             for t in latency_bins:
-                latency_times.append(t)
+                latency_times.append(t - l_start_time)  # shift to 0 start
                 latencies = latency_bucket[t]
                 avg_latency = sum(latencies) / len(latencies) if latencies else 0
                 latency_values.append(avg_latency)
