@@ -8,11 +8,10 @@ ports: 10000
 process_name: epaxos_server
 pipeline_length: 1
 view_timeout_time: 2000000
-algo: -e
+algo: -pa
 exec: -exec
 dreply: -dreply
 durable: -durable
 thrifty: -thrifty
 w: 100
 c: 2
-
