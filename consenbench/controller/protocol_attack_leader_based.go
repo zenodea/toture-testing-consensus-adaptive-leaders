@@ -36,20 +36,19 @@ func (a *LeaderAttack1) Attack(nodes []*AttackNode, links [][]*AttackLink, oracl
 				}
 			}
 		}
-		time.Sleep(2 * time.Second)
+		time.Sleep(3 * time.Second)
 
 		fmt.Printf("resetting attack\n")
 
 		for i := 0; i < len(nodes); i++ {
-			if i == node_id {
-				for j := 0; j < len(nodes); j++ {
-					if i == j {
-						continue
-					}
-					links[i][j].SetLoss(0)
-					fmt.Printf("resetting loss between %v and %v\n", i, j)
+			for j := 0; j < len(nodes); j++ {
+				if i == j {
+					continue
 				}
+				links[i][j].SetLoss(0)
+				fmt.Printf("resetting loss between %v and %v\n", i, j)
 			}
+
 		}
 	}
 
@@ -84,20 +83,19 @@ func (a *LeaderAttack2) Attack(nodes []*AttackNode, links [][]*AttackLink, oracl
 			}
 		}
 	}
-	time.Sleep(2 * time.Second)
+	time.Sleep(3 * time.Second)
 
 	fmt.Printf("resetting attack\n")
 
 	for i := 0; i < len(nodes); i++ {
-		if i == node_id {
-			for j := 0; j < len(nodes); j++ {
-				if i == j {
-					continue
-				}
-				links[i][j].SetLoss(0)
-				fmt.Printf("resetting loss between %v and %v\n", i, j)
+		for j := 0; j < len(nodes); j++ {
+			if i == j {
+				continue
 			}
+			links[i][j].SetLoss(0)
+			fmt.Printf("resetting loss between %v and %v\n", i, j)
 		}
+
 	}
 
 	for time.Now().Sub(start_time).Seconds() < float64(duration-10) {
@@ -154,17 +152,9 @@ func (a *LeaderAttack3) Attack(nodes []*AttackNode, links [][]*AttackLink, oracl
 
 	fmt.Printf("resetting attack\n")
 
-	for j := 0; j < len(nodes); j++ {
-		if j == leaeder_node || j == connected_node {
-			continue
-		}
-		links[leaeder_node][j].SetLoss(0)
-		fmt.Printf("setting loss between %v and %v\n", leaeder_node, j)
-	}
-
 	for i := 0; i < len(nodes); i++ {
 		for j := 0; j < len(nodes); j++ {
-			if i == j || i == leaeder_node || i == connected_node || j == connected_node {
+			if i == j {
 				continue
 			} else {
 				links[i][j].SetLoss(0)
@@ -210,13 +200,13 @@ func (a *LeaderAttack4) Attack(nodes []*AttackNode, links [][]*AttackLink, oracl
 			}
 		}
 
-		time.Sleep(2 * time.Second)
+		time.Sleep(3 * time.Second)
 
 		fmt.Printf("resetting attack\n")
 
 		for i := 0; i < len(nodes); i++ {
 			for j := 0; j < len(nodes); j++ {
-				if i == j || i == good_node || j == good_node {
+				if i == j {
 					continue
 				} else {
 					links[i][j].SetLoss(0)
@@ -252,7 +242,7 @@ func (a *LeaderAttack5) Attack(nodes []*AttackNode, links [][]*AttackLink, oracl
 		if j == leaeder_node {
 			continue
 		}
-		links[leaeder_node][j].SetDelay(100)
+		links[leaeder_node][j].SetDelay(20)
 		fmt.Printf("setting delay between %v and %v\n", leaeder_node, j)
 	}
 
@@ -293,7 +283,7 @@ func (a *LeaderAttack6) Attack(nodes []*AttackNode, links [][]*AttackLink, oracl
 			if i == j {
 				continue
 			}
-			links[i][j].SetDelay(450)
+			links[i][j].SetDelay(300)
 		}
 	}
 
@@ -334,7 +324,7 @@ func (a *LeaderAttack7) Attack(nodes []*AttackNode, links [][]*AttackLink, oracl
 		fmt.Printf("The leader order is %v\n", oracle.GetTopNLeaders())
 		nodes[0].Pause()
 		nodes[1].Pause()
-		time.Sleep(5 * time.Second)
+		time.Sleep(3 * time.Second)
 		nodes[0].Continue()
 		nodes[1].Continue()
 	}
