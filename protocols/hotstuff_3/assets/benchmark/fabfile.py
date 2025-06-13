@@ -27,7 +27,7 @@ def remote(ctx, pid=1, attack_duration=2, num_replicas=3):
     }
     node_params = {
         'consensus': {
-            'timeout_delay': 5_000,
+            'timeout_delay': 2_000,
             'sync_retry_delay': 5_000,
             'max_payload_size': 1_000,
             'min_block_delay': 100

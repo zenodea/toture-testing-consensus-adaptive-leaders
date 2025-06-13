@@ -6,7 +6,7 @@ arrival_rate: 10000
 ports: 10000
 process_name: replica
 pipeline_length: 10
-view_timeout_time: 1000000
+view_timeout_time: 2000000
 network_batch_time: 2
 replica_batch_size: 50
 replica_batch_time: 5000
