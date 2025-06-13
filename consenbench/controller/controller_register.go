@@ -106,6 +106,7 @@ func (c *Controller) GetAttackImpl() Attack {
 // as you add more protocols, you need to add the protocol here
 
 func (c *Controller) GetProtocolImpl(protocol string) protocols.Consensus {
+
 	if protocol == "ping" {
 		return ping.NewPing(c.logger)
 	} else if protocol == "dedis_paxos" {
