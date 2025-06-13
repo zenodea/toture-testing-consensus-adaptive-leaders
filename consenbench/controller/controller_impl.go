@@ -99,7 +99,7 @@ func (c *Controller) Run(protocol string) {
 	cmd := exec.Command("rm", []string{"-r", filepath.Join(homeDir, "toture-testing-consensus/final-results/"+protocol+"/"+c.Options.Attack)}...)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		panic("Error while deleting final-results/" + protocol + "/" + c.Options.Attack + err.Error() + " " + string(output) + "\n")
+		print("Error while deleting final-results/" + protocol + "/" + c.Options.Attack + err.Error() + " " + string(output) + "\n")
 	} else {
 		print("deleted final-results sub directory successfully\n" + string(output) + "\n")
 	}
