@@ -6,13 +6,8 @@ mkdir logs
 
 echo "Running tests for all protocols..."
 
-/bin/bash  consenbench/scripts/dry_run.sh dedis_paxos   noop eth1
-/bin/bash  consenbench/scripts/dry_run.sh dedis_raft    noop eth1
-/bin/bash  consenbench/scripts/dry_run.sh sadl_racs     noop eth1
-/bin/bash  consenbench/scripts/dry_run.sh racs          noop eth1
-/bin/bash  consenbench/scripts/dry_run.sh efficient     noop eth1
-/bin/bash  consenbench/scripts/dry_run.sh quepaxa       noop eth1
-/bin/bash  consenbench/scripts/dry_run.sh hotstuff_2    noop eth1
-/bin/bash  consenbench/scripts/dry_run.sh hotstuff_3    noop eth1
-/bin/bash  consenbench/scripts/dry_run.sh etcd          noop eth1
-/bin/bash  consenbench/scripts/dry_run.sh zoo_keeper    noop eth1
+for protocol in dedis_paxos dedis_raft sadl_racs racs efficient quepaxa hotstuff_2 hotstuff_3 etcd zoo_keeper; do
+  for attack in noop leader_1 leader_2 leader_3 leader_4 leader_5 leader_6 leader_7 leader_8 leader_9; do
+    /bin/bash  consenbench/scripts/dry_run.sh   "${protocol}" "${attack}" eth1
+  done
+done
