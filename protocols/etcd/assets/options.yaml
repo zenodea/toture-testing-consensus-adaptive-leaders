@@ -1,5 +1,5 @@
 ports: 2380
 process_name: etcd
-num_replicas: 9
+num_replicas: 5
 num_clients: 100
 view_timeout: 2000

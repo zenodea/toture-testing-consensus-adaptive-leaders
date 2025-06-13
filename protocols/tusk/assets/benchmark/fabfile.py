@@ -24,7 +24,7 @@ def remote(ctx, pid=1, attack_duration=2, num_replicas=3, debug=False):
         'nodes': [int(num_replicas)],
         'workers': 1,
         'collocate': True,
-        'rate': [10_000],
+        'rate': [50_000],
         'tx_size': 512,
         'duration': int(attack_duration),
         'runs': 1,
