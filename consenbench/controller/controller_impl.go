@@ -3,6 +3,8 @@ package controller
 import (
 	"fmt"
 	"os"
+	"os/exec"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"sync"
@@ -89,6 +91,27 @@ func (c *Controller) Run(protocol string) {
 	c.HandleClientMessages()
 	time.Sleep(5 * time.Second)
 
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		panic("error getting home directory:" + err.Error())
+	}
+
+	cmd := exec.Command("rm", []string{"-r", filepath.Join(homeDir, "toture-testing-consensus/final-results/"+protocol+"/"+c.Options.Attack)}...)
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		panic("Error while deleting final-results/" + protocol + "/" + c.Options.Attack + err.Error() + " " + string(output) + "\n")
+	} else {
+		print("deleted final-results sub directory successfully\n" + string(output) + "\n")
+	}
+
+	cmd = exec.Command("mkdir", []string{"-p", filepath.Join(homeDir, "toture-testing-consensus/final-results/"+protocol+"/"+c.Options.Attack)}...)
+	output, err = cmd.CombinedOutput()
+	if err != nil {
+		panic("Error while creating final-results/" + protocol + "/" + c.Options.Attack + err.Error() + " " + string(output) + "\n")
+	} else {
+		print("created final-results/ sub directory successfully\n" + string(output) + "\n")
+	}
+
 	protocol_impl := c.GetProtocolImpl(protocol)
 	options := protocol_impl.ExtractOptions("protocols/" + protocol + "/assets/options.yaml")
 
@@ -143,5 +166,14 @@ func (c *Controller) Run(protocol string) {
 	fmt.Println("Closed the clients")
 	c.DownloadClientLogs()
 	fmt.Println("Downloaded the logs from the clients")
+
+	cmd = exec.Command("mv", []string{filepath.Join(homeDir, "toture-testing-consensus/logs/*"), filepath.Join(homeDir, "toture-testing-consensus/final-results/"+protocol+"/"+c.Options.Attack)}...)
+	output, err = cmd.CombinedOutput()
+	if err != nil {
+		panic("Error while moving to final-results/" + protocol + "/" + c.Options.Attack + err.Error() + " " + string(output) + "\n")
+	} else {
+		print("moved final-results/ sub directory successfully\n" + string(output) + "\n")
+	}
+
 	fmt.Println("test complete")
 }
