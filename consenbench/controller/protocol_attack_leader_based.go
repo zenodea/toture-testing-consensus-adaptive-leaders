@@ -6,18 +6,18 @@ import (
 	"toture-test/util"
 )
 
-type RaftAttack1 struct {
+type LeaderAttack1 struct {
 	logger *util.Logger
 }
 
-func NewRaftAttack1(logger *util.Logger) *RaftAttack1 {
-	return &RaftAttack1{
+func NewLeaderAttack1(logger *util.Logger) *LeaderAttack1 {
+	return &LeaderAttack1{
 		logger: logger,
 	}
 }
 
-func (a *RaftAttack1) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
-	fmt.Printf("Running RaftAttack1 continous leader node parition simplex  for %v seconds\n", duration)
+func (a *LeaderAttack1) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
+	fmt.Printf("Running LeaderAttack1 continous leader node parition simplex  for %v seconds\n", duration)
 	start_time := time.Now()
 
 	for time.Now().Sub(start_time).Seconds() < float64(duration-10) {
@@ -53,21 +53,21 @@ func (a *RaftAttack1) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle 
 		}
 	}
 
-	fmt.Print("RaftAttack1 complete\n")
+	fmt.Print("LeaderAttack1 complete\n")
 }
 
-type RaftAttack2 struct {
+type LeaderAttack2 struct {
 	logger *util.Logger
 }
 
-func NewRaftAttack2(logger *util.Logger) *RaftAttack2 {
-	return &RaftAttack2{
+func NewLeaderAttack2(logger *util.Logger) *LeaderAttack2 {
+	return &LeaderAttack2{
 		logger: logger,
 	}
 }
 
-func (a *RaftAttack2) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
-	fmt.Printf("Running RaftAttack2 once leader node parition simplex  for %v seconds\n", duration)
+func (a *LeaderAttack2) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
+	fmt.Printf("Running LeaderAttack2 once leader node parition simplex  for %v seconds\n", duration)
 	start_time := time.Now()
 
 	node_id := oracle.GetTopNLeaders()[0]
@@ -104,21 +104,21 @@ func (a *RaftAttack2) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle 
 
 	}
 
-	fmt.Print("RaftAttack2 complete\n")
+	fmt.Print("LeaderAttack2 complete\n")
 }
 
-type RaftAttack3 struct {
+type LeaderAttack3 struct {
 	logger *util.Logger
 }
 
-func NewRaftAttack3(logger *util.Logger) *RaftAttack3 {
-	return &RaftAttack3{
+func NewLeaderAttack3(logger *util.Logger) *LeaderAttack3 {
+	return &LeaderAttack3{
 		logger: logger,
 	}
 }
 
-func (a *RaftAttack3) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
-	fmt.Printf("Running RaftAttack3 leader is connected to a majority connected node for %v seconds\n", duration)
+func (a *LeaderAttack3) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
+	fmt.Printf("Running LeaderAttack3 leader is connected to a majority connected node for %v seconds\n", duration)
 	start_time := time.Now()
 
 	leaeder_node := oracle.GetTopNLeaders()[0]
@@ -173,22 +173,22 @@ func (a *RaftAttack3) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle 
 		}
 	}
 
-	fmt.Print("RaftAttack3 complete\n")
+	fmt.Print("LeaderAttack3 complete\n")
 }
 
-type RaftAttack4 struct {
+type LeaderAttack4 struct {
 	logger *util.Logger
 }
 
-func NewRaftAttack4(logger *util.Logger) *RaftAttack4 {
-	return &RaftAttack4{
+func NewLeaderAttack4(logger *util.Logger) *LeaderAttack4 {
+	return &LeaderAttack4{
 		logger: logger,
 	}
 }
 
-func (a *RaftAttack4) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
+func (a *LeaderAttack4) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
 
-	fmt.Printf("Running RaftAttack4 in each epoch only one quorum connected node for %v seconds\n", duration)
+	fmt.Printf("Running LeaderAttack4 in each epoch only one quorum connected node for %v seconds\n", duration)
 
 	start_time := time.Now()
 	good_node := 0
@@ -225,22 +225,22 @@ func (a *RaftAttack4) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle 
 			}
 		}
 	}
-	fmt.Print("RaftAttack4 complete\n")
+	fmt.Print("LeaderAttack4 complete\n")
 }
 
-type RaftAttack5 struct {
+type LeaderAttack5 struct {
 	logger *util.Logger
 }
 
-func NewRaftAttack5(logger *util.Logger) *RaftAttack5 {
-	return &RaftAttack5{
+func NewLeaderAttack5(logger *util.Logger) *LeaderAttack5 {
+	return &LeaderAttack5{
 		logger: logger,
 	}
 }
 
-func (a *RaftAttack5) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
+func (a *LeaderAttack5) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
 
-	fmt.Printf("Running RaftAttack5 leader high delay but no view changes for %v seconds\n", duration)
+	fmt.Printf("Running LeaderAttack5 leader high delay but no view changes for %v seconds\n", duration)
 
 	start_time := time.Now()
 
@@ -269,22 +269,22 @@ func (a *RaftAttack5) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle 
 		fmt.Printf("setting delay between %v and %v\n", leaeder_node, j)
 	}
 
-	fmt.Print("RaftAttack5 complete\n")
+	fmt.Print("LeaderAttack5 complete\n")
 }
 
-type RaftAttack6 struct {
+type LeaderAttack6 struct {
 	logger *util.Logger
 }
 
-func NewRaftAttack6(logger *util.Logger) *RaftAttack6 {
-	return &RaftAttack6{
+func NewLeaderAttack6(logger *util.Logger) *LeaderAttack6 {
+	return &LeaderAttack6{
 		logger: logger,
 	}
 }
 
-func (a *RaftAttack6) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
+func (a *LeaderAttack6) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
 
-	fmt.Printf("Running RaftAttack6 all links have close to view timeout delay for %v seconds\n", duration)
+	fmt.Printf("Running LeaderAttack6 all links have close to view timeout delay for %v seconds\n", duration)
 
 	start_time := time.Now()
 
@@ -311,22 +311,22 @@ func (a *RaftAttack6) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle 
 		}
 	}
 
-	fmt.Print("RaftAttack6 complete\n")
+	fmt.Print("LeaderAttack6 complete\n")
 }
 
-type RaftAttack7 struct {
+type LeaderAttack7 struct {
 	logger *util.Logger
 }
 
-func NewRaftAttack7(logger *util.Logger) *RaftAttack7 {
-	return &RaftAttack7{
+func NewLeaderAttack7(logger *util.Logger) *LeaderAttack7 {
+	return &LeaderAttack7{
 		logger: logger,
 	}
 }
 
-func (a *RaftAttack7) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
+func (a *LeaderAttack7) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
 
-	fmt.Printf("Running RaftAttack7 two stragglers for %v seconds\n", duration)
+	fmt.Printf("Running LeaderAttack7 two stragglers for %v seconds\n", duration)
 
 	start_time := time.Now()
 
@@ -339,22 +339,22 @@ func (a *RaftAttack7) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle 
 		nodes[1].Continue()
 	}
 
-	fmt.Print("RaftAttack7 complete\n")
+	fmt.Print("LeaderAttack7 complete\n")
 }
 
-type RaftAttack8 struct {
+type LeaderAttack8 struct {
 	logger *util.Logger
 }
 
-func NewRaftAttack8(logger *util.Logger) *RaftAttack8 {
-	return &RaftAttack8{
+func NewLeaderAttack8(logger *util.Logger) *LeaderAttack8 {
+	return &LeaderAttack8{
 		logger: logger,
 	}
 }
 
-func (a *RaftAttack8) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
+func (a *LeaderAttack8) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
 
-	fmt.Printf("Running RaftAttack8 straggler in closest majority for %v seconds\n", duration)
+	fmt.Printf("Running LeaderAttack8 straggler in closest majority for %v seconds\n", duration)
 
 	start_time := time.Now()
 
@@ -405,22 +405,22 @@ func (a *RaftAttack8) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle 
 		}
 	}
 
-	fmt.Print("RaftAttack8 complete\n")
+	fmt.Print("LeaderAttack8 complete\n")
 }
 
-type RaftAttack9 struct {
+type LeaderAttack9 struct {
 	logger *util.Logger
 }
 
-func NewRaftAttack9(logger *util.Logger) *RaftAttack9 {
-	return &RaftAttack9{
+func NewLeaderAttack9(logger *util.Logger) *LeaderAttack9 {
+	return &LeaderAttack9{
 		logger: logger,
 	}
 }
 
-func (a *RaftAttack9) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
+func (a *LeaderAttack9) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
 
-	fmt.Printf("Running RaftAttack9 leader crash for %v seconds\n", duration)
+	fmt.Printf("Running LeaderAttack9 leader crash for %v seconds\n", duration)
 
 	start_time := time.Now()
 
@@ -440,5 +440,5 @@ func (a *RaftAttack9) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle 
 		time.Sleep(500 * time.Millisecond)
 	}
 
-	fmt.Print("RaftAttack9 complete\n")
+	fmt.Print("LeaderAttack9 complete\n")
 }

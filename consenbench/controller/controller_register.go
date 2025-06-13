@@ -80,24 +80,24 @@ func (c *Controller) GetAttackImpl() Attack {
 		return NewDriftAttack_2(c.logger)
 	case "drift_3":
 		return NewDriftAttack_3(c.logger)
-	case "raft_1":
-		return NewRaftAttack1(c.logger)
-	case "raft_2":
-		return NewRaftAttack2(c.logger)
-	case "raft_3":
-		return NewRaftAttack3(c.logger)
-	case "raft_4":
-		return NewRaftAttack4(c.logger)
-	case "raft_5":
-		return NewRaftAttack5(c.logger)
-	case "raft_6":
-		return NewRaftAttack6(c.logger)
-	case "raft_7":
-		return NewRaftAttack7(c.logger)
-	case "raft_8":
-		return NewRaftAttack8(c.logger)
-	case "raft_9":
-		return NewRaftAttack9(c.logger)
+	case "leader_1":
+		return NewLeaderAttack1(c.logger)
+	case "leader_2":
+		return NewLeaderAttack2(c.logger)
+	case "leader_3":
+		return NewLeaderAttack3(c.logger)
+	case "leader_4":
+		return NewLeaderAttack4(c.logger)
+	case "leader_5":
+		return NewLeaderAttack5(c.logger)
+	case "leader_6":
+		return NewLeaderAttack6(c.logger)
+	case "leader_7":
+		return NewLeaderAttack7(c.logger)
+	case "leader_8":
+		return NewLeaderAttack8(c.logger)
+	case "leader_9":
+		return NewLeaderAttack9(c.logger)
 	default:
 		panic("Unknown attack: " + c.Options.Attack)
 	}
