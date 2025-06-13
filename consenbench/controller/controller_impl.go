@@ -167,7 +167,7 @@ func (c *Controller) Run(protocol string) {
 	c.DownloadClientLogs()
 	fmt.Println("Downloaded the logs from the clients")
 
-	cmd = exec.Command("mv", []string{filepath.Join(homeDir, "toture-testing-consensus/logs/*"), filepath.Join(homeDir, "toture-testing-consensus/final-results/"+protocol+"/"+c.Options.Attack)}...)
+	cmd = exec.Command("mv", []string{filepath.Join(homeDir, "toture-testing-consensus/logs/*.pdf"), filepath.Join(homeDir, "toture-testing-consensus/final-results/"+protocol+"/"+c.Options.Attack)}...)
 	output, err = cmd.CombinedOutput()
 	if err != nil {
 		panic("Error while moving to final-results/" + protocol + "/" + c.Options.Attack + err.Error() + " " + string(output) + "\n")
