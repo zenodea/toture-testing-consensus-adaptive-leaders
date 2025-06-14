@@ -134,6 +134,13 @@ func (ba *Tusk) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 	if err != nil {
 		panic("Failed to change directory")
 	}
+
+	cmd = exec.Command("pkill", "fab")
+	output, err = sshCmd.CombinedOutput()
+	if err != nil {
+		print("Error while killing fab " + err.Error() + " " + string(output) + "\n")
+	}
+
 	result <- p
 }
 
