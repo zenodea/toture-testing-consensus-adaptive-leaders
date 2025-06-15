@@ -27,6 +27,7 @@ func (c *Controller) BootstrapClients() error {
 	for j := 0; j < len(c.Nodes); j++ {
 		go func(i int) {
 			c.Nodes[i].ExecCmd(fmt.Sprintf("pkill -KILL -f bench"))
+			c.Nodes[i].ExecCmd(fmt.Sprintf("pkill -KILL -f fab"))
 			c.Nodes[i].ExecCmd(fmt.Sprintf("rm -r %vbench", c.Nodes[i].HomeDir))
 			c.Nodes[i].ExecCmd(fmt.Sprintf("mkdir -p %vbench", c.Nodes[i].HomeDir))
 			c.Nodes[i].Put_Load("consenbench/bin/bench", fmt.Sprintf("%vbench/", c.Nodes[i].HomeDir))
