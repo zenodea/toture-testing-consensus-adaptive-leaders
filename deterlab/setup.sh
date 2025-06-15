@@ -7,7 +7,7 @@ cmd="set -e;sudo apt update;sudo apt upgrade;sudo apt-get -y autoremove; sudo ap
 
 for i in $NODES; do
     echo "Processing node_$i..."
-    ssh node"$i" "$cmd" > "setup_node${i}.log" 2>&1
+    ssh node"$i" "$cmd"
 done
 
 echo "All nodes configured."
