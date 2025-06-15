@@ -164,7 +164,7 @@ class Bench:
 
         # Kill any potentially unfinished run and delete logs.
         self.kill(hosts=hosts, delete_logs=True)
-
+        Print.info("Cleaning up logs and killing any unfinished processes...")
         # Run the clients (they will wait for the nodes to be ready).
         # Filter all faulty nodes from the client addresses (or they will wait
         # for the faulty nodes to be online).
