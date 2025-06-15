@@ -78,6 +78,9 @@ class Bench:
             raise BenchError("Failed to install repo on testbed", e)
 
     def kill(self, hosts=[], delete_logs=False):
+
+        Print.info("Killing nodes and cleaning up logs...")
+
         assert isinstance(hosts, list)
         assert isinstance(delete_logs, bool)
         hosts = hosts if hosts else self.manager.hosts(flat=True)
@@ -85,7 +88,13 @@ class Bench:
         cmd = [delete_logs, f"({CommandMaker.kill()} || true)"]
         try:
             g = Group(*hosts, user=self.manager.user(), connect_kwargs=self.connect)
+
+            Print.info(f"Killing nodes on {len(hosts)} hosts")
+
             g.run(" && ".join(cmd), hide=True)
+
+            Print.info("Nodes killed and logs cleaned up")
+
         except GroupException as e:
             raise BenchError("Failed to kill nodes", FabricError(e))
 
