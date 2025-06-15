@@ -87,7 +87,7 @@ func (n *Node) Start_Client(device string) error {
 	fmt.Printf("Starting client on node: %v\n", n.Id)
 	n.ExecCmd("pkill -KILL -f bench")
 	n.ExecCmd("pkill -KILL -f fab")
-	n.ExecCmd("tmux kill-server")
+	n.ExecCmd("pkill -9 tmux")
 	exec.Command("pkill", "fab")
 
 	if n.Logger.DebugOn {
