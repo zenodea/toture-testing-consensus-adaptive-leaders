@@ -3,5 +3,5 @@ process_name: QuorumPeerMain
 num_replicas: 5
 num_clients: 50
 tickTime: 2000
-initLimit: 5
-syncLimit: 2
+initLimit: 1
+syncLimit: 1
