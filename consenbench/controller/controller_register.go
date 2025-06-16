@@ -3,6 +3,7 @@ package controller
 import (
 	"toture-test/protocols"
 	bullshark "toture-test/protocols/bullshark"
+	cft "toture-test/protocols/cft_dag"
 	dedis_paxos "toture-test/protocols/dedis_paxos"
 	dedis_raft "toture-test/protocols/dedis_raft"
 	efficient "toture-test/protocols/efficient"
@@ -139,6 +140,8 @@ func (c *Controller) GetProtocolImpl(protocol string) protocols.Consensus {
 		return etcd.NewETCD(c.logger)
 	} else if protocol == "zoo_keeper" {
 		return zoo_keeper.NewZooKeeper(c.logger)
+	} else if protocol == "cft_dag" {
+		return cft.NewCFT_DAG(c.logger)
 	} else {
 		panic("Unknown protocol")
 	}
