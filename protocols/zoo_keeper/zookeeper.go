@@ -88,7 +88,7 @@ func (ba *ZooKeeper) Bootstrap(nodes []*common.Node, duration int, result chan u
 	var wg sync.WaitGroup
 	wg.Add(num_replicas_int)
 
-	ZOO_CFG_CONTENT := fmt.Sprintf("tickTime=%v\ndataDir=%vapache-zookeeper-3.8.1-bin/data\nclientPort=2181\ninitLimit=%v\nsyncLimit=%v\n", tickTime, nodes[0].HomeDir, initLimit, syncLimit)
+	ZOO_CFG_CONTENT := fmt.Sprintf("initLimit=1\ntickTime=%v\ndataDir=%vapache-zookeeper-3.8.1-bin/data\nclientPort=2181\ninitLimit=%v\nsyncLimit=%v\n", tickTime, nodes[0].HomeDir, initLimit, syncLimit)
 	for i := 0; i < num_replicas_int; i++ {
 		ZOO_CFG_CONTENT += fmt.Sprintf("server.%d=%v:2888:3888\n", i+1, nodes[i].Ip)
 	}
