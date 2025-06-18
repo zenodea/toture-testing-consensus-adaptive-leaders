@@ -322,7 +322,7 @@ class LogParser:
 
         # --- Plot throughput ---
         plt.figure()
-        plt.plot(tps_times, tps_values, label="Throughput (TPS)", color='blue')
+        plt.scatter(tps_times, tps_values, label="Throughput (TPS)", color='blue')
         plt.xlabel("Time (s)")
         plt.ylabel("Transactions/sec")
         plt.title("Time vs Throughput")
@@ -333,7 +333,7 @@ class LogParser:
 
         # --- Plot latency ---
         plt.figure()
-        plt.plot(latency_times, latency_values, label="Latency (ms)", color='orange')
+        plt.scatter(latency_times, latency_values, label="Latency (ms)", color='orange')
         plt.xlabel("Time (s)")
         plt.ylabel("Latency (ms)")
         plt.title("Time vs Latency")

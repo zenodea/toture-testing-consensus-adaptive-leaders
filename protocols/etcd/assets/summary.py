@@ -45,7 +45,7 @@ avg_latency_values = [sum(latency_by_sec[t]) / len(latency_by_sec[t]) for t in t
 
 # Plot throughput
 plt.figure(figsize=(10, 5))
-plt.plot(time_series, throughput_values, marker='o', label='Throughput (req/s)')
+plt.scatter(time_series, throughput_values, marker='o', label='Throughput (req/s)')
 plt.xlabel('Time (s)')
 plt.ylabel('Throughput (requests/sec)')
 plt.title('Time vs Throughput')
@@ -56,7 +56,7 @@ print("Generated throughput plot in " + OUTPUT_FILE_ROOT + "/etcd_throughput.pdf
 
 # Plot latency
 plt.figure(figsize=(10, 5))
-plt.plot(time_series, avg_latency_values, marker='o', color='orange', label='Avg Latency (ms)')
+plt.scatter(time_series, avg_latency_values, marker='o', color='orange', label='Avg Latency (ms)')
 plt.xlabel('Time (s)')
 plt.ylabel('Latency (ms)')
 plt.title('Time vs Latency')

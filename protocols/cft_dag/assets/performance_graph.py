@@ -64,7 +64,7 @@ def plot_throughput(throughput, n):
     throughput_values = [throughput[sec] / n for sec in seconds]
 
     plt.figure(figsize=(10, 6))
-    plt.plot(seconds, throughput_values, marker='o')
+    plt.scatter(seconds, throughput_values, marker='o')
     plt.xlabel('Seconds')
     plt.ylabel('Requests per second')
     plt.grid(True)
@@ -77,7 +77,7 @@ def plot_latency(average_latency):
     latency_values = [average_latency[sec] for sec in seconds]
 
     plt.figure(figsize=(10, 6))
-    plt.plot(seconds, latency_values, marker='o', color='orange')
+    plt.scatter(seconds, latency_values, marker='o', color='orange')
     plt.xlabel('Seconds')
     plt.ylabel('Average Latency (ms)')
     plt.grid(True)
