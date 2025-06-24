@@ -23,58 +23,14 @@ import (
 
 func (c *Controller) GetAttackImpl() Attack {
 	switch c.Options.Attack {
-	case "basic":
-		return NewBasicAttack(c.logger)
 	case "noop":
 		return NewNoopAttack(c.logger)
-	case "partition_1":
-		return NewPartitionAttack_1(c.logger)
-	case "partition_2":
-		return NewPartitionAttack_2(c.logger)
-	case "partition_3":
-		return NewPartitionAttack_3(c.logger)
-	case "partition_4":
-		return NewPartitionAttack_4(c.logger)
-	case "partition_5":
-		return NewPartitionAttack_5(c.logger)
-	case "partition_6":
-		return NewPartitionAttack_6(c.logger)
-	case "partition_7":
-		return NewPartitionAttack_7(c.logger)
-	case "delay_1":
-		return NewDelayAttack_1(c.logger)
-	case "delay_2":
-		return NewDelayAttack_2(c.logger)
-	case "delay_3":
-		return NewDelayAttack_3(c.logger)
-	case "delay_4":
-		return NewDelayAttack_4(c.logger)
-	case "bandwidth_1":
-		return NewBandwidthAttack_1(c.logger)
-	case "bandwidth_2":
-		return NewBandwidthAttack_2(c.logger)
-	case "bandwidth_3":
-		return NewBandwidthAttack_3(c.logger)
-	case "bandwidth_4":
-		return NewBandwidthAttack_4(c.logger)
 	case "skew_1":
 		return NewSkewAttack_1(c.logger)
 	case "skew_2":
 		return NewSkewAttack_2(c.logger)
 	case "skew_3":
 		return NewSkewAttack_3(c.logger)
-	case "straggler_1":
-		return NewStragglerAttack_1(c.logger)
-	case "straggler_2":
-		return NewStragglerAttack_2(c.logger)
-	case "straggler_3":
-		return NewStragglerAttack_3(c.logger)
-	case "crash_1":
-		return NewCrashAttack_1(c.logger)
-	case "crash_2":
-		return NewCrashAttack_2(c.logger)
-	case "crash_3":
-		return NewCrashAttack_3(c.logger)
 	case "drift_1":
 		return NewDriftAttack_1(c.logger)
 	case "drift_2":
