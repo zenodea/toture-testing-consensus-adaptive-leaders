@@ -11,7 +11,5 @@ view_timeout_time: 2000000
 algo: -pa
 exec: -exec
 dreply: -dreply
-durable: -durable
-thrifty: -thrifty
 w: 100
 c: 2
