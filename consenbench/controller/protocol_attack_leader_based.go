@@ -21,21 +21,20 @@ func (a *LeaderAttack1) Attack(nodes []*AttackNode, links [][]*AttackLink, oracl
 	start_time := time.Now()
 
 	for time.Now().Sub(start_time).Seconds() < float64(duration-10) {
+		fmt.Printf("The leader order is %v\n", oracle.GetTopNLeaders())
 		// select the leader
 		node_id := oracle.GetTopNLeaders()[0]
 		// set all outgoing links to of leader to high loss
 		fmt.Printf("attacking leader node %v\n", node_id)
-		for i := 0; i < len(nodes); i++ {
-			if i == node_id {
-				for j := 0; j < len(nodes); j++ {
-					if i == j {
-						continue
-					}
-					links[i][j].SetLoss(100)
-					fmt.Printf("setting loss between %v and %v\n", i, j)
-				}
+
+		for j := 0; j < len(nodes); j++ {
+			if node_id == j {
+				continue
 			}
+			links[node_id][j].SetLoss(100)
+			fmt.Printf("setting loss between %v and %v\n", node_id, j)
 		}
+
 		time.Sleep(3 * time.Second)
 
 		fmt.Printf("resetting attack\n")
