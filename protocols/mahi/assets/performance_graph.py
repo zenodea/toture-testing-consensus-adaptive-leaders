@@ -16,7 +16,7 @@ def extract_start_end_pairs(filenames):
                     if len(parts) >= 2:
                         start_time = int(parts[0].strip())
                         end_time = int(parts[1].strip())
-                        if 40000000 < start_time and start_time < 100000001:
+                        if 0 < start_time and start_time < 60000001:
                             start_end_pairs.append((start_time, end_time))
         except FileNotFoundError:
             print(f"File not found: {filename}")
