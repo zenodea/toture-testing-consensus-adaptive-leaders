@@ -21,7 +21,6 @@ It allows plugging in different consensus algorithms and network topologies to t
 - SADL-RACS
 - EPaxos
 - Mencius
-- Generalized Paxos
 - QuePaxa
 - Mahi-Mahi
 - Codial-Miners
