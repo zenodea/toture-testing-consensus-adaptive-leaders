@@ -32,6 +32,7 @@ func (a *LeaderAttack1) Attack(nodes []*AttackNode, links [][]*AttackLink, oracl
 				continue
 			}
 			links[node_id][j].SetLoss(100)
+			links[j][node_id].SetLoss(100)
 			fmt.Printf("setting loss between %v and %v\n", node_id, j)
 		}
 
