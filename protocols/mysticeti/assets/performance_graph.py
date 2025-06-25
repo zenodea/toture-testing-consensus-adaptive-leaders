@@ -16,7 +16,7 @@ def extract_start_end_pairs(filenames):
                     if len(parts) >= 2:
                         start_time = int(parts[0].strip())
                         end_time = int(parts[1].strip())
-                        if 40000000 < start_time and start_time < 100000001:
+                        if (40000000-1) < start_time and end_time < 100000001:
                             start_end_pairs.append((start_time, end_time))
         except FileNotFoundError:
             print(f"File not found: {filename}")
@@ -31,6 +31,9 @@ def calculate_throughput_latency(start_end_pairs, n):
     throughput = defaultdict(int)
     latency_sum = defaultdict(int)
     latency_count = defaultdict(int)
+
+    min_time = min(start for start, _ in start_end_pairs)
+    max_time = max(end for _, end in start_end_pairs)
 
     for start, end in start_end_pairs:
         end_sec = end // 1_000_000  # convert end time to seconds
@@ -50,7 +53,7 @@ def calculate_throughput_latency(start_end_pairs, n):
 
     total_requests = sum(throughput.values())
     total_latency = sum(latency_sum.values())
-    total_seconds = len(throughput)
+    total_seconds = max_time - min_time
     overall_throughput = total_requests / total_seconds / n
     overall_average_latency = total_latency / total_requests / 1000
     print(f"{overall_throughput:.2f} {overall_average_latency:.2f} ")
