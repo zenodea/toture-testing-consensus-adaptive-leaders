@@ -142,7 +142,7 @@ func (ba *CFT_DAG) Bootstrap(nodes []*common.Node, duration int, result chan uti
 			nodes[j].ExecCmd(fmt.Sprintf("./bench/mysticeti run --authority %v --committee-path %vbench/committee.yaml --public-config-path %vbench/public-config.yaml --private-config-path %vbench/private-config-%v.yaml --client-parameters-path %vbench/client-parameters.yml", j, nodes[j].HomeDir, nodes[j].HomeDir, nodes[j].HomeDir, j, nodes[j].HomeDir))
 		}(i)
 	}
-	time.Sleep(45 * time.Second)
+	time.Sleep(5 * time.Second)
 
 	println("Started the replicas")
 
