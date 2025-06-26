@@ -169,7 +169,7 @@ func (ba *Rabia) Bootstrap(nodes []*common.Node, duration int, result chan util.
 	fmt.Printf("export_command: %v\n\n\n", export_command)
 	fmt.Printf("crl_export: %v\n\n\n", crl_export)
 
-	time.Sleep(6 * time.Second)
+	time.Sleep(5 * time.Second)
 
 	fmt.Print("Bootstrap complete\n")
 	bootstrap_complete <- true

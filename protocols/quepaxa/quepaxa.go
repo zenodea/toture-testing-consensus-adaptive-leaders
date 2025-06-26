@@ -215,7 +215,7 @@ func (ba *QuePaxa) Bootstrap(nodes []*common.Node, duration int, result chan uti
 
 	fmt.Print("Started all the clients\n")
 
-	time.Sleep(6 * time.Second)
+	time.Sleep(10 * time.Second)
 
 	fmt.Print("Bootstrap complete\n")
 	bootstrap_complete <- true
