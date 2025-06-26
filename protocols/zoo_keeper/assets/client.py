@@ -17,7 +17,7 @@ def run_instance(instance_id):
 
     random.seed(time.time() + instance_id)
     key_prefix = f"/ark_key_{instance_id}"
-    value = b"k_value"
+    value = b"k_va"
 
     latencies = []
     logs = []

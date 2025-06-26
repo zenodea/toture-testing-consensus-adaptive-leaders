@@ -5,5 +5,5 @@ wave_length: 5
 number_of_leaders: 1
 enable_pipelining: true
 enable_synchronizer: true
-transaction_size: 512
+transaction_size: 18
 process_name: mysticeti
