@@ -37,24 +37,16 @@ func (c *Controller) GetAttackImpl() Attack {
 		return NewDriftAttack_2(c.logger)
 	case "drift_3":
 		return NewDriftAttack_3(c.logger)
-	case "leader_1":
-		return NewLeaderAttack1(c.logger)
-	case "leader_2":
-		return NewLeaderAttack2(c.logger)
-	case "leader_3":
-		return NewLeaderAttack3(c.logger)
-	case "leader_4":
-		return NewLeaderAttack4(c.logger)
-	case "leader_5":
-		return NewLeaderAttack5(c.logger)
-	case "leader_6":
-		return NewLeaderAttack6(c.logger)
-	case "leader_7":
-		return NewLeaderAttack7(c.logger)
-	case "leader_8":
-		return NewLeaderAttack8(c.logger)
-	case "leader_9":
-		return NewLeaderAttack9(c.logger)
+	case "LeaderPartition":
+		return NewLeaderPartition(c.logger)
+	case "OneQuorumNodePartition":
+		return NewOneQuorumNodePartition(c.logger)
+	case "MajorityHighDelay":
+		return NewMajorityHighDelay(c.logger)
+	case "MinorityCrash":
+		return NewMinorityCrash(c.logger)
+	case "MinorityStraggler":
+		return NewMinorityStraggler(c.logger)
 	default:
 		panic("Unknown attack: " + c.Options.Attack)
 	}
