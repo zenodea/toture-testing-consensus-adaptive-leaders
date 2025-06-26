@@ -113,6 +113,22 @@ func (c *Controller) Run(protocol string) {
 		print("created final-results/ sub directory successfully\n" + string(output) + "\n")
 	}
 
+	cmd = exec.Command("rm", []string{"-r", filepath.Join(homeDir, "toture-testing-consensus/logs")}...)
+	output, err = cmd.CombinedOutput()
+	if err != nil {
+		print("error while deleting logs/ " + err.Error() + " " + string(output) + "\n")
+	} else {
+		print("deleted local logs/ successfully\n" + string(output) + "\n")
+	}
+
+	cmd = exec.Command("mkdir", []string{"-p", filepath.Join(homeDir, "toture-testing-consensus/logs")}...)
+	output, err = cmd.CombinedOutput()
+	if err != nil {
+		panic("Error while creating logs/ " + err.Error() + " " + string(output) + "\n")
+	} else {
+		print("created logs/ successfully\n" + string(output) + "\n")
+	}
+
 	protocol_impl := c.GetProtocolImpl(protocol)
 	options := protocol_impl.ExtractOptions("protocols/" + protocol + "/assets/options.yaml")
 
