@@ -17,7 +17,7 @@ func NewLeaderPartition(logger *util.Logger) *LeaderPartition {
 }
 
 func (a *LeaderPartition) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
-	fmt.Printf("Running Leader Parition Attack -- continous leader node parition duplex")
+	fmt.Printf("Running Leader Parition Attack -- continous leader node parition duplex\n")
 
 	start_time := time.Now()
 
@@ -67,7 +67,7 @@ func NewOneQuorumNodePartition(logger *util.Logger) *OneQuorumNodePartition {
 }
 
 func (a *OneQuorumNodePartition) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
-	fmt.Printf("Running One Quorum Parition Attack -- at a time only one quorum connected node")
+	fmt.Printf("Running One Quorum Parition Attack -- at a time only one quorum connected node\n")
 
 	start_time := time.Now()
 	good_node := 0
@@ -75,7 +75,7 @@ func (a *OneQuorumNodePartition) Attack(nodes []*AttackNode, links [][]*AttackLi
 	for time.Now().Sub(start_time).Seconds() < float64(duration-10) {
 		good_node = (good_node + 1) % len(nodes)
 
-		fmt.Printf("Only quorum connected node is %v", good_node)
+		fmt.Printf("Only quorum connected node is %v\n", good_node)
 
 		for i := 0; i < len(nodes); i++ {
 			for j := 0; j < len(nodes); j++ {
@@ -117,7 +117,7 @@ func NewMajorityHighDelay(logger *util.Logger) *MajorityHighDelay {
 }
 
 func (a *MajorityHighDelay) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
-	fmt.Printf("Running Majority High Delay attack -- first majority nodes have high link delays")
+	fmt.Printf("Running Majority High Delay attack -- first majority nodes have high link delays\n")
 
 	start_time := time.Now()
 
@@ -131,7 +131,7 @@ func (a *MajorityHighDelay) Attack(nodes []*AttackNode, links [][]*AttackLink, o
 			majority_leaders[leaders[i]] = true
 		}
 
-		fmt.Printf("setting high delays for nodes %v", majority_leaders)
+		fmt.Printf("setting high delays for nodes %v\n", majority_leaders)
 
 		for i := 0; i < len(nodes); i++ {
 			for j := 0; j < len(nodes); j++ {
@@ -139,7 +139,7 @@ func (a *MajorityHighDelay) Attack(nodes []*AttackNode, links [][]*AttackLink, o
 					continue
 				}
 				if majority_leaders[i] && majority_leaders[j] {
-					links[i][j].SetDelay(100)
+					links[i][j].SetDelay(800)
 					fmt.Printf("setting delay between %v and %v\n", i, j)
 				}
 			}
@@ -175,7 +175,7 @@ func NewMinorityCrash(logger *util.Logger) *MinorityCrash {
 }
 
 func (a *MinorityCrash) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
-	fmt.Printf("Running Minority Crash attack -- minority of the nodes crash")
+	fmt.Printf("Running Minority Crash attack -- minority of the nodes crash\n")
 
 	leaders := oracle.GetTopNLeaders()
 	num_nodes := len(nodes)
@@ -185,16 +185,20 @@ func (a *MinorityCrash) Attack(nodes []*AttackNode, links [][]*AttackLink, oracl
 		minority_leaders[leaders[i]] = true
 	}
 
-	fmt.Printf("crashing minority nodes %v", minority_leaders)
+	fmt.Printf("crashing minority nodes %v\n", minority_leaders)
 
 	for i := 0; i < len(nodes); i++ {
 		if minority_leaders[i] {
 			nodes[i].Pause()
-			fmt.Printf("crashed %v", i)
+			fmt.Printf("crashed %v\n", i)
 		}
 	}
+	start_time := time.Now()
 
-	time.Sleep(time.Duration(duration-5) * time.Second) // we don't want to see a recovered state
+	for time.Now().Sub(start_time).Seconds() < float64(duration-5) {
+		fmt.Printf("The leader order is %v\n", oracle.GetTopNLeaders())
+		time.Sleep(2 * time.Second)
+	}
 
 	for i := 0; i < len(nodes); i++ {
 		if minority_leaders[i] {
@@ -216,7 +220,7 @@ func NewMinorityStraggler(logger *util.Logger) *MinorityStraggler {
 }
 
 func (a *MinorityStraggler) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
-	fmt.Printf("Running Minority Straggler -- minority nodes are slow")
+	fmt.Printf("Running Minority Straggler -- minority nodes are slow\n")
 
 	start_time := time.Now()
 
@@ -230,12 +234,12 @@ func (a *MinorityStraggler) Attack(nodes []*AttackNode, links [][]*AttackLink, o
 			minority_leaders[leaders[i]] = true
 		}
 
-		fmt.Printf("setting stragglers for nodes %v", minority_leaders)
+		fmt.Printf("setting stragglers for nodes %v\n", minority_leaders)
 
 		for i := 0; i < len(nodes); i++ {
 			if minority_leaders[i] {
 				nodes[i].Pause()
-				fmt.Printf("paused %v", i)
+				fmt.Printf("paused %v\n", i)
 			}
 		}
 
