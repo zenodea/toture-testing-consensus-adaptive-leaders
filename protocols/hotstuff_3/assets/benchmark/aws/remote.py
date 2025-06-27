@@ -198,7 +198,7 @@ class Bench:
 
         # Wait for the nodes to synchronize
         Print.info('Waiting for the nodes to synchronize...')
-        sleep(5)
+        sleep(10)
 
         print("sending signal to pid: ", pid)
         try:
