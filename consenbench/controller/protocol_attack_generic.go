@@ -181,7 +181,7 @@ func (a *MinorityCrash) Attack(nodes []*AttackNode, links [][]*AttackLink, oracl
 	num_nodes := len(nodes)
 
 	minority_leaders := make(map[int]bool)
-	for i := 0; i < num_nodes/2; i++ {
+	for i := 0; i < num_nodes/3; i++ {
 		minority_leaders[leaders[i]] = true
 	}
 
@@ -230,7 +230,7 @@ func (a *MinorityStraggler) Attack(nodes []*AttackNode, links [][]*AttackLink, o
 		num_nodes := len(nodes)
 
 		minority_leaders := make(map[int]bool)
-		for i := 0; i < num_nodes/2; i++ {
+		for i := 0; i < num_nodes/3; i++ {
 			minority_leaders[leaders[i]] = true
 		}
 
