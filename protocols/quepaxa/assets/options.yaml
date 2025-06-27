@@ -2,7 +2,7 @@ replica_path: protocols/quepaxa/assets/replica
 client_path: protocols/quepaxa/assets/client
 num_replicas: 5
 num_clients: 5
-arrival_rate: 10000
+arrival_rate: 1000
 ports: 10000
 process_name: replica
 pipeline_length: 1
