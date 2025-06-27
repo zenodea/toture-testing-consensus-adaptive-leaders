@@ -241,7 +241,7 @@ class Bench:
                 log_file = PathMaker.worker_log_file(i, id)
                 self._background_run(host, cmd, log_file)
 
-        sleep(5)
+        sleep(10)
 
         # send a signal to pid
         print("sending signal to pid: ", pid)

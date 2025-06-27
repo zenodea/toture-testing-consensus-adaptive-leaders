@@ -126,7 +126,7 @@ func (ba *Bullshark) Bootstrap(nodes []*common.Node, duration int, result chan u
 
 	fmt.Println("Waiting for a signal from fabric (PID:", os.Getpid(), ")")
 	<-done
-	time.Sleep(5 * time.Second)
+	time.Sleep(10 * time.Second)
 	bootstrap_complete <- true
 	fmt.Printf("bootstrap complete for bullshark\n")
 	wg.Wait()
