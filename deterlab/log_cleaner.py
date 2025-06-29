@@ -1,0 +1,178 @@
+import sys
+
+def clean_log_file(input_filename):
+    skip_postfixes = [
+        "waiting for 5 replicas",
+        "Starting Egalitarian Paxos replica...",
+        "Done connecting to peers",
+        "; happy 0",
+        "Performance graph",
+        "killed",
+        "options",
+        "successfully",
+        "user",
+        "Booting",
+        "sending ",
+        "sent to process",
+        "logs and computing",
+        "fab",
+        "Fab",
+        "available",
+        "testbed",
+        "warning:",
+        "note: ",
+        "mmysticeti_core::c",
+        "mysticeti_core::",
+        "private key",
+        "Starting ",
+        "Installing",
+        "Selected ",
+        "Cleaning",
+        "Waiting",
+    ]
+    skip_prefixes = [
+        "summary:",
+        "   |",
+        "Killing",
+        "Created",
+        "Deleted old",
+        "Mysticeti options",
+        "rm: cannot remove",
+        "Generated throughput plot",
+        "Generated latency plot in",
+        "finished",
+        "bootstrap",
+        "bootstrap ",
+        "Efficient Performance graph",
+        "quepaxa options:",
+        "     ip: ",
+        "     proxyport: ",
+        "     recorderport: ",
+        "     clientport: ",
+        "QuePaxa Performance graph",
+        "Mahi Mahi options",
+        "Cloned the",
+        "Generated the",
+        "Prometheus server",
+        "Wal is empty,",
+        "raxos/replica/src",
+        "goroutine 252 ",
+        "MinorityStraggler ",
+        "Starting generator with",
+        "Generating ",
+        "Pipeline enabled",
+        "Number",
+        "Wave ",
+        "Network",
+        "+---",
+        "| peer",
+        "|  -",
+        "| ",
+        "Validator",
+        "Timeout",
+        "/home/pasindut/toture-testing-consensus",
+        "# google.golang.org/protobuf/reflect/protoreflect",
+        "./go/pkg/mod/",
+        "../go/pkg/mod/g",
+        "Started the client binary on ",
+        "Initialized the network layer with ",
+        "Closed the clients",
+        "Downloaded the logs from the clients",
+        "Copied the ",
+        "Started the client",
+        "Initialized the network layer",
+        "Error while deleting ",
+        "created ",
+        "deleted ",
+        "note:",
+        "go: added",
+        "build.sh:",
+        "reading node",
+        "FAILED to execute",
+        "Copied the client binary to",
+        "Starting client on",
+        "ID: ",
+        "The leader order i",
+        " peers:",
+        "   - name:",
+        "     address:",
+        "     gaddress:",
+        "dedis_paxos options:",
+        "setting high delays for nodes",
+        " for node:",
+        "setting duplex loss",
+        "resetting attack",
+        "attacking",
+        "Status",
+        "Killed",
+        "Started",
+        "Sent",
+        "Bootstrap",
+        " map",
+        "Running ",
+        "Noop",
+        "ip_config.yaml",
+        "Attack",
+        "Finished",
+        "Downloaded",
+        "setting",
+        "clients",
+        "Only quorum",
+        "OneQuorumNodePartition",
+        "paused",
+        "2 became the",
+        "1 became the",
+        "3 became the",
+        "4 became the",
+        "5 became the",
+        "rabia options:",
+        "export_command:",
+        "crl_export: ",
+        "cli_export: ",
+        "svr_export: ",
+        "Rabia Performance graph",
+        "Dedis_Raft Performance graph",
+        "Dedis_Paxos Performance graph",
+        "Sadl_Racs Performance graph",
+        "sadl_racs options",
+        "panic: ",
+        "goroutine 1",
+        "mandator-sporades/replica/",
+        "	/home/tennage/Documents/",
+        "main.main()",
+        "LeaderPartition attack complete",
+        "MajorityHighDelay complete",
+        "crashing minority nodes",
+        "crashed ",
+        "MinorityCrash",
+        "Racs Performance graph",
+        "test complete",
+        "moved final-results",
+
+    ]
+
+    try:
+        with open(input_filename, 'r') as f:
+            lines = f.readlines()
+
+        cleaned_lines = []
+        for line in lines:
+            if (not any(line.startswith(prefix) for prefix in skip_prefixes)) and (not any(s in line for s in skip_postfixes)) :
+                if len(line.strip())>0:
+                    cleaned_lines.append(line)
+
+        with open("logs/log_cleaned.log", 'w') as out_file:
+            out_file.writelines(cleaned_lines)
+
+        print("Filtered lines written to log_cleaned.log")
+
+    except FileNotFoundError:
+        print(f"Error: File '{input_filename}' not found.")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Usage: python clean_log.py <filename>")
+    else:
+        clean_log_file(sys.argv[1])
