@@ -235,7 +235,7 @@ func (ba *ZooKeeper) GetPerformance(outputs []string) util.Performance {
 	p := util.Performance{
 		map[string]string{"latency": fmt.Sprintf("%v", sum_latency/entries), "throughput": fmt.Sprintf("%v", sum_throughput)}}
 
-	fmt.Printf("%v ", p)
+	fmt.Printf("%v,%v,%v,", sum_throughput, sum_latency/entries, 0)
 
 	return p
 }
