@@ -196,9 +196,12 @@ func (ba *Bullshark) GetPerformance() util.Performance {
 
 	// Convert the content to a string
 	fileContent := string(content)
-	fmt.Printf(fileContent) //todo
 
-	return util.Performance{
+	p := util.Performance{
 		map[string]string{"summary": fileContent},
 	}
+
+	fmt.Printf("%v ", p)
+
+	return p
 }

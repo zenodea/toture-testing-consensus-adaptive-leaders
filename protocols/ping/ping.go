@@ -46,7 +46,7 @@ func (ba *Ping) CopyConsensus(nodes []*common.Node) error {
 		config_inputs = append(config_inputs, nodes[i].Ip)
 	}
 
-	fmt.Printf("Running python command: %v\n", config_inputs)
+	ba.logger.Debug(fmt.Sprintf("Running python command: %v\n", config_inputs), 0)
 
 	sshCmd := exec.Command("python3", config_inputs...)
 	output, err := sshCmd.CombinedOutput()
@@ -60,7 +60,7 @@ func (ba *Ping) CopyConsensus(nodes []*common.Node) error {
 		if err != nil {
 			panic("Error while writing to ip_config.yaml " + err.Error())
 		} else {
-			fmt.Printf("ip_config.yaml written successfully with content:\n %v\n", string(output))
+			ba.logger.Debug(fmt.Sprintf("ip_config.yaml written successfully with content:\n %v\n", string(output)), 0)
 		}
 	}
 
@@ -78,7 +78,7 @@ func (ba *Ping) CopyConsensus(nodes []*common.Node) error {
 		}(int(j))
 	}
 	wg.Wait()
-	fmt.Print("Copied the ping binaries to all the nodes\n")
+	ba.logger.Debug(fmt.Sprintf("Copied the ping binaries to all the nodes\n"), 0)
 
 	return nil
 }
@@ -106,7 +106,7 @@ func (ba *Ping) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 	}
 	wg.Wait()
 
-	fmt.Print("Killed all the replicas and clients\n")
+	ba.logger.Debug(fmt.Sprintf("Killed all the replicas and clients\n"), 0)
 
 	for j := 0; j < int(num_replicas); j++ {
 		go func(i int) {
@@ -116,13 +116,13 @@ func (ba *Ping) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 
 	time.Sleep(15 * time.Second)
 
-	fmt.Print("Started all the replicas\n")
+	ba.logger.Debug(fmt.Sprintf("Started all the replicas\n"), 0)
 
 	go func() {
 		nodes[0].ExecCmd("." + stat_path + " --config " + fmt.Sprintf("%vbench/ip_config.yaml", nodes[0].HomeDir))
 	}()
 
-	fmt.Print("Bootstrap complete\n")
+	ba.logger.Debug(fmt.Sprintf("Bootstrap complete\n"), 0)
 	bootstrap_complete <- true
 
 	time.Sleep(time.Duration(duration) * time.Second)
@@ -138,7 +138,7 @@ func (ba *Ping) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 	}
 	wg1.Wait()
 
-	fmt.Print("Killed all the replicas and stats client\n")
+	ba.logger.Debug(fmt.Sprintf("Killed all the replicas and stats client\n"), 0)
 
 	result <- util.Performance{map[string]string{}}
 }
@@ -160,7 +160,7 @@ func (ba *Ping) ExtractOptions(path string) protocols.ConsensusOptions {
 		options.Option[key] = fmt.Sprintf("%v", value)
 	}
 
-	fmt.Printf("Ping options:\n %v\n", options.Option)
+	ba.logger.Debug(fmt.Sprintf("Ping options:\n %v\n", options.Option), 0)
 
 	ba.options = options
 	return options
