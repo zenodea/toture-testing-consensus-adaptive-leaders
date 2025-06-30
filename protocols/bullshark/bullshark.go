@@ -29,7 +29,7 @@ func NewBullshark(logger *util.Logger) *Bullshark {
 }
 
 func (ba *Bullshark) CopyConsensus(nodes []*common.Node) error {
-	println("Copying Bullshark consensus to nodes using fabric")
+	ba.logger.Debug(fmt.Sprintf("Copying Bullshark consensus to nodes using fabric"), 0)
 	err := os.Chdir("protocols/bullshark/assets/benchmark")
 	if err != nil {
 		panic("Failed to change directory")
@@ -42,13 +42,13 @@ func (ba *Bullshark) CopyConsensus(nodes []*common.Node) error {
 		panic(fmt.Sprintf("Failed to run fab install: %v\n%v", err, string(output)))
 	} else {
 		// print output
-		fmt.Printf("fab install Output: %s\n", output)
+		ba.logger.Debug(fmt.Sprintf("fab install Output: %s\n", output), 0)
 	}
 	return nil
 }
 
 func (ba *Bullshark) Bootstrap(nodes []*common.Node, duration int, result chan util.Performance, bootstrap_complete chan bool) {
-	println("Running Bullshark consensus using fabric")
+	ba.logger.Debug(fmt.Sprintf("Running Bullshark consensus using fabric"), 0)
 	err := os.Chdir("protocols/bullshark/assets/benchmark")
 	if err != nil {
 		panic("Failed to change directory")
@@ -57,16 +57,16 @@ func (ba *Bullshark) Bootstrap(nodes []*common.Node, duration int, result chan u
 	cmd := exec.Command("rm", "-r", "results/")
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		fmt.Printf("Failed to delete results/ %v\n%v", err, string(output))
+		ba.logger.Debug(fmt.Sprintf("Failed to delete results/ %v\n%v", err, string(output)), 0)
 	} else {
-		fmt.Printf("Deleted old results/ %s\n", output)
+		ba.logger.Debug(fmt.Sprintf("Deleted old results/ %s\n", output), 0)
 	}
 	cmd = exec.Command("mkdir", "results/")
 	output, err = cmd.CombinedOutput()
 	if err != nil {
 		panic(fmt.Sprintf("Failed to create results/ %v\n%v", err, string(output)))
 	} else {
-		fmt.Printf("Created  results/ %s\n", output)
+		ba.logger.Debug(fmt.Sprintf("Created  results/ %s\n", output), 0)
 	}
 
 	homeDir, err := os.UserHomeDir()
@@ -77,9 +77,9 @@ func (ba *Bullshark) Bootstrap(nodes []*common.Node, duration int, result chan u
 	sshCmd := exec.Command("rm", []string{"-r", filepath.Join(homeDir, "toture-testing-consensus/logs")}...)
 	output, err = sshCmd.CombinedOutput()
 	if err != nil {
-		print("error while deleting logs/ " + err.Error() + " " + string(output) + "\n")
+		ba.logger.Debug(fmt.Sprintf("error while deleting logs/ "+err.Error()+" "+string(output)+"\n"), 0)
 	} else {
-		print("deleted local logs/ successfully\n" + string(output) + "\n")
+		ba.logger.Debug(fmt.Sprintf("deleted local logs/ successfully\n"+string(output)+"\n"), 0)
 	}
 
 	sshCmd = exec.Command("mkdir", []string{"-p", filepath.Join(homeDir, "toture-testing-consensus/logs")}...)
@@ -87,7 +87,7 @@ func (ba *Bullshark) Bootstrap(nodes []*common.Node, duration int, result chan u
 	if err != nil {
 		panic("Error while creating logs/ " + err.Error() + " " + string(output) + "\n")
 	} else {
-		print("created logs/ successfully\n" + string(output) + "\n")
+		ba.logger.Debug(fmt.Sprintf("created logs/ successfully\n"+string(output)+"\n"), 0)
 	}
 
 	num_replicas, ok := ba.options.Option["num_replicas"]
@@ -105,7 +105,7 @@ func (ba *Bullshark) Bootstrap(nodes []*common.Node, duration int, result chan u
 			panic(fmt.Sprintf("Failed to run %v: %v\n%v", cmd, err, string(output)))
 		} else {
 			// print output
-			fmt.Printf("Fab remote Output: %s\n", output)
+			ba.logger.Debug(fmt.Sprintf("Fab remote Output: %s\n", output), 0)
 			wg.Done()
 		}
 	}()
@@ -119,18 +119,18 @@ func (ba *Bullshark) Bootstrap(nodes []*common.Node, duration int, result chan u
 	// Goroutine to handle signals
 	go func() {
 		sig := <-sigs
-		fmt.Println()
-		fmt.Println("Received signal from fabric:", sig)
+
+		ba.logger.Debug(fmt.Sprintf("Received signal from fabric:", sig), 0)
 		done <- true
 	}()
 
-	fmt.Println("Waiting for a signal from fabric (PID:", os.Getpid(), ")")
+	ba.logger.Debug(fmt.Sprintf("Waiting for a signal from fabric (PID:", os.Getpid(), ")"), 0)
 	<-done
 	time.Sleep(10 * time.Second)
 	bootstrap_complete <- true
-	fmt.Printf("bootstrap complete for bullshark\n")
+	ba.logger.Debug(fmt.Sprintf("bootstrap complete for bullshark\n"), 0)
 	wg.Wait()
-	fmt.Printf("finished running bullshark")
+	ba.logger.Debug(fmt.Sprintf("finished running bullshark"), 0)
 	p := ba.GetPerformance()
 	err = os.Chdir(("../../../../"))
 	if err != nil {
@@ -140,7 +140,7 @@ func (ba *Bullshark) Bootstrap(nodes []*common.Node, duration int, result chan u
 	cmd = exec.Command("pkill", "fab")
 	output, err = sshCmd.CombinedOutput()
 	if err != nil {
-		print("Error while killing fab " + err.Error() + " " + string(output) + "\n")
+		ba.logger.Debug(fmt.Sprintf("Error while killing fab "+err.Error()+" "+string(output)+"\n"), 0)
 	}
 	result <- p
 }
@@ -162,7 +162,7 @@ func (ba *Bullshark) ExtractOptions(path string) protocols.ConsensusOptions {
 		options.Option[key] = fmt.Sprintf("%v", value)
 	}
 
-	fmt.Printf("Bullshark options:\n %v\n", options.Option)
+	ba.logger.Debug(fmt.Sprintf("Bullshark options:\n %v\n", options.Option), 0)
 
 	ba.options = options
 	return options
@@ -196,6 +196,7 @@ func (ba *Bullshark) GetPerformance() util.Performance {
 
 	// Convert the content to a string
 	fileContent := string(content)
+	fmt.Printf(fileContent) //todo
 
 	return util.Performance{
 		map[string]string{"summary": fileContent},

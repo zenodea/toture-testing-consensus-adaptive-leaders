@@ -29,7 +29,7 @@ func NewZooKeeper(logger *util.Logger) *ZooKeeper {
 }
 
 func (ba *ZooKeeper) CopyConsensus(nodes []*common.Node) error {
-	println("Running ZooKeeper")
+	ba.logger.Debug(fmt.Sprintf("Running ZooKeeper"), 0)
 
 	num_replicas, ok := ba.options.Option["num_replicas"]
 	if !ok {
@@ -52,7 +52,7 @@ func (ba *ZooKeeper) CopyConsensus(nodes []*common.Node) error {
 }
 
 func (ba *ZooKeeper) Bootstrap(nodes []*common.Node, duration int, result chan util.Performance, bootstrap_complete chan bool) {
-	println("Running ZooKeeper Paxos")
+	ba.logger.Debug(fmt.Sprintf("Running ZooKeeper Paxos"), 0)
 
 	num_clients, ok := ba.options.Option["num_clients"]
 	if !ok {
@@ -126,9 +126,9 @@ func (ba *ZooKeeper) Bootstrap(nodes []*common.Node, duration int, result chan u
 	}
 	wg.Wait()
 	bootstrap_complete <- true
-	fmt.Printf("bootstrap complete for zookeeper\n")
+	ba.logger.Debug(fmt.Sprintf("bootstrap complete for zookeeper\n"), 0)
 	time.Sleep(time.Duration(3*duration) * time.Second)
-	fmt.Printf("finished running zookeeper\n")
+	ba.logger.Debug(fmt.Sprintf("finished running zookeeper\n"), 0)
 	var wg1 sync.WaitGroup
 	wg1.Add(num_replicas_int)
 	for j := 0; j < num_replicas_int; j++ {
@@ -139,7 +139,7 @@ func (ba *ZooKeeper) Bootstrap(nodes []*common.Node, duration int, result chan u
 		}(j)
 	}
 	wg1.Wait()
-	println("ZooKeeper killed")
+	ba.logger.Debug(fmt.Sprintf("ZooKeeper killed"), 0)
 
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
@@ -149,9 +149,9 @@ func (ba *ZooKeeper) Bootstrap(nodes []*common.Node, duration int, result chan u
 	sshCmd := exec.Command("rm", []string{"-r", filepath.Join(homeDir, "toture-testing-consensus/logs")}...)
 	output, err := sshCmd.CombinedOutput()
 	if err != nil {
-		print("error while deleting logs/ " + err.Error() + " " + string(output) + "\n")
+		ba.logger.Debug(fmt.Sprintf("error while deleting logs/ "+err.Error()+" "+string(output)+"\n"), 0)
 	} else {
-		print("deleted local logs/ successfully\n" + string(output) + "\n")
+		ba.logger.Debug(fmt.Sprintf("deleted local logs/ successfully\n"+string(output)+"\n"), 0)
 	}
 
 	sshCmd = exec.Command("mkdir", []string{"-p", filepath.Join(homeDir, "toture-testing-consensus/logs")}...)
@@ -159,7 +159,7 @@ func (ba *ZooKeeper) Bootstrap(nodes []*common.Node, duration int, result chan u
 	if err != nil {
 		panic("Error while creating logs/ " + err.Error() + " " + string(output) + "\n")
 	} else {
-		print("created logs/ successfully\n" + string(output) + "\n")
+		ba.logger.Debug(fmt.Sprintf("created logs/ successfully\n"+string(output)+"\n"), 0)
 	}
 
 	var wg2 sync.WaitGroup
@@ -175,14 +175,14 @@ func (ba *ZooKeeper) Bootstrap(nodes []*common.Node, duration int, result chan u
 
 	}
 	wg2.Wait()
-	fmt.Println("Downloaded all the zoo keepeter client logs")
+	ba.logger.Debug(fmt.Sprintf("Downloaded all the zoo keepeter client logs"), 0)
 
 	sshCmd = exec.Command("python3", []string{"protocols/zoo_keeper/assets/summary.py", filepath.Join(homeDir, "toture-testing-consensus/logs/"), filepath.Join(homeDir, "toture-testing-consensus/logs/")}...)
 	output, err = sshCmd.CombinedOutput()
 	if err != nil {
-		print("error while running summary " + err.Error() + " " + string(output) + "\n")
+		ba.logger.Debug(fmt.Sprintf("error while running summary "+err.Error()+" "+string(output)+"\n"), 0)
 	} else {
-		print("summary ran successfully\n" + string(output) + "\n")
+		ba.logger.Debug(fmt.Sprintf("summary ran successfully\n"+string(output)+"\n"), 0)
 	}
 
 	p := ba.GetPerformance(outputs)
@@ -206,7 +206,7 @@ func (ba *ZooKeeper) ExtractOptions(path string) protocols.ConsensusOptions {
 		options.Option[key] = fmt.Sprintf("%v", value)
 	}
 
-	fmt.Printf("ZooKeeper options:\n %v\n", options.Option)
+	ba.logger.Debug(fmt.Sprintf("ZooKeeper options:\n %v\n", options.Option), 0)
 
 	ba.options = options
 	return options
@@ -232,6 +232,10 @@ func (ba *ZooKeeper) GetPerformance(outputs []string) util.Performance {
 		}
 	}
 
-	return util.Performance{
+	p := util.Performance{
 		map[string]string{"latency": fmt.Sprintf("%v", sum_latency/entries), "throughput": fmt.Sprintf("%v", sum_throughput)}}
+
+	fmt.Printf("%v ", p)
+
+	return p
 }

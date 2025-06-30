@@ -62,7 +62,7 @@ func (ba *ETCD) CopyConsensus(nodes []*common.Node) error {
 }
 
 func (ba *ETCD) Bootstrap(nodes []*common.Node, duration int, result chan util.Performance, bootstrap_complete chan bool) {
-	println("Running ETCD Raft")
+	ba.logger.Debug(fmt.Sprintf("Running ETCD Raft"), 0)
 
 	num_replicas, ok := ba.options.Option["num_replicas"]
 	if !ok {
@@ -116,9 +116,9 @@ func (ba *ETCD) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 	}
 	wg.Wait()
 	bootstrap_complete <- true
-	fmt.Printf("bootstrap complete for etcd\n")
+	ba.logger.Debug(fmt.Sprintf("bootstrap complete for etcd\n"), 0)
 	time.Sleep(time.Duration(3*duration) * time.Second)
-	fmt.Printf("finished running etcd")
+	ba.logger.Debug(fmt.Sprintf("finished running etcd"), 0)
 	var wg1 sync.WaitGroup
 	wg1.Add(num_replicas_int)
 	for j := 0; j < num_replicas_int; j++ {
@@ -129,7 +129,7 @@ func (ba *ETCD) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 		}(j)
 	}
 	wg1.Wait()
-	println("ETCD Raft killed")
+	ba.logger.Debug(fmt.Sprintf("ETCD Raft killed"), 0)
 
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
@@ -139,9 +139,9 @@ func (ba *ETCD) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 	sshCmd := exec.Command("rm", []string{"-r", filepath.Join(homeDir, "toture-testing-consensus/logs")}...)
 	output, err := sshCmd.CombinedOutput()
 	if err != nil {
-		print("error while deleting logs/ " + err.Error() + " " + string(output) + "\n")
+		ba.logger.Debug(fmt.Sprintf("error while deleting logs/ "+err.Error()+" "+string(output)+"\n"), 0)
 	} else {
-		print("deleted local logs/ successfully\n" + string(output) + "\n")
+		ba.logger.Debug(fmt.Sprintf("deleted local logs/ successfully\n"+string(output)+"\n"), 0)
 	}
 
 	sshCmd = exec.Command("mkdir", []string{"-p", filepath.Join(homeDir, "toture-testing-consensus/logs")}...)
@@ -149,7 +149,7 @@ func (ba *ETCD) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 	if err != nil {
 		panic("Error while creating logs/ " + err.Error() + " " + string(output) + "\n")
 	} else {
-		print("created logs/ successfully\n" + string(output) + "\n")
+		ba.logger.Debug(fmt.Sprintf("created logs/ successfully\n"+string(output)+"\n"), 0)
 	}
 
 	var wg2 sync.WaitGroup
@@ -165,14 +165,14 @@ func (ba *ETCD) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 
 	}
 	wg2.Wait()
-	fmt.Println("Downloaded all the etcd client logs")
+	ba.logger.Debug(fmt.Sprintf("Downloaded all the etcd client logs"), 0)
 
 	sshCmd = exec.Command("python3", []string{"protocols/etcd/assets/summary.py", filepath.Join(homeDir, "toture-testing-consensus/logs/"), filepath.Join(homeDir, "toture-testing-consensus/logs/")}...)
 	output, err = sshCmd.CombinedOutput()
 	if err != nil {
-		print("error while running summary " + err.Error() + " " + string(output) + "\n")
+		ba.logger.Debug(fmt.Sprintf("error while running summary "+err.Error()+" "+string(output)+"\n"), 0)
 	} else {
-		print("summary ran successfully\n" + string(output) + "\n")
+		ba.logger.Debug(fmt.Sprintf("summary ran successfully\n"+string(output)+"\n"), 0)
 	}
 
 	p := ba.GetPerformance(outputs)
@@ -196,7 +196,7 @@ func (ba *ETCD) ExtractOptions(path string) protocols.ConsensusOptions {
 		options.Option[key] = fmt.Sprintf("%v", value)
 	}
 
-	fmt.Printf("ETCD options:\n %v\n", options.Option)
+	ba.logger.Debug(fmt.Sprintf("ETCD options:\n %v\n", options.Option), 0)
 
 	ba.options = options
 	return options
@@ -222,6 +222,10 @@ func (ba *ETCD) GetPerformance(outputs []string) util.Performance {
 		}
 	}
 
-	return util.Performance{
+	p := util.Performance{
 		map[string]string{"latency": fmt.Sprintf("%v", sum_latency/entries), "throughput": fmt.Sprintf("%v", sum_throughput)}}
+
+	fmt.Printf("%v ", p)
+
+	return p
 }

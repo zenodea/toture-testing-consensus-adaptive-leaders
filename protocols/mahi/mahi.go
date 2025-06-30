@@ -45,11 +45,11 @@ func (ba *Mahi) CopyConsensus(nodes []*common.Node) error {
 
 	nodes[0].ExecCmd(fmt.Sprintf("sudo rm -r async-mystecity; git clone https://github.com/PasinduTennage/async-mystecity; cd async-mystecity; git checkout consensus-rework; sudo apt-get install -y libfontconfig1-dev; source %v.cargo/env; cargo build", nodes[0].HomeDir))
 
-	println("Cloned the mahi repository and built the binary")
+	ba.logger.Debug(fmt.Sprintf("Cloned the mahi repository and built the binary"), 0)
 
 	nodes[0].Get_Load(fmt.Sprintf("%vasync-mystecity/target/debug/mysticeti", nodes[0].HomeDir), "protocols/mahi/assets/")
 
-	println("Copied the mahi binary to the controller machine")
+	ba.logger.Debug(fmt.Sprintf("Copied the mahi binary to the controller machine"), 0)
 
 	var wg sync.WaitGroup
 	wg.Add(int(num_replicas_int))
@@ -62,7 +62,7 @@ func (ba *Mahi) CopyConsensus(nodes []*common.Node) error {
 		}(int(j))
 	}
 	wg.Wait()
-	fmt.Print("Copied the mahi binary to all the nodes\n")
+	ba.logger.Debug(fmt.Sprintf("Copied the mahi binary to all the nodes\n"), 0)
 	return nil
 }
 
@@ -85,7 +85,7 @@ func (ba *Mahi) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 	}
 	wg.Wait()
 
-	fmt.Print("Killed all the replicas and clients\n")
+	ba.logger.Debug(fmt.Sprintf("Killed all the replicas and clients\n"), 0)
 
 	load, ok := ba.options.Option["load"]
 	if !ok {
@@ -145,7 +145,7 @@ func (ba *Mahi) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 	}
 	wg1.Wait()
 
-	println("Generated the node private keys")
+	ba.logger.Debug(fmt.Sprintf("Generated the node private keys"), 0)
 
 	for i := 0; i < int(num_replicas); i++ {
 		go func(j int) {
@@ -154,7 +154,7 @@ func (ba *Mahi) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 	}
 	time.Sleep(45 * time.Second)
 
-	println("Started the replicas")
+	ba.logger.Debug(fmt.Sprintf("Started the replicas"), 0)
 
 	bootstrap_complete <- true
 
@@ -170,7 +170,7 @@ func (ba *Mahi) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 	}
 	wg2.Wait()
 
-	println("Killed all the replicas")
+	ba.logger.Debug(fmt.Sprintf("Killed all the replicas"), 0)
 
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
@@ -180,9 +180,9 @@ func (ba *Mahi) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 	cmd := exec.Command("rm", []string{"-r", filepath.Join(homeDir, "toture-testing-consensus/logs")}...)
 	output, err = cmd.CombinedOutput()
 	if err != nil {
-		print("Error while deleting logs/ " + err.Error() + " " + string(output) + "\n")
+		ba.logger.Debug(fmt.Sprintf("Error while deleting logs/ "+err.Error()+" "+string(output)+"\n"), 0)
 	} else {
-		print("deleted local logs/ successfully\n" + string(output) + "\n")
+		ba.logger.Debug(fmt.Sprintf("deleted local logs/ successfully\n"+string(output)+"\n"), 0)
 	}
 
 	cmd = exec.Command("mkdir", []string{"-p", filepath.Join(homeDir, "toture-testing-consensus/logs")}...)
@@ -190,7 +190,7 @@ func (ba *Mahi) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 	if err != nil {
 		panic("Error while creating logs/ " + err.Error() + " " + string(output) + "\n")
 	} else {
-		print("created logs/ successfully\n" + string(output) + "\n")
+		ba.logger.Debug(fmt.Sprintf("created logs/ successfully\n"+string(output)+"\n"), 0)
 	}
 
 	var wg3 sync.WaitGroup
@@ -203,7 +203,7 @@ func (ba *Mahi) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 	}
 	wg3.Wait()
 
-	println("Downloaded the client logs")
+	ba.logger.Debug(fmt.Sprintf("Downloaded the client logs"), 0)
 
 	command := "protocols/mahi/assets/performance_graph.py"
 	outputs := []string{}
@@ -215,9 +215,9 @@ func (ba *Mahi) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 		sshCmd = exec.Command("python3", []string{command, "mahi-" + strconv.Itoa(j), logFile}...)
 		output, err = sshCmd.CombinedOutput()
 		if err != nil {
-			print("Error while generating performance graph " + err.Error() + " " + string(output) + "\n")
+			ba.logger.Debug(fmt.Sprintf("Error while generating performance graph "+err.Error()+" "+string(output)+"\n"), 0)
 		} else {
-			print("Mahi Performance graph generated successfully\n" + string(output) + "\n")
+			ba.logger.Debug(fmt.Sprintf("Mahi Performance graph generated successfully\n"+string(output)+"\n"), 0)
 			outputs = append(outputs, string(output))
 		}
 	}
@@ -225,12 +225,12 @@ func (ba *Mahi) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 	sshCmd = exec.Command("python3", append([]string{command, "mahi"}, files...)...)
 	output, err = sshCmd.CombinedOutput()
 	if err != nil {
-		print("Error while generating performance graph " + err.Error() + " " + string(output) + "\n")
+		ba.logger.Debug(fmt.Sprintf("Error while generating performance graph "+err.Error()+" "+string(output)+"\n"), 0)
 	} else {
-		print("Mahi Performance graph generated successfully\n" + string(output) + "\n")
+		ba.logger.Debug(fmt.Sprintf("Mahi Performance graph generated successfully\n"+string(output)+"\n"), 0)
 	}
 
-	fmt.Printf("Mahi Mahi Performance:\n %v\n", outputs)
+	ba.logger.Debug(fmt.Sprintf("Mahi Mahi Performance:\n %v\n", outputs), 0)
 	result <- ba.getPerformance(outputs)
 
 }
@@ -252,7 +252,7 @@ func (ba *Mahi) ExtractOptions(path string) protocols.ConsensusOptions {
 		options.Option[key] = fmt.Sprintf("%v", value)
 	}
 
-	fmt.Printf("Mahi Mahi options:\n %v\n", options.Option)
+	ba.logger.Debug(fmt.Sprintf("Mahi Mahi options:\n %v\n", options.Option), 0)
 
 	ba.options = options
 	return options
@@ -279,5 +279,6 @@ func (ba *Mahi) getPerformance(outputs []string) util.Performance {
 	p.Option["throughput"] = fmt.Sprintf("%v requests per second", sum_tx/len(outputs))
 	p.Option["average latency"] = fmt.Sprintf("%v ms", sum_lat/len(outputs))
 
+	fmt.Printf("%v ", p)
 	return p
 }

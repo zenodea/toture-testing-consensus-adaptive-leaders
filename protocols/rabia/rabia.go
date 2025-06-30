@@ -64,7 +64,7 @@ func (ba *Rabia) CopyConsensus(nodes []*common.Node) error {
 		}(int(j))
 	}
 	wg.Wait()
-	fmt.Print("Copied the rabia binaries to all the nodes\n")
+	ba.logger.Debug(fmt.Sprintf("Copied the rabia binaries to all the nodes\n"), 0)
 
 	return nil
 }
@@ -114,7 +114,7 @@ func (ba *Rabia) Bootstrap(nodes []*common.Node, duration int, result chan util.
 	}
 	wg.Wait()
 
-	fmt.Print("Killed all the replicas and clients\n")
+	ba.logger.Debug(fmt.Sprintf("Killed all the replicas and clients\n"), 0)
 
 	Controller := nodes[0].Ip + ":9000"
 	NServers := num_replicas
@@ -134,15 +134,15 @@ func (ba *Rabia) Bootstrap(nodes []*common.Node, duration int, result chan util.
 			svr_export := fmt.Sprintf("export RC_Role=svr RC_Index=%v RC_SvrIp=\"%v\" RC_PPort=\"11000\" RC_NPort=\"10000\"", i, nodes[i].Ip)
 			nodes[i].ExecCmd(svr_export + ";" + export_command + ";" + "." + rabia_path)
 			if i == 0 {
-				fmt.Printf("export_command: %v\n\n\n", export_command)
-				fmt.Printf("svr_export: %v\n\n\n", svr_export)
+				ba.logger.Debug(fmt.Sprintf("export_command: %v\n\n\n", export_command), 0)
+				ba.logger.Debug(fmt.Sprintf("svr_export: %v\n\n\n", svr_export), 0)
 			}
 		}(j)
 	}
 
 	time.Sleep(5 * time.Second)
 
-	fmt.Print("Started all the replicas\n")
+	ba.logger.Debug(fmt.Sprintf("Started all the replicas\n"), 0)
 
 	clientOutputs := make([]string, num_clients)
 	m := 0
@@ -153,30 +153,30 @@ func (ba *Rabia) Bootstrap(nodes []*common.Node, duration int, result chan util.
 			cli_export := fmt.Sprintf("export RC_Role=cli RC_Index=%v RC_Proxy=\"%v:11000\"", k, nodes[int64(i)-num_replicas].Ip)
 			clientOutputs[i-int(num_replicas)] = nodes[i].ExecCmd(cli_export + ";" + export_command + ";" + "." + rabia_path)
 			if i == int(num_replicas) {
-				fmt.Printf("export_command: %v\n\n\n", export_command)
-				fmt.Printf("cli_export: %v\n\n\n", cli_export)
+				ba.logger.Debug(fmt.Sprintf("export_command: %v\n\n\n", export_command), 0)
+				ba.logger.Debug(fmt.Sprintf("cli_export: %v\n\n\n", cli_export), 0)
 			}
 		}(j, m)
 		m++
 	}
 
-	fmt.Print("Started all the clients\n")
+	ba.logger.Debug(fmt.Sprintf("Started all the clients\n"), 0)
 
 	crl_export := fmt.Sprintf("export RC_Role=ctrl")
 	export_command := fmt.Sprintf("export LogFilePath=%vbench/logs/ RC_Ctrl=%v RC_Folder=%v/bench/ RC_LLevel=\"warn\" Rabia_ClosedLoop=false Rabia_NServers=%v Rabia_NFaulty=0 Rabia_NClients=%v Rabia_NConcurrency=1 Rabia_ClientBatchSize=%v Rabia_ClientTimeout=%v Rabia_ClientThinkTime=0 Rabia_ClientNRequests=0 Rabia_ClientArrivalRate=%v Rabia_ProxyBatchSize=%v Rabia_ProxyBatchTimeout=%v Rabia_NetworkBatchSize=0 Rabia_NetworkBatchTimeout=0 RC_Peers=%v Rabia_StorageMode=0",
 		nodes[0].HomeDir, Controller, nodes[0].HomeDir, NServers, NClients, rabia_client_batch_size, duration, arrival_rate, rabia_proxy_batch_size, rabia_proxy_batch_timeout, RC_Peers_N)
 	go nodes[0].ExecCmd(crl_export + ";" + export_command + ";" + "." + rabia_path)
-	fmt.Printf("export_command: %v\n\n\n", export_command)
-	fmt.Printf("crl_export: %v\n\n\n", crl_export)
+	ba.logger.Debug(fmt.Sprintf("export_command: %v\n\n\n", export_command), 0)
+	ba.logger.Debug(fmt.Sprintf("crl_export: %v\n\n\n", crl_export), 0)
 
 	time.Sleep(5 * time.Second)
 
-	fmt.Print("Bootstrap complete\n")
+	ba.logger.Debug(fmt.Sprintf("Bootstrap complete\n"), 0)
 	bootstrap_complete <- true
 
 	time.Sleep(time.Duration(2*duration) * time.Second)
 
-	fmt.Print("Finished the clients\n")
+	ba.logger.Debug(fmt.Sprintf("Finished the clients\n"), 0)
 
 	var wg1 sync.WaitGroup
 	wg1.Add(int(num_replicas + num_clients))
@@ -189,7 +189,7 @@ func (ba *Rabia) Bootstrap(nodes []*common.Node, duration int, result chan util.
 	}
 	wg1.Wait()
 
-	fmt.Print("Killed all the replicas and clients\n")
+	ba.logger.Debug(fmt.Sprintf("Killed all the replicas and clients\n"), 0)
 
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
@@ -199,9 +199,9 @@ func (ba *Rabia) Bootstrap(nodes []*common.Node, duration int, result chan util.
 	sshCmd := exec.Command("rm", []string{"-r", filepath.Join(homeDir, "toture-testing-consensus/logs")}...)
 	output, err := sshCmd.CombinedOutput()
 	if err != nil {
-		print("Error while deleting logs/ " + err.Error() + " " + string(output) + "\n")
+		ba.logger.Debug(fmt.Sprintf("Error while deleting logs/ "+err.Error()+" "+string(output)+"\n"), 0)
 	} else {
-		print("deleted local logs/ successfully\n" + string(output) + "\n")
+		ba.logger.Debug(fmt.Sprintf("deleted local logs/ successfully\n"+string(output)+"\n"), 0)
 	}
 
 	sshCmd = exec.Command("mkdir", []string{"-p", filepath.Join(homeDir, "toture-testing-consensus/logs")}...)
@@ -209,7 +209,7 @@ func (ba *Rabia) Bootstrap(nodes []*common.Node, duration int, result chan util.
 	if err != nil {
 		panic("Error while creating logs/ " + err.Error() + " " + string(output) + "\n")
 	} else {
-		print("created logs/ successfully\n" + string(output) + "\n")
+		ba.logger.Debug(fmt.Sprintf("created logs/ successfully\n"+string(output)+"\n"), 0)
 	}
 
 	var wg2 sync.WaitGroup
@@ -223,7 +223,7 @@ func (ba *Rabia) Bootstrap(nodes []*common.Node, duration int, result chan util.
 		m++
 	}
 	wg2.Wait()
-	fmt.Println("Downloaded all the rabia client logs")
+	ba.logger.Debug(fmt.Sprintf("Downloaded all the rabia client logs"), 0)
 
 	command := "protocols/rabia/assets/performance_graph.py"
 	file_names := []string{}
@@ -237,9 +237,9 @@ func (ba *Rabia) Bootstrap(nodes []*common.Node, duration int, result chan util.
 		sshCmd = exec.Command("python3", []string{command, "rabia-" + strconv.Itoa(m), logFile}...)
 		output, err = sshCmd.CombinedOutput()
 		if err != nil {
-			print("Error while generating performance graph " + err.Error() + " " + string(output) + "\n")
+			ba.logger.Debug(fmt.Sprintf("Error while generating performance graph "+err.Error()+" "+string(output)+"\n"), 0)
 		} else {
-			print("Rabia Performance graph generated successfully\n" + string(output) + "\n")
+			ba.logger.Debug(fmt.Sprintf("Rabia Performance graph generated successfully\n"+string(output)+"\n"), 0)
 		}
 
 		m++
@@ -248,9 +248,9 @@ func (ba *Rabia) Bootstrap(nodes []*common.Node, duration int, result chan util.
 	sshCmd = exec.Command("python3", append([]string{command, "rabia"}, file_names...)...)
 	output, err = sshCmd.CombinedOutput()
 	if err != nil {
-		print("Error while generating performance graphs " + err.Error() + " " + string(output) + "\n")
+		ba.logger.Debug(fmt.Sprintf("Error while generating performance graphs "+err.Error()+" "+string(output)+"\n"), 0)
 	} else {
-		print("Rabia Performance graphs generated successfully\n" + string(output) + "\n")
+		ba.logger.Debug(fmt.Sprintf("Rabia Performance graphs generated successfully\n"+string(output)+"\n"), 0)
 	}
 
 	result <- ba.GetPerformance(clientOutputs)
@@ -273,7 +273,7 @@ func (ba *Rabia) ExtractOptions(path string) protocols.ConsensusOptions {
 		options.Option[key] = fmt.Sprintf("%v", value)
 	}
 
-	fmt.Printf("rabia options:\n %v\n", options.Option)
+	ba.logger.Debug(fmt.Sprintf("rabia options:\n %v\n", options.Option), 0)
 
 	ba.options = options
 	return options
@@ -308,11 +308,15 @@ func (ba *Rabia) GetPerformance(outputs []string) util.Performance {
 		sum_percentle += percentil99s[i]
 	}
 
-	return util.Performance{
+	p := util.Performance{
 		map[string]string{
 			"throughput":   fmt.Sprintf("%v", sum_throughput),
 			"median":       fmt.Sprintf("%v", sum_median/float64(len(throughput))),
 			"percentile99": fmt.Sprintf("%v", sum_percentle/float64(len(throughput))),
 		},
 	}
+
+	fmt.Printf("%v ", p)
+
+	return p
 }

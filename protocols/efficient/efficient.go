@@ -66,7 +66,7 @@ func (ba *Efficient) CopyConsensus(nodes []*common.Node) error {
 		}(int(j))
 	}
 	wg.Wait()
-	fmt.Print("Copied the efficient binaries to all the nodes\n")
+	ba.logger.Debug(fmt.Sprintf("Copied the efficient binaries to all the nodes\n"), 0)
 
 	return nil
 }
@@ -150,20 +150,20 @@ func (ba *Efficient) Bootstrap(nodes []*common.Node, duration int, result chan u
 	}
 	wg.Wait()
 
-	fmt.Print("Killed all the replicas and clients\n")
+	ba.logger.Debug(fmt.Sprintf("Killed all the replicas and clients\n"), 0)
 
 	go nodes[0].ExecCmd("." + master_path + " -N " + strconv.Itoa(int(num_replicas)))
 
 	time.Sleep(5 * time.Second)
 
-	fmt.Print("Started the master\n")
+	ba.logger.Debug(fmt.Sprintf("Started the master\n"), 0)
 
 	for i := 0; i < int(num_replicas); i++ {
 		go nodes[i].ExecCmd("." + replica_path + " -port 10000 " + " -maddr " + nodes[0].Ip + " -addr " + nodes[i].Ip + " -batchSize 3000 " + " -batchTime 5000 " + " -pipeline " + pipeline_length + " " + algo + " " + execF + " " + dreply + " " + durable + " " + thrifty)
 		time.Sleep(5 * time.Second)
 	}
 
-	fmt.Print("Started all the replicas\n")
+	ba.logger.Debug(fmt.Sprintf("Started all the replicas\n"), 0)
 
 	time.Sleep(5 * time.Second)
 
@@ -180,16 +180,16 @@ func (ba *Efficient) Bootstrap(nodes []*common.Node, duration int, result chan u
 		m++
 	}
 
-	fmt.Print("Started all the clients\n")
+	ba.logger.Debug(fmt.Sprintf("Started all the clients\n"), 0)
 
 	time.Sleep(5 * time.Second)
 
-	fmt.Print("Bootstrap complete\n")
+	ba.logger.Debug(fmt.Sprintf("Bootstrap complete\n"), 0)
 	bootstrap_complete <- true
 
 	time.Sleep(time.Duration(2*duration) * time.Second)
 
-	fmt.Print("Finished the clients\n")
+	ba.logger.Debug(fmt.Sprintf("Finished the clients\n"), 0)
 
 	var wg1 sync.WaitGroup
 	wg1.Add(int(num_replicas + num_clients))
@@ -203,7 +203,7 @@ func (ba *Efficient) Bootstrap(nodes []*common.Node, duration int, result chan u
 	}
 	wg1.Wait()
 
-	fmt.Print("Killed all the replicas and clients\n")
+	ba.logger.Debug(fmt.Sprintf("Killed all the replicas and clients\n"), 0)
 
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
@@ -213,9 +213,9 @@ func (ba *Efficient) Bootstrap(nodes []*common.Node, duration int, result chan u
 	sshCmd := exec.Command("rm", []string{"-r", filepath.Join(homeDir, "toture-testing-consensus/logs")}...)
 	output, err := sshCmd.CombinedOutput()
 	if err != nil {
-		print("Error while deleting logs/ " + err.Error() + " " + string(output) + "\n")
+		ba.logger.Debug(fmt.Sprintf("Error while deleting logs/ "+err.Error()+" "+string(output)+"\n"), 0)
 	} else {
-		print("deleted local logs/ successfully\n" + string(output) + "\n")
+		ba.logger.Debug(fmt.Sprintf("deleted local logs/ successfully\n"+string(output)+"\n"), 0)
 	}
 
 	sshCmd = exec.Command("mkdir", []string{"-p", filepath.Join(homeDir, "toture-testing-consensus/logs")}...)
@@ -223,7 +223,7 @@ func (ba *Efficient) Bootstrap(nodes []*common.Node, duration int, result chan u
 	if err != nil {
 		panic("Error while creating logs/ " + err.Error() + " " + string(output) + "\n")
 	} else {
-		print("created logs/ successfully\n" + string(output) + "\n")
+		ba.logger.Debug(fmt.Sprintf("created logs/ successfully\n"+string(output)+"\n"), 0)
 	}
 
 	var wg2 sync.WaitGroup
@@ -237,7 +237,7 @@ func (ba *Efficient) Bootstrap(nodes []*common.Node, duration int, result chan u
 		m++
 	}
 	wg2.Wait()
-	fmt.Println("Downloaded all the efficient client logs")
+	ba.logger.Debug(fmt.Sprintf("Downloaded all the efficient client logs"), 0)
 
 	command := "protocols/efficient/assets/performance_graph.py"
 	file_names := []string{}
@@ -251,9 +251,9 @@ func (ba *Efficient) Bootstrap(nodes []*common.Node, duration int, result chan u
 		sshCmd = exec.Command("python3", []string{command, "efficient-" + strconv.Itoa(50+m), logFile}...)
 		output, err = sshCmd.CombinedOutput()
 		if err != nil {
-			print("Error while generating performance graph " + err.Error() + " " + string(output) + "\n")
+			ba.logger.Debug(fmt.Sprintf("Error while generating performance graph "+err.Error()+" "+string(output)+"\n"), 0)
 		} else {
-			print("Efficient Performance graph generated successfully\n" + string(output) + "\n")
+			ba.logger.Debug(fmt.Sprintf("Efficient Performance graph generated successfully\n"+string(output)+"\n"), 0)
 		}
 		m++
 	}
@@ -261,9 +261,9 @@ func (ba *Efficient) Bootstrap(nodes []*common.Node, duration int, result chan u
 	sshCmd = exec.Command("python3", append([]string{command, "efficient"}, file_names...)...)
 	output, err = sshCmd.CombinedOutput()
 	if err != nil {
-		print("Error while generating performance graphs " + err.Error() + " " + string(output) + "\n")
+		ba.logger.Debug(fmt.Sprintf("Error while generating performance graphs "+err.Error()+" "+string(output)+"\n"), 0)
 	} else {
-		print("Efficient Performance graphs generated successfully\n" + string(output) + "\n")
+		ba.logger.Debug(fmt.Sprintf("Efficient Performance graphs generated successfully\n"+string(output)+"\n"), 0)
 	}
 
 	result <- ba.GetPerformance(clientOutputs)
@@ -306,7 +306,7 @@ func (ba *Efficient) ExtractOptions(path string) protocols.ConsensusOptions {
 		options.Option["thrifty"] = ""
 	}
 
-	fmt.Printf("efficient options:\n %v\n", options.Option)
+	ba.logger.Debug(fmt.Sprintf("efficient options:\n %v\n", options.Option), 0)
 
 	ba.options = options
 	return options
@@ -341,11 +341,13 @@ func (ba *Efficient) GetPerformance(outputs []string) util.Performance {
 		sum_percentle += percentil99s[i]
 	}
 
-	return util.Performance{
+	p := util.Performance{
 		map[string]string{
 			"throughput":   fmt.Sprintf("%v", sum_throughput),
 			"median":       fmt.Sprintf("%v", sum_median/float64(len(throughput))),
 			"percentile99": fmt.Sprintf("%v", sum_percentle/float64(len(throughput))),
 		},
 	}
+	fmt.Printf("%v ", p)
+	return p
 }

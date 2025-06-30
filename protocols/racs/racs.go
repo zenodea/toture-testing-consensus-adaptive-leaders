@@ -57,7 +57,7 @@ func (ba *Racs) CopyConsensus(nodes []*common.Node) error {
 		config_inputs = append(config_inputs, nodes[i].Ip)
 	}
 
-	fmt.Printf("Running python command: %v\n", config_inputs)
+	ba.logger.Debug(fmt.Sprintf("Running python command: %v\n", config_inputs), 0)
 
 	sshCmd := exec.Command("python3", config_inputs...)
 	output, err := sshCmd.CombinedOutput()
@@ -71,7 +71,7 @@ func (ba *Racs) CopyConsensus(nodes []*common.Node) error {
 		if err != nil {
 			panic("Error while writing to ip_config.yaml " + err.Error())
 		} else {
-			fmt.Printf("ip_config.yaml written successfully with content:\n %v\n", string(output))
+			ba.logger.Debug(fmt.Sprintf("ip_config.yaml written successfully with content:\n %v\n", string(output)), 0)
 		}
 	}
 
@@ -89,7 +89,7 @@ func (ba *Racs) CopyConsensus(nodes []*common.Node) error {
 		}(int(j))
 	}
 	wg.Wait()
-	fmt.Print("Copied the racs binaries to all the nodes\n")
+	ba.logger.Debug(fmt.Sprintf("Copied the racs binaries to all the nodes\n"), 0)
 
 	return nil
 }
@@ -176,7 +176,7 @@ func (ba *Racs) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 	}
 	wg.Wait()
 
-	fmt.Print("Killed all the replicas and clients\n")
+	ba.logger.Debug(fmt.Sprintf("Killed all the replicas and clients\n"), 0)
 
 	for j := 0; j < int(num_replicas); j++ {
 		go func(i int) {
@@ -186,17 +186,17 @@ func (ba *Racs) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 
 	time.Sleep(5 * time.Second)
 
-	fmt.Print("Started all the replicas\n")
+	ba.logger.Debug(fmt.Sprintf("Started all the replicas\n"), 0)
 
 	nodes[num_replicas].ExecCmd("." + ctl_path + " --name " + strconv.Itoa(51) + " --logFilePath " + fmt.Sprintf("%vbench/logs/", nodes[num_replicas].HomeDir) + " --config " + fmt.Sprintf("%vbench/ip_config.yaml", nodes[num_replicas].HomeDir) + " --requestType status --operationType 1 ")
 
-	fmt.Print("Sent initial status to bootstrap\n")
+	ba.logger.Debug(fmt.Sprintf("Sent initial status to bootstrap\n"), 0)
 
 	time.Sleep(15 * time.Second)
 
 	nodes[num_replicas].ExecCmd("." + ctl_path + " --name " + strconv.Itoa(51) + " --logFilePath " + fmt.Sprintf("%vbench/logs/", nodes[num_replicas].HomeDir) + " --config " + fmt.Sprintf("%vbench/ip_config.yaml", nodes[num_replicas].HomeDir) + " --requestType status --operationType 3 ")
 
-	fmt.Print("Sent consensus start-up to bootstrap\n")
+	ba.logger.Debug(fmt.Sprintf("Sent consensus start-up to bootstrap\n"), 0)
 
 	time.Sleep(15 * time.Second)
 
@@ -209,16 +209,16 @@ func (ba *Racs) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 		m++
 	}
 
-	fmt.Print("Started all the clients\n")
+	ba.logger.Debug(fmt.Sprintf("Started all the clients\n"), 0)
 
 	time.Sleep(10 * time.Second)
 
-	fmt.Print("Bootstrap complete\n")
+	ba.logger.Debug(fmt.Sprintf("Bootstrap complete\n"), 0)
 	bootstrap_complete <- true
 
 	time.Sleep(time.Duration(3*duration) * time.Second)
 
-	fmt.Print("Finished the clients\n")
+	ba.logger.Debug(fmt.Sprintf("Finished the clients\n"), 0)
 
 	var wg1 sync.WaitGroup
 	wg1.Add(int(num_replicas + num_clients))
@@ -231,7 +231,7 @@ func (ba *Racs) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 	}
 	wg1.Wait()
 
-	fmt.Print("Killed all the replicas and clients\n")
+	ba.logger.Debug(fmt.Sprintf("Killed all the replicas and clients\n"), 0)
 
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
@@ -241,9 +241,9 @@ func (ba *Racs) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 	sshCmd := exec.Command("rm", []string{"-r", filepath.Join(homeDir, "toture-testing-consensus/logs")}...)
 	output, err := sshCmd.CombinedOutput()
 	if err != nil {
-		print("Error while deleting logs/ " + err.Error() + " " + string(output) + "\n")
+		ba.logger.Debug(fmt.Sprintf("Error while deleting logs/ "+err.Error()+" "+string(output)+"\n"), 0)
 	} else {
-		print("deleted local logs/ successfully\n" + string(output) + "\n")
+		ba.logger.Debug(fmt.Sprintf("deleted local logs/ successfully\n"+string(output)+"\n"), 0)
 	}
 
 	sshCmd = exec.Command("mkdir", []string{"-p", filepath.Join(homeDir, "toture-testing-consensus/logs")}...)
@@ -251,7 +251,7 @@ func (ba *Racs) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 	if err != nil {
 		panic("Error while creating logs/ " + err.Error() + " " + string(output) + "\n")
 	} else {
-		print("created logs/ successfully\n" + string(output) + "\n")
+		ba.logger.Debug(fmt.Sprintf("created logs/ successfully\n"+string(output)+"\n"), 0)
 	}
 
 	var wg2 sync.WaitGroup
@@ -265,7 +265,7 @@ func (ba *Racs) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 		m++
 	}
 	wg2.Wait()
-	fmt.Println("Downloaded all the racs client logs")
+	ba.logger.Debug(fmt.Sprintf("Downloaded all the racs client logs"), 0)
 
 	command := "protocols/racs/assets/performance_graph.py"
 	file_names := []string{}
@@ -279,9 +279,9 @@ func (ba *Racs) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 		sshCmd = exec.Command("python3", []string{command, "racs-" + strconv.Itoa(50+m), logFile}...)
 		output, err = sshCmd.CombinedOutput()
 		if err != nil {
-			print("Error while generating performance graph " + err.Error() + " " + string(output) + "\n")
+			ba.logger.Debug(fmt.Sprintf("Error while generating performance graph "+err.Error()+" "+string(output)+"\n"), 0)
 		} else {
-			print("Racs Performance graph generated successfully\n" + string(output) + "\n")
+			ba.logger.Debug(fmt.Sprintf("Racs Performance graph generated successfully\n"+string(output)+"\n"), 0)
 		}
 
 		m++
@@ -290,9 +290,9 @@ func (ba *Racs) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 	sshCmd = exec.Command("python3", append([]string{command, "racs"}, file_names...)...)
 	output, err = sshCmd.CombinedOutput()
 	if err != nil {
-		print("Error while generating performance graphs " + err.Error() + " " + string(output) + "\n")
+		ba.logger.Debug(fmt.Sprintf("Error while generating performance graphs "+err.Error()+" "+string(output)+"\n"), 0)
 	} else {
-		print("Racs Performance graphs generated successfully\n" + string(output) + "\n")
+		ba.logger.Debug(fmt.Sprintf("Racs Performance graphs generated successfully\n"+string(output)+"\n"), 0)
 	}
 
 	result <- ba.GetPerformance(clientOutputs)
@@ -315,7 +315,7 @@ func (ba *Racs) ExtractOptions(path string) protocols.ConsensusOptions {
 		options.Option[key] = fmt.Sprintf("%v", value)
 	}
 
-	fmt.Printf("racs options:\n %v\n", options.Option)
+	ba.logger.Debug(fmt.Sprintf("racs options:\n %v\n", options.Option), 0)
 
 	ba.options = options
 	return options
@@ -350,11 +350,15 @@ func (ba *Racs) GetPerformance(outputs []string) util.Performance {
 		sum_percentle += percentil99s[i]
 	}
 
-	return util.Performance{
+	p := util.Performance{
 		map[string]string{
 			"throughput":   fmt.Sprintf("%v", sum_throughput),
 			"median":       fmt.Sprintf("%v", sum_median/float64(len(throughput))),
 			"percentile99": fmt.Sprintf("%v", sum_percentle/float64(len(throughput))),
 		},
 	}
+
+	fmt.Printf("%v ", p)
+
+	return p
 }
