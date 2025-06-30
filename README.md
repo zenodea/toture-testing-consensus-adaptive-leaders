@@ -10,7 +10,6 @@ It allows plugging in different consensus algorithms and network topologies to t
 - Delay injection
 - Network Partitions
 - Clock skew
-- Clock drift
 - Straggler nodes
 
 ## Supported consensus algorithms
