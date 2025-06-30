@@ -9,6 +9,7 @@ import (
 	"os/exec"
 	"os/signal"
 	"path/filepath"
+	"strings"
 	"sync"
 	"syscall"
 	"toture-test/consenbench/common"
@@ -199,6 +200,35 @@ func (ba *Hotstuff_2) GetPerformance() util.Performance {
 	p := util.Performance{
 		map[string]string{"summary": fileContent},
 	}
-	fmt.Printf("%v ", p) //todo
+
+	var throughput string
+	var latency string
+
+	lines := strings.Split(fileContent, "\n")
+
+	for _, line := range lines {
+		line = strings.TrimSpace(line)
+		if strings.HasPrefix(line, "Consensus TPS") {
+			parts := strings.Split(line, ":")
+			if len(parts) >= 2 {
+				valuePart := strings.TrimSpace(parts[1])
+				tokens := strings.Split(valuePart, " ")
+				if len(tokens) > 0 {
+					throughput = tokens[0]
+				}
+			}
+		} else if strings.HasPrefix(line, "Consensus latency") {
+			parts := strings.Split(line, ":")
+			if len(parts) >= 2 {
+				valuePart := strings.TrimSpace(parts[1])
+				tokens := strings.Split(valuePart, " ")
+				if len(tokens) > 0 {
+					latency = tokens[0]
+				}
+			}
+		}
+	}
+
+	fmt.Printf("%v,%v,%v,", throughput, latency, 0)
 	return p
 }
