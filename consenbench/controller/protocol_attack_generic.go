@@ -17,16 +17,16 @@ func NewLeaderPartition(logger *util.Logger) *LeaderPartition {
 }
 
 func (a *LeaderPartition) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
-	fmt.Printf("Running Leader Parition Attack -- continous leader node parition duplex\n")
+	a.logger.Debug(fmt.Sprintf("Running Leader Parition Attack -- continous leader node parition duplex\n"), 0)
 
 	start_time := time.Now()
 
 	for time.Now().Sub(start_time).Seconds() < float64(duration-10) {
-		fmt.Printf("The leader order is %v\n", oracle.GetTopNLeaders())
+		a.logger.Debug(fmt.Sprintf("The leader order is %v\n", oracle.GetTopNLeaders()), 0)
 
 		node_id := oracle.GetTopNLeaders()[0]
 
-		fmt.Printf("attacking leader node %v\n", node_id)
+		a.logger.Debug(fmt.Sprintf("attacking leader node %v\n", node_id), 0)
 
 		for j := 0; j < len(nodes); j++ {
 			if node_id == j {
@@ -34,12 +34,12 @@ func (a *LeaderPartition) Attack(nodes []*AttackNode, links [][]*AttackLink, ora
 			}
 			links[node_id][j].SetLoss(100)
 			links[j][node_id].SetLoss(100)
-			fmt.Printf("setting duplex loss between %v and %v\n", node_id, j)
+			a.logger.Debug(fmt.Sprintf("setting duplex loss between %v and %v\n", node_id, j), 0)
 		}
 
 		time.Sleep(3 * time.Second)
 
-		fmt.Printf("resetting attack\n")
+		a.logger.Debug(fmt.Sprintf("resetting attack\n"), 0)
 
 		for i := 0; i < len(nodes); i++ {
 			for j := 0; j < len(nodes); j++ {
@@ -53,7 +53,7 @@ func (a *LeaderPartition) Attack(nodes []*AttackNode, links [][]*AttackLink, ora
 
 	time.Sleep(5 * time.Second)
 
-	fmt.Print("LeaderPartition attack complete\n")
+	a.logger.Debug(fmt.Sprintf("LeaderPartition attack complete\n"), 0)
 }
 
 type OneQuorumNodePartition struct {
@@ -67,7 +67,7 @@ func NewOneQuorumNodePartition(logger *util.Logger) *OneQuorumNodePartition {
 }
 
 func (a *OneQuorumNodePartition) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
-	fmt.Printf("Running One Quorum Parition Attack -- at a time only one quorum connected node\n")
+	a.logger.Debug(fmt.Sprintf("Running One Quorum Parition Attack -- at a time only one quorum connected node\n"), 0)
 
 	start_time := time.Now()
 	good_node := 0
@@ -75,7 +75,7 @@ func (a *OneQuorumNodePartition) Attack(nodes []*AttackNode, links [][]*AttackLi
 	for time.Now().Sub(start_time).Seconds() < float64(duration-10) {
 		good_node = (good_node + 1) % len(nodes)
 
-		fmt.Printf("Only quorum connected node is %v\n", good_node)
+		a.logger.Debug(fmt.Sprintf("Only quorum connected node is %v\n", good_node), 0)
 
 		for i := 0; i < len(nodes); i++ {
 			for j := 0; j < len(nodes); j++ {
@@ -83,13 +83,13 @@ func (a *OneQuorumNodePartition) Attack(nodes []*AttackNode, links [][]*AttackLi
 					continue
 				}
 				links[i][j].SetLoss(100)
-				fmt.Printf("setting loss between %v and %v\n", i, j)
+				a.logger.Debug(fmt.Sprintf("setting loss between %v and %v\n", i, j), 0)
 			}
 		}
 
 		time.Sleep(3 * time.Second)
 
-		fmt.Printf("resetting attack\n")
+		a.logger.Debug(fmt.Sprintf("resetting attack\n"), 0)
 
 		for i := 0; i < len(nodes); i++ {
 			for j := 0; j < len(nodes); j++ {
@@ -103,7 +103,7 @@ func (a *OneQuorumNodePartition) Attack(nodes []*AttackNode, links [][]*AttackLi
 
 	time.Sleep(5 * time.Second)
 
-	fmt.Print("OneQuorumNodePartition complete\n")
+	a.logger.Debug(fmt.Sprintf("OneQuorumNodePartition complete\n"), 0)
 }
 
 type MajorityHighDelay struct {
@@ -117,7 +117,7 @@ func NewMajorityHighDelay(logger *util.Logger) *MajorityHighDelay {
 }
 
 func (a *MajorityHighDelay) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
-	fmt.Printf("Running Majority High Delay attack -- first majority nodes have high link delays\n")
+	a.logger.Debug(fmt.Sprintf("Running Majority High Delay attack -- first majority nodes have high link delays\n"), 0)
 
 	start_time := time.Now()
 
@@ -131,7 +131,7 @@ func (a *MajorityHighDelay) Attack(nodes []*AttackNode, links [][]*AttackLink, o
 			majority_leaders[leaders[i]] = true
 		}
 
-		fmt.Printf("setting high delays for nodes %v\n", majority_leaders)
+		a.logger.Debug(fmt.Sprintf("setting high delays for nodes %v\n", majority_leaders), 0)
 
 		for i := 0; i < len(nodes); i++ {
 			for j := 0; j < len(nodes); j++ {
@@ -140,14 +140,14 @@ func (a *MajorityHighDelay) Attack(nodes []*AttackNode, links [][]*AttackLink, o
 				}
 				if majority_leaders[i] && majority_leaders[j] {
 					links[i][j].SetDelay(800)
-					fmt.Printf("setting delay between %v and %v\n", i, j)
+					a.logger.Debug(fmt.Sprintf("setting delay between %v and %v\n", i, j), 0)
 				}
 			}
 		}
 
 		time.Sleep(3 * time.Second)
 
-		fmt.Printf("resetting attack\n")
+		a.logger.Debug(fmt.Sprintf("resetting attack\n"), 0)
 
 		for i := 0; i < len(nodes); i++ {
 			for j := 0; j < len(nodes); j++ {
@@ -161,7 +161,7 @@ func (a *MajorityHighDelay) Attack(nodes []*AttackNode, links [][]*AttackLink, o
 
 	time.Sleep(5 * time.Second)
 
-	fmt.Print("MajorityHighDelay complete\n")
+	a.logger.Debug(fmt.Sprintf("MajorityHighDelay complete\n"), 0)
 }
 
 type MinorityCrash struct {
@@ -175,7 +175,7 @@ func NewMinorityCrash(logger *util.Logger) *MinorityCrash {
 }
 
 func (a *MinorityCrash) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
-	fmt.Printf("Running Minority Crash attack -- minority of the nodes crash\n")
+	a.logger.Debug(fmt.Sprintf("Running Minority Crash attack -- minority of the nodes crash\n"), 0)
 
 	leaders := oracle.GetTopNLeaders()
 	num_nodes := len(nodes)
@@ -185,18 +185,18 @@ func (a *MinorityCrash) Attack(nodes []*AttackNode, links [][]*AttackLink, oracl
 		minority_leaders[leaders[i]] = true
 	}
 
-	fmt.Printf("crashing minority nodes %v\n", minority_leaders)
+	a.logger.Debug(fmt.Sprintf("crashing minority nodes %v\n", minority_leaders), 0)
 
 	for i := 0; i < len(nodes); i++ {
 		if minority_leaders[i] {
 			nodes[i].Pause()
-			fmt.Printf("crashed %v\n", i)
+			a.logger.Debug(fmt.Sprintf("crashed %v\n", i), 0)
 		}
 	}
 	start_time := time.Now()
 
 	for time.Now().Sub(start_time).Seconds() < float64(duration-5) {
-		fmt.Printf("The leader order is %v\n", oracle.GetTopNLeaders())
+		a.logger.Debug(fmt.Sprintf("The leader order is %v\n", oracle.GetTopNLeaders()), 0)
 		time.Sleep(2 * time.Second)
 	}
 
@@ -206,7 +206,7 @@ func (a *MinorityCrash) Attack(nodes []*AttackNode, links [][]*AttackLink, oracl
 		}
 	}
 
-	fmt.Print("MinorityCrash complete\n")
+	a.logger.Debug(fmt.Sprintf("MinorityCrash complete\n"), 0)
 }
 
 type MinorityStraggler struct {
@@ -220,7 +220,7 @@ func NewMinorityStraggler(logger *util.Logger) *MinorityStraggler {
 }
 
 func (a *MinorityStraggler) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
-	fmt.Printf("Running Minority Straggler -- minority nodes are slow\n")
+	a.logger.Debug(fmt.Sprintf("Running Minority Straggler -- minority nodes are slow\n"), 0)
 
 	start_time := time.Now()
 
@@ -234,18 +234,18 @@ func (a *MinorityStraggler) Attack(nodes []*AttackNode, links [][]*AttackLink, o
 			minority_leaders[leaders[i]] = true
 		}
 
-		fmt.Printf("setting stragglers for nodes %v\n", minority_leaders)
+		a.logger.Debug(fmt.Sprintf("setting stragglers for nodes %v\n", minority_leaders), 0)
 
 		for i := 0; i < len(nodes); i++ {
 			if minority_leaders[i] {
 				nodes[i].Pause()
-				fmt.Printf("paused %v\n", i)
+				a.logger.Debug(fmt.Sprintf("paused %v\n", i), 0)
 			}
 		}
 
 		time.Sleep(3 * time.Second)
 
-		fmt.Printf("resetting attack\n")
+		a.logger.Debug(fmt.Sprintf("resetting attack\n"), 0)
 
 		for i := 0; i < len(nodes); i++ {
 			if minority_leaders[i] {
@@ -256,5 +256,5 @@ func (a *MinorityStraggler) Attack(nodes []*AttackNode, links [][]*AttackLink, o
 
 	time.Sleep(5 * time.Second)
 
-	fmt.Print("MinorityStraggler complete\n")
+	a.logger.Debug(fmt.Sprintf("MinorityStraggler complete\n"), 0)
 }

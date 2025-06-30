@@ -46,7 +46,7 @@ func (n *Node) ExecCmd(cmd string) string {
 	sshCmd := exec.Command("ssh", "-o", "StrictHostKeyChecking=no", "-i", n.PrivateKeyPath, fmt.Sprintf("%s@%s", n.Username, n.Ip), cmd)
 	output, err := sshCmd.CombinedOutput()
 	if err != nil {
-		fmt.Printf("FAILED to execute %v via SSH, err:%v, output:%v for node:%v\n\n", fmt.Sprintf("%v", sshCmd), err, string(output), n.Id)
+		n.Logger.Debug(fmt.Sprintf("FAILED to execute %v via SSH, err:%v, output:%v for node:%v\n\n", fmt.Sprintf("%v", sshCmd), err, string(output), n.Id), 0)
 	} else {
 		n.Logger.Debug(fmt.Sprintf("SUCCESS %v via SSH, output: %v for node: %v\n\n", fmt.Sprintf("%v", sshCmd), string(output), n.Id), 5)
 	}
@@ -84,7 +84,7 @@ func (n *Node) Put_Load(local_location string, remote_location string) error {
 
 func (n *Node) Start_Client(device string) error {
 
-	fmt.Printf("Starting client on node: %v\n", n.Id)
+	n.Logger.Debug(fmt.Sprintf("Starting client on node: %v\n", n.Id), 0)
 	n.ExecCmd("pkill -KILL -f bench")
 	n.ExecCmd("pkill -KILL -f fab")
 	n.ExecCmd("pkill -9 tmux")
@@ -142,7 +142,7 @@ func GetNewArr(usage []float32) []float32 {
 }
 
 func GetNodes(filename string) []*Node {
-	fmt.Printf("reading node data from filename: %v\n", filename)
+	// fmt.Printf("reading node data from filename: %v\n", filename)
 	type Nodes struct {
 		Nodes []*Node `yaml:"nodes"`
 	}

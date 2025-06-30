@@ -38,27 +38,27 @@ func (c *Controller) BootstrapClients() error {
 	}
 	wg.Wait()
 
-	fmt.Println("Copied the client binary to all the nodes")
+	c.logger.Debug(fmt.Sprintln("Copied the client binary to all the nodes"), 0)
 
 	// start the client binary
 	for i := 0; i < len(c.Nodes); i++ {
 		c.Nodes[i].Start_Client(c.Options.Device)
 	}
 	time.Sleep(5 * time.Second)
-	fmt.Println("Started the client binary on all the nodes")
+	c.logger.Debug(fmt.Sprintf("Started the client binary on all the nodes"), 0)
 
 	// initiate the tcp connections
 	c.NetworkInit()
-	fmt.Println("Initialized the network layer with all clients")
+	c.logger.Debug(fmt.Sprintf("Initialized the network layer with all clients"), 0)
 
 	c.HandleClientMessages()
 
 	time.Sleep(10 * time.Second)
 	// close the clients
 	c.CloseClients()
-	fmt.Println("Closed the clients")
+	c.logger.Debug(fmt.Sprintf("Closed the clients"), 0)
 	c.DownloadClientLogs()
-	fmt.Println("Downloaded the logs from the clients")
+	c.logger.Debug(fmt.Sprintf("Downloaded the logs from the clients"), 0)
 	os.Exit(0)
 	return nil
 
@@ -83,11 +83,11 @@ func (c *Controller) Run(protocol string) {
 		c.Nodes[i].Start_Client(c.Options.Device)
 	}
 	time.Sleep(5 * time.Second)
-	fmt.Println("Started the client binary on all the nodes")
+	c.logger.Debug(fmt.Sprintf("Started the client binary on all the nodes"), 0)
 
 	// initiate the tcp connections
 	c.NetworkInit()
-	fmt.Println("Initialized the network layer with all clients")
+	c.logger.Debug(fmt.Sprintf("Initialized the network layer with all clients"), 0)
 
 	c.HandleClientMessages()
 	time.Sleep(5 * time.Second)
@@ -100,9 +100,9 @@ func (c *Controller) Run(protocol string) {
 	cmd := exec.Command("rm", []string{"-r", filepath.Join(homeDir, "toture-testing-consensus/final-results/"+protocol+"/"+c.Options.Attack)}...)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		print("Error while deleting final-results/" + protocol + "/" + c.Options.Attack + err.Error() + " " + string(output) + "\n")
+		c.logger.Debug(fmt.Sprintf("Error while deleting final-results/"+protocol+"/"+c.Options.Attack+err.Error()+" "+string(output)+"\n"), 0)
 	} else {
-		print("deleted final-results sub directory successfully\n" + string(output) + "\n")
+		c.logger.Debug(fmt.Sprintf("deleted final-results sub directory successfully\n"+string(output)+"\n"), 0)
 	}
 
 	cmd = exec.Command("mkdir", []string{"-p", filepath.Join(homeDir, "toture-testing-consensus/final-results/"+protocol+"/"+c.Options.Attack)}...)
@@ -110,15 +110,15 @@ func (c *Controller) Run(protocol string) {
 	if err != nil {
 		panic("Error while creating final-results/" + protocol + "/" + c.Options.Attack + err.Error() + " " + string(output) + "\n")
 	} else {
-		print("created final-results/ sub directory successfully\n" + string(output) + "\n")
+		c.logger.Debug(fmt.Sprintf("created final-results/ sub directory successfully\n"+string(output)+"\n"), 0)
 	}
 
 	cmd = exec.Command("rm", []string{"-r", filepath.Join(homeDir, "toture-testing-consensus/logs")}...)
 	output, err = cmd.CombinedOutput()
 	if err != nil {
-		print("error while deleting logs/ " + err.Error() + " " + string(output) + "\n")
+		c.logger.Debug(fmt.Sprintf("error while deleting logs/ "+err.Error()+" "+string(output)+"\n"), 0)
 	} else {
-		print("deleted local logs/ successfully\n" + string(output) + "\n")
+		c.logger.Debug(fmt.Sprintf("deleted local logs/ successfully\n"+string(output)+"\n"), 0)
 	}
 
 	cmd = exec.Command("mkdir", []string{"-p", filepath.Join(homeDir, "toture-testing-consensus/logs")}...)
@@ -126,7 +126,7 @@ func (c *Controller) Run(protocol string) {
 	if err != nil {
 		panic("Error while creating logs/ " + err.Error() + " " + string(output) + "\n")
 	} else {
-		print("created logs/ successfully\n" + string(output) + "\n")
+		c.logger.Debug(fmt.Sprintf("created logs/ successfully\n"+string(output)+"\n"), 0)
 	}
 
 	protocol_impl := c.GetProtocolImpl(protocol)
@@ -157,30 +157,27 @@ func (c *Controller) Run(protocol string) {
 	attack_impl := c.GetAttackImpl()
 
 	<-bootstrap_complete_chan // wait for the bootstrap to complete
-	fmt.Print("Bootstrap complete, starting attack from controller\n")
+	c.logger.Debug(fmt.Sprintf("Bootstrap complete, starting attack from controller\n"), 0)
 
 	for i := 0; i < len(c.Nodes); i++ {
 		c.Nodes[i].StartUpdateStats()
 	}
 
 	attack_impl.Attack(attackNodes, attackLinks, leaderOracle, c.Options.AttackDuration)
-	fmt.Print("Attack complete\n")
+	c.logger.Debug(fmt.Sprint("Attack complete\n"), 0)
 
 	for i := 0; i < len(c.Nodes); i++ {
 		c.Nodes[i].StopUpdateStats()
 	}
 
-	performance := <-performance_output_chan
-	for key, value := range performance.Option {
-		fmt.Printf("%v: %v\n", key, value)
-	}
+	_ = <-performance_output_chan
 
 	c.PrintStats(int(num_replicas))
 
 	c.CloseClients()
-	fmt.Println("Closed the clients")
+	c.logger.Debug(fmt.Sprintf("Closed the clients"), 0)
 	c.DownloadClientLogs()
-	fmt.Println("Downloaded the logs from the clients")
+	c.logger.Debug(fmt.Sprintf("Downloaded the logs from the clients"), 0)
 
 	logDir := filepath.Join(homeDir, "toture-testing-consensus", "logs")
 	destDir := filepath.Join(homeDir, "toture-testing-consensus", "final-results", protocol, c.Options.Attack)
@@ -191,8 +188,8 @@ func (c *Controller) Run(protocol string) {
 	if err != nil {
 		panic("Error while moving to final-results/" + protocol + "/" + c.Options.Attack + err.Error() + " " + string(output) + "\n")
 	} else {
-		print("moved final-results/ sub directory successfully\n" + string(output) + "\n")
+		c.logger.Debug(fmt.Sprintf("moved final-results/ sub directory successfully\n"+string(output)+"\n"), 0)
 	}
 
-	fmt.Println("test complete")
+	c.logger.Debug(fmt.Sprintf("test complete"), 0)
 }
