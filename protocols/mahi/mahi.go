@@ -279,6 +279,6 @@ func (ba *Mahi) getPerformance(outputs []string) util.Performance {
 	p.Option["throughput"] = fmt.Sprintf("%v requests per second", sum_tx/len(outputs))
 	p.Option["average latency"] = fmt.Sprintf("%v ms", sum_lat/len(outputs))
 
-	fmt.Printf("%v ", p)
+	fmt.Printf("%v,%v,%v,", sum_tx/len(outputs), sum_lat/len(outputs), 0)
 	return p
 }
