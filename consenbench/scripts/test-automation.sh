@@ -6,7 +6,7 @@ mkdir logs
 
 /bin/bash build.sh
 
-echo "Running tests for all protocols..."
+echo "Protocol,Attack,Throughput,Latency(ms),Percentile_99(ms),CPU,MEM,NET_IN,NET_OUT"
 echo
 echo
 echo
