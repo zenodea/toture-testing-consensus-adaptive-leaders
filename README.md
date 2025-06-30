@@ -4,7 +4,6 @@ This repository implements a networked tool to test the robustness of consensus 
 It allows plugging in different consensus algorithms and network topologies to test their performance under different scenarios.
 
 ## Supported attacks
-
 - Bandwidth throttling
 - Crashes
 - Delay injection
@@ -13,7 +12,6 @@ It allows plugging in different consensus algorithms and network topologies to t
 - Straggler nodes
 
 ## Supported consensus algorithms
-
 - Raft
 - Rabia
 - RACS
