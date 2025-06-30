@@ -214,7 +214,7 @@ func (ba *Hotstuff_2) GetPerformance() util.Performance {
 				valuePart := strings.TrimSpace(parts[1])
 				tokens := strings.Split(valuePart, " ")
 				if len(tokens) > 0 {
-					throughput = tokens[0]
+					throughput = strings.ReplaceAll(tokens[0], ",", "")
 				}
 			}
 		} else if strings.HasPrefix(line, "Consensus latency") {
@@ -223,7 +223,7 @@ func (ba *Hotstuff_2) GetPerformance() util.Performance {
 				valuePart := strings.TrimSpace(parts[1])
 				tokens := strings.Split(valuePart, " ")
 				if len(tokens) > 0 {
-					latency = tokens[0]
+					latency = strings.ReplaceAll(tokens[0], ",", "")
 				}
 			}
 		}
