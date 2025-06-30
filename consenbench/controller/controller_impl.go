@@ -77,6 +77,7 @@ func (c *Controller) CopyConsensus(protocol string) {
 // run the controller
 
 func (c *Controller) Run(protocol string) {
+	fmt.Printf("%v,%v,", protocol, c.Options.Attack)
 	c.InitiliazeNodes()
 	// start the client binary
 	for i := 0; i < len(c.Nodes); i++ {
