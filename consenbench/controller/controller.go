@@ -112,5 +112,5 @@ func (c *Controller) PrintStats(num_replicas int) {
 		network_out += Sum(net_out)
 		counter += len(cpu)
 	}
-	fmt.Printf("%v, %v, %v, %v\n", cpu_usage/float32(counter), mem_usage/float32(counter), network_in/float32(counter), network_out/float32(counter))
+	fmt.Printf("%v,%v,%v,%v\n", cpu_usage/float32(counter), mem_usage/float32(counter), network_in/float32(counter), network_out/float32(counter))
 }
