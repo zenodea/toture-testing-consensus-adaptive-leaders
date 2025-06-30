@@ -25,18 +25,6 @@ func (c *Controller) GetAttackImpl() Attack {
 	switch c.Options.Attack {
 	case "noop":
 		return NewNoopAttack(c.logger)
-	case "skew_1":
-		return NewSkewAttack_1(c.logger)
-	case "skew_2":
-		return NewSkewAttack_2(c.logger)
-	case "skew_3":
-		return NewSkewAttack_3(c.logger)
-	case "drift_1":
-		return NewDriftAttack_1(c.logger)
-	case "drift_2":
-		return NewDriftAttack_2(c.logger)
-	case "drift_3":
-		return NewDriftAttack_3(c.logger)
 	case "LeaderPartition":
 		return NewLeaderPartition(c.logger)
 	case "OneQuorumNodePartition":
