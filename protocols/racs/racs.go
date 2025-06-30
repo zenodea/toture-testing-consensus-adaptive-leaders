@@ -358,7 +358,7 @@ func (ba *Racs) GetPerformance(outputs []string) util.Performance {
 		},
 	}
 
-	fmt.Printf("%v ", p)
+	fmt.Printf("%v,%v,%v,", sum_throughput, sum_median/float64(1000*len(throughput)), sum_percentle/float64(1000*len(throughput)))
 
 	return p
 }
