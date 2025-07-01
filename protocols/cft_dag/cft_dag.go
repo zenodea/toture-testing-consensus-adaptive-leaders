@@ -202,7 +202,7 @@ func (ba *CFT_DAG) Bootstrap(nodes []*common.Node, duration int, result chan uti
 		logFile := filepath.Join(homeDir, fmt.Sprintf("toture-testing-consensus/logs/client-times-%v.txt", j))
 		logFiles = append(logFiles, logFile)
 
-		sshCmd = exec.Command("python3", []string{command, "CFT_DAG-" + strconv.Itoa(j), logFile}...)
+		sshCmd = exec.Command("python3", []string{command, "CFT_DAG-" + strconv.Itoa(j), strconv.Itoa(duration), logFile}...)
 		output, err = sshCmd.CombinedOutput()
 		if err != nil {
 			ba.logger.Debug(fmt.Sprintf("Error while generating performance graph "+err.Error()+" "+string(output)+"\n"), 0)
@@ -212,7 +212,7 @@ func (ba *CFT_DAG) Bootstrap(nodes []*common.Node, duration int, result chan uti
 		}
 	}
 
-	sshCmd = exec.Command("python3", append([]string{command, "CFT_DAG"}, logFiles...)...)
+	sshCmd = exec.Command("python3", append([]string{command, "CFT_DAG", strconv.Itoa(duration)}, logFiles...)...)
 	output, err = sshCmd.CombinedOutput()
 	if err != nil {
 		ba.logger.Debug(fmt.Sprintf("Error while generating performance graph "+err.Error()+" "+string(output)+"\n"), 0)
