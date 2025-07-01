@@ -26,7 +26,7 @@ def extract_start_end_pairs(filenames):
     return start_end_pairs
 
 
-def calculate_throughput_latency(start_end_pairs, n):
+def calculate_throughput_latency(start_end_pairs, n,duration):
     """Calculate per second throughput and average latency from start and end times."""
     throughput = defaultdict(int)
     latency_sum = defaultdict(int)
@@ -53,7 +53,7 @@ def calculate_throughput_latency(start_end_pairs, n):
 
     total_requests = sum(throughput.values())
     total_latency = sum(latency_sum.values())
-    total_seconds = (max_time - min_time)/1000000
+    total_seconds = int(duration)
     overall_throughput = total_requests / total_seconds / n
     overall_average_latency = total_latency / total_requests / 1000
     print(f"{overall_throughput:.2f} {overall_average_latency:.2f} ")
@@ -91,14 +91,14 @@ def main():
     if len(sys.argv) < 3:
         print("Usage: python throughput_latency.py <name> <file1> <file2> ...")
         return
-
-    filenames = sys.argv[2:]
+    duration = sys.argv[2]
+    filenames = sys.argv[3:]
     start_end_pairs = extract_start_end_pairs(filenames)
     if not start_end_pairs:
         print("No valid data found.")
         return
 
-    throughput, average_latency = calculate_throughput_latency(start_end_pairs, len(filenames))
+    throughput, average_latency = calculate_throughput_latency(start_end_pairs, len(filenames),duration)
 
     plot_throughput(throughput, len(filenames))
     plot_latency(average_latency)

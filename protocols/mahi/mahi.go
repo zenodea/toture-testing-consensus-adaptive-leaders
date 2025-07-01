@@ -212,7 +212,7 @@ func (ba *Mahi) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 		logFile := filepath.Join(homeDir, fmt.Sprintf("toture-testing-consensus/logs/client-times-%v.txt", j))
 		files = append(files, logFile)
 
-		sshCmd = exec.Command("python3", []string{command, "mahi-" + strconv.Itoa(j), logFile}...)
+		sshCmd = exec.Command("python3", []string{command, "mahi-" + strconv.Itoa(j), strconv.Itoa(duration), logFile}...)
 		output, err = sshCmd.CombinedOutput()
 		if err != nil {
 			ba.logger.Debug(fmt.Sprintf("Error while generating performance graph "+err.Error()+" "+string(output)+"\n"), 0)
@@ -222,7 +222,7 @@ func (ba *Mahi) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 		}
 	}
 
-	sshCmd = exec.Command("python3", append([]string{command, "mahi"}, files...)...)
+	sshCmd = exec.Command("python3", append([]string{command, "mahi", strconv.Itoa(duration)}, files...)...)
 	output, err = sshCmd.CombinedOutput()
 	if err != nil {
 		ba.logger.Debug(fmt.Sprintf("Error while generating performance graph "+err.Error()+" "+string(output)+"\n"), 0)
