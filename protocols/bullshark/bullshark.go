@@ -9,6 +9,7 @@ import (
 	"os/exec"
 	"os/signal"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"sync"
 	"syscall"
@@ -132,7 +133,7 @@ func (ba *Bullshark) Bootstrap(nodes []*common.Node, duration int, result chan u
 	ba.logger.Debug(fmt.Sprintf("bootstrap complete for bullshark\n"), 0)
 	wg.Wait()
 	ba.logger.Debug(fmt.Sprintf("finished running bullshark"), 0)
-	p := ba.GetPerformance()
+	p := ba.GetPerformance(duration)
 	err = os.Chdir(("../../../../"))
 	if err != nil {
 		panic("Failed to change directory")
@@ -169,7 +170,7 @@ func (ba *Bullshark) ExtractOptions(path string) protocols.ConsensusOptions {
 	return options
 }
 
-func (ba *Bullshark) GetPerformance() util.Performance {
+func (ba *Bullshark) GetPerformance(duration int) util.Performance {
 	dirPath := "results/"
 
 	// Read the directory to get the list of files
@@ -204,6 +205,7 @@ func (ba *Bullshark) GetPerformance() util.Performance {
 
 	var throughput string
 	var latency string
+	var run_duration string
 
 	lines := strings.Split(fileContent, "\n")
 
@@ -227,10 +229,24 @@ func (ba *Bullshark) GetPerformance() util.Performance {
 					latency = strings.ReplaceAll(tokens[0], ",", "")
 				}
 			}
+		} else if strings.HasPrefix(line, "Execution time") {
+			parts := strings.Split(line, ":")
+			if len(parts) >= 2 {
+				valuePart := strings.TrimSpace(parts[1])
+				tokens := strings.Split(valuePart, " ")
+				if len(tokens) > 0 {
+					run_duration = strings.ReplaceAll(tokens[0], ",", "")
+				}
+			}
 		}
 	}
 
-	fmt.Printf("%v,%v,%v,", throughput, latency, 0)
+	throughput_int, _ := strconv.Atoi(throughput)
+	duration_int, _ := strconv.Atoi(run_duration)
+
+	throuhgput_exact := (throughput_int * duration_int) / duration
+
+	fmt.Printf("%v,%v,%v,", throuhgput_exact, latency, 0)
 
 	return p
 }
