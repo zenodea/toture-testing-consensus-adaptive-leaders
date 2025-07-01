@@ -1,7 +1,7 @@
 ports: 2888
 process_name: QuorumPeerMain
 num_replicas: 5
-num_clients: 50
+num_clients: 60
 tickTime: 2000
 initLimit: 1
 syncLimit: 1
