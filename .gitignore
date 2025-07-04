@@ -3,6 +3,10 @@ logs/
 vendor/
 graphs/
 venv/
+protocols/hotstuff_2/assets/target/
+protocols/hotstuff_3/assets/target/
+protocols/tusk/assets/target/
+protocols/bullshark/assets/target/
 *.log
 *.csv
 *.pdf
