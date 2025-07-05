@@ -19,14 +19,14 @@ def remote(ctx, pid=1, attack_duration=2, num_replicas=3):
     """Run benchmarks on AWS"""
     bench_params = {
         "nodes": [int(num_replicas)],
-        "rate": [5000],
-        "tx_size": 18,
+        "rate": [50000],
+        "tx_size": 512,
         "duration": int(attack_duration),
         "runs": 1,
     }
     node_params = {
         "consensus": {
-            "timeout_delay": 2_000,
+            "timeout_delay": 10_000,
             "sync_retry_delay": 5_000,
         },
         "mempool": {

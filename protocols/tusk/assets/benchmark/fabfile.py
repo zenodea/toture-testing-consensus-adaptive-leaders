@@ -24,14 +24,14 @@ def remote(ctx, pid=1, attack_duration=2, num_replicas=3, debug=False):
         'nodes': [int(num_replicas)],
         'workers': 1,
         'collocate': True,
-        'rate': [5000],
-        'tx_size': 18,
+        'rate': [50000],
+        'tx_size': 512,
         'duration': int(attack_duration),
         'runs': 1,
     }
     node_params = {
         'header_size': 1_000,  # bytes
-        'max_header_delay': 2000,  # ms
+        'max_header_delay': 10000,  # ms
         'gc_depth': 50,  # rounds
         'sync_retry_delay': 10_000,  # ms
         'sync_retry_nodes': 3,  # number of nodes
