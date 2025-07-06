@@ -29,7 +29,7 @@ func (c *Client) NetInit(id_ip []string, ports_under_attack []string, device str
 	RunCommand("tc", []string{"filter", "del", "dev", c.Options.Device}, c.logger)
 	RunCommand("tc", []string{"qdisc", "del", "dev", c.Options.Device, "root"}, c.logger)
 	RunCommand("tc", []string{"qdisc", "add", "dev", c.Options.Device, "root", "handle", "1:", "htb", "default", strconv.Itoa(len(id_ip) + 5)}, c.logger)
-	RunCommand("tc", []string{"class", "add", "dev", c.Options.Device, "parent 1:", "classid 1:1", "htb", "rate", "1gbit", "ceil", "1gbit"}, c.logger)
+	RunCommand("tc", []string{"class", "add", "dev", c.Options.Device, "parent 1:", "classid 1:1", "htb", "rate", "100gbit", "ceil", "100gbit"}, c.logger)
 	c.InitializeNetEmClients(id_ip, c.logger, ports_under_attack, device)
 }
 
@@ -52,14 +52,14 @@ func (c *Client) InitializeNetEmClients(id_ip []string, logger *util.Logger, Por
 			DuplicatePackets:   0,
 			ReorderPackets:     0,
 			CorruptPackets:     0,
-			Rate:               10000000,
+			Rate:               100000000,
 			logger:             logger,
 			Ports_under_attack: Ports_under_attack,
 			Device:             device,
 			Prio:               strconv.Itoa((id_int + 1)),
 		}
 
-		RunCommand("tc", []string{"class", "add", "dev", c.Options.Device, "parent 1:1", "classid", c.Attacker.NetEmAttackers[id_int].Classid, "htb", "rate", "1gbit", "ceil", "1gbit", "prio", c.Attacker.NetEmAttackers[id_int].Prio}, c.logger)
+		RunCommand("tc", []string{"class", "add", "dev", c.Options.Device, "parent 1:1", "classid", c.Attacker.NetEmAttackers[id_int].Classid, "htb", "rate", "100gbit", "ceil", "100gbit", "prio", c.Attacker.NetEmAttackers[id_int].Prio}, c.logger)
 		c.Attacker.NetEmAttackers[id_int].applyHandleToEachPort()
 		debug := fmt.Sprintf("Initialized net em attacker with %v ", c.Attacker.NetEmAttackers[id_int])
 		c.logger.Debug(debug, 5)
