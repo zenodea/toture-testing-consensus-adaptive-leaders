@@ -101,7 +101,7 @@ func (ba *Mysticeti) Bootstrap(nodes []*common.Node, duration int, result chan u
 
 	enable_pipelining := "true"
 
-	enable_synchronizer := "false"
+	enable_synchronizer := "true"
 
 	transaction_size, ok := ba.options.Option["transaction_size"]
 	if !ok {
