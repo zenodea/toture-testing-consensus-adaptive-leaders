@@ -43,11 +43,11 @@ func (ba *Mysticeti) CopyConsensus(nodes []*common.Node) error {
 		panic("Not enough nodes to deploy mysticeti")
 	}
 
-	nodes[0].ExecCmd(fmt.Sprintf("sudo rm -r mysticeti; git clone https://github.com/PasinduTennage/mysticeti; cd mysticeti ; sudo apt-get install -y libfontconfig1-dev; source %v.cargo/env; cargo build", nodes[0].HomeDir))
+	nodes[0].ExecCmd(fmt.Sprintf("sudo rm -r mysticeti; git clone https://github.com/PasinduTennage/mysticeti; cd mysticeti ; sudo apt-get install -y libfontconfig1-dev; source %v.cargo/env; cargo build --release", nodes[0].HomeDir))
 
 	ba.logger.Debug(fmt.Sprintf("Cloned the mysticeti repository and built the binary"), 0)
 
-	nodes[0].Get_Load(fmt.Sprintf("%vmysticeti/target/debug/mysticeti", nodes[0].HomeDir), "protocols/mysticeti/assets/")
+	nodes[0].Get_Load(fmt.Sprintf("%vmysticeti/target/release/mysticeti", nodes[0].HomeDir), "protocols/mysticeti/assets/")
 
 	ba.logger.Debug(fmt.Sprintf("Copied the mysticeti binary to the controller machine"), 0)
 

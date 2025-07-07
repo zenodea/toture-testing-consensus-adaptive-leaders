@@ -43,11 +43,11 @@ func (ba *Mahi) CopyConsensus(nodes []*common.Node) error {
 		panic("Not enough nodes to deploy mahi")
 	}
 
-	nodes[0].ExecCmd(fmt.Sprintf("sudo rm -r mahi-mahi-consensus; git clone https://github.com/PasinduTennage/mahi-mahi-consensus; cd mahi-mahi-consensus; git checkout consensus-rework; sudo apt-get install -y libfontconfig1-dev; source %v.cargo/env; cargo build", nodes[0].HomeDir))
+	nodes[0].ExecCmd(fmt.Sprintf("sudo rm -r mahi-mahi-consensus; git clone https://github.com/PasinduTennage/mahi-mahi-consensus; cd mahi-mahi-consensus; git checkout consensus-rework; sudo apt-get install -y libfontconfig1-dev; source %v.cargo/env; cargo build --release", nodes[0].HomeDir))
 
 	ba.logger.Debug(fmt.Sprintf("Cloned the mahi repository and built the binary"), 0)
 
-	nodes[0].Get_Load(fmt.Sprintf("%vmahi-mahi-consensus/target/debug/mysticeti", nodes[0].HomeDir), "protocols/mahi/assets/")
+	nodes[0].Get_Load(fmt.Sprintf("%vmahi-mahi-consensus/target/release/mysticeti", nodes[0].HomeDir), "protocols/mahi/assets/")
 
 	ba.logger.Debug(fmt.Sprintf("Copied the mahi binary to the controller machine"), 0)
 

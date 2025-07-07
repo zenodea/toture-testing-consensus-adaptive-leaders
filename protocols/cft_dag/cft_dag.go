@@ -43,11 +43,11 @@ func (ba *CFT_DAG) CopyConsensus(nodes []*common.Node) error {
 		panic("Not enough nodes to deploy CFT_DAG")
 	}
 
-	nodes[0].ExecCmd(fmt.Sprintf("sudo rm -r mysticeti; git clone https://github.com/asonnino/mysticeti; cd mysticeti; git checkout cft; sudo apt-get install -y libfontconfig1-dev; source %v.cargo/env; cargo build", nodes[0].HomeDir))
+	nodes[0].ExecCmd(fmt.Sprintf("sudo rm -r mysticeti; git clone https://github.com/asonnino/mysticeti; cd mysticeti; git checkout cft; sudo apt-get install -y libfontconfig1-dev; source %v.cargo/env; cargo build --release", nodes[0].HomeDir))
 
 	ba.logger.Debug(fmt.Sprintf("Cloned the CFT_DAG repository and built the binary"), 0)
 
-	nodes[0].Get_Load(fmt.Sprintf("%vmysticeti/target/debug/mysticeti", nodes[0].HomeDir), "protocols/cft_dag/assets/")
+	nodes[0].Get_Load(fmt.Sprintf("%vmysticeti/target/release/mysticeti", nodes[0].HomeDir), "protocols/cft_dag/assets/")
 
 	ba.logger.Debug(fmt.Sprintf("Copied the CFT_DAG binary to the controller machine"), 0)
 
