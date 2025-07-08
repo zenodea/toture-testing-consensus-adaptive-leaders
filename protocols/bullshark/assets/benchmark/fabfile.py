@@ -29,8 +29,8 @@ def remote(ctx, pid=1, attack_duration=2, num_replicas=3, debug=False):
         'runs': 1,
     }
     node_params = {
-        'header_size': 50,  # bytes
-        'max_header_delay': 5_000,  # ms
+        'header_size': 1_000,  # bytes
+        'max_header_delay': 200,  # ms
         'gc_depth': 50,  # rounds
         'sync_retry_delay': 10_000,  # ms
         'sync_retry_nodes': 3,  # number of nodes
