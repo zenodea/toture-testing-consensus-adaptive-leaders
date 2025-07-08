@@ -322,23 +322,19 @@ class LogParser:
                 latency_values.append(avg)
 
         # --- Plot throughput ---
-        plt.figure()
-        plt.scatter(tps_times, tps_values, label="Throughput (TPS)", color='blue')
+        plt.figure(figsize=(10, 6))
+        plt.plot(tps_times, tps_values, label="Tusk", color='teal')
         plt.xlabel("Time (s)")
         plt.ylabel("Transactions/sec")
-        plt.title("Time vs Throughput")
         plt.grid(True)
         plt.legend()
-        plt.tight_layout()
         plt.savefig(f"../../../../logs/{output_prefix}_throughput.pdf")
 
         # --- Plot latency ---
-        plt.figure()
-        plt.scatter(latency_times, latency_values, label="Latency (ms)", color='orange')
+        plt.figure(figsize=(10, 6))
+        plt.plot(latency_times, latency_values, label="Tusk", color='teal')
         plt.xlabel("Time (s)")
         plt.ylabel("Latency (ms)")
-        plt.title("Time vs Latency")
         plt.grid(True)
         plt.legend()
-        plt.tight_layout()
         plt.savefig(f"../../../../logs/{output_prefix}_latency.pdf")
