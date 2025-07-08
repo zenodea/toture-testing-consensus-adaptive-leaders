@@ -19,8 +19,8 @@ def remote(ctx, pid=1, attack_duration=2, num_replicas=3):
     ''' Run benchmarks on AWS '''
     bench_params = {
         'nodes': [int(num_replicas)],
-        'rate': [10000],
-        'tx_size': 256,
+        'rate': [50000],
+        'tx_size': 32,
         'faults': 0,
         'duration': int(attack_duration),
         'runs': 1,
