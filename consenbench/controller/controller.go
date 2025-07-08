@@ -64,7 +64,7 @@ func (c *Controller) HandleClientMessages() error {
 	go func() {
 		for true {
 			msg := <-c.InputChan
-			c.logger.Debug(fmt.Sprintf("received from client %v %v ", msg.Peer, msg.RpcPair), 0)
+			c.logger.Debug(fmt.Sprintf("received from client %v %v ", msg.Peer, msg.RpcPair), -1)
 			switch msg.RpcPair.Code {
 			case common.GetRPCCodes().ControlMsg:
 				// handle control message

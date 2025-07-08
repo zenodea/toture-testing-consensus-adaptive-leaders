@@ -137,7 +137,7 @@ func (n *Network) HandleReadStream(reader *bufio.Reader, id int) error {
 				},
 				Peer: id,
 			}
-			n.logger.Debug("Pushed a message from "+strconv.Itoa(id), 0)
+			n.logger.Debug("Pushed a message from "+strconv.Itoa(id), -1)
 		} else {
 			n.logger.Debug("Error received unknown message type from "+strconv.Itoa(id), 3)
 			return nil
