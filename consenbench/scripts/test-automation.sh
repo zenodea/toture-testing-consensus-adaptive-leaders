@@ -9,7 +9,7 @@ mkdir logs
 echo "Protocol,Attack,Throughput,Latency(ms),Percentile_99(ms),CPU,MEM,NET_IN,NET_OUT"
 
 
-for protocol in mahi mysticeti hotstuff_2 hotstuff_3 tusk bullshark; do
+for protocol in mahi mysticeti hotstuff_2 tusk bullshark; do
   for attack in noop; do
     /bin/bash  consenbench/scripts/dry_run.sh   "${protocol}" "${attack}" eth1
   done
