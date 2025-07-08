@@ -63,7 +63,7 @@ def calculate_throughput_latency(start_end_pairs, n,duration):
 
 def plot_throughput(throughput, n):
     """Plot per second throughput."""
-    seconds = sorted(throughput.keys())
+    seconds = [sec - 40 for sec in sorted(throughput.keys())]
     throughput_values = [throughput[sec]/n for sec in seconds]
 
     plt.figure(figsize=(10, 6))
@@ -77,7 +77,7 @@ def plot_throughput(throughput, n):
 
 def plot_latency(average_latency):
     """Plot per second average latency."""
-    seconds = sorted(average_latency.keys())
+    seconds = [sec - 40 for sec in sorted(average_latency.keys())]
     latency_values = [average_latency[sec] for sec in seconds]
 
     plt.figure(figsize=(10, 6))
