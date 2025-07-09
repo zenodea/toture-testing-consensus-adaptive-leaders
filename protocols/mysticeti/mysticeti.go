@@ -67,6 +67,21 @@ func (ba *Mysticeti) CopyConsensus(nodes []*common.Node) error {
 }
 
 func (ba *Mysticeti) Bootstrap(nodes []*common.Node, duration int, result chan util.Performance, bootstrap_complete chan bool) {
+
+	data, err := os.ReadFile("params.param")
+	if err != nil {
+		panic(err.Error())
+	}
+
+	parts := strings.Fields(string(data))
+	if len(parts) != 2 {
+		panic("Expected exactly 2 values in params.param")
+	}
+
+	param_load := parts[0]
+
+	param_size := parts[1]
+
 	num_replicas, err := strconv.ParseInt(ba.options.Option["num_replicas"], 10, 64)
 	if err != nil {
 		panic(err.Error() + " while parsing num_replicas")
@@ -87,10 +102,8 @@ func (ba *Mysticeti) Bootstrap(nodes []*common.Node, duration int, result chan u
 
 	ba.logger.Debug(fmt.Sprintf("Killed all the replicas\n"), 0)
 
-	load, ok := ba.options.Option["load"]
-	if !ok {
-		panic("load not found in options")
-	}
+	int_load, _ := strconv.Atoi(param_load)
+	load := strconv.Itoa(int_load / int(num_replicas))
 
 	wave_length := "3"
 
@@ -103,10 +116,7 @@ func (ba *Mysticeti) Bootstrap(nodes []*common.Node, duration int, result chan u
 
 	enable_synchronizer := "true"
 
-	transaction_size, ok := ba.options.Option["transaction_size"]
-	if !ok {
-		panic("transaction_size not found in options")
-	}
+	transaction_size := param_size
 
 	sshCmd := exec.Command("python3", []string{"protocols/mysticeti/assets/genrate-configs.py", "--wave_length", wave_length, "--number_of_leaders", number_of_leaders, "--enable_pipelining", enable_pipelining, "--consensus_only", "true", "--enable_synchronizer", enable_synchronizer, "--initial_delay_secs", "5", "--initial_delay_nanos", "0", "--load", load, "--transaction_size", transaction_size, "--output_dir", "protocols/mysticeti/assets/"}...)
 	output, err := sshCmd.CombinedOutput()

@@ -102,7 +102,8 @@ func (ba *Mahi) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 
 	ba.logger.Debug(fmt.Sprintf("Killed all the replicas and clients\n"), 0)
 
-	load := param_load
+	int_load, _ := strconv.Atoi(param_load)
+	load := strconv.Itoa(int_load / int(num_replicas))
 
 	wave_length, ok := ba.options.Option["wave_length"]
 	if !ok {
