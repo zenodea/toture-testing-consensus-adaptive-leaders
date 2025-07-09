@@ -11,8 +11,19 @@ echo "Load,Size,Protocol,Attack,Throughput,Latency(ms),Percentile_99(ms),CPU,MEM
 
 for protocol in mahi mysticeti hotstuff_2 tusk bullshark cft_dag; do
   for attack in noop; do
-    for size in 32 512; do
+    for size in 32; do
       for load in 10000 20000 50000 70000 100000 120000 150000 180000 200000 250000 300000; do
+        /bin/bash  consenbench/scripts/dry_run.sh   "${protocol}" "${attack}" eth1 "$load" "$size"
+      done
+    done
+  done
+done
+
+
+for protocol in mahi mysticeti hotstuff_2 tusk bullshark cft_dag; do
+  for attack in noop; do
+    for size in 512; do
+      for load in 10000 20000 30000 40000 50000 60000 70000 80000 100000; do
         /bin/bash  consenbench/scripts/dry_run.sh   "${protocol}" "${attack}" eth1 "$load" "$size"
       done
     done
