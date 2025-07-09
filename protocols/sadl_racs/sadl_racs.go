@@ -95,6 +95,21 @@ func (ba *Sadl_Racs) CopyConsensus(nodes []*common.Node) error {
 }
 
 func (ba *Sadl_Racs) Bootstrap(nodes []*common.Node, duration int, result chan util.Performance, bootstrap_complete chan bool) {
+
+	data, err := os.ReadFile("params.param")
+	if err != nil {
+		panic(err.Error())
+	}
+
+	parts := strings.Fields(string(data))
+	if len(parts) != 2 {
+		panic("Expected exactly 2 values in params.param")
+	}
+
+	param_load := parts[0]
+
+	param_size := parts[1]
+
 	replica_path := "/bench/replica"
 	ctl_path := "/bench/client"
 
@@ -113,10 +128,8 @@ func (ba *Sadl_Racs) Bootstrap(nodes []*common.Node, duration int, result chan u
 		panic(err.Error() + " while parsing view_timeout_time")
 	}
 
-	arrival_rate, ok := ba.options.Option["arrival_rate"]
-	if !ok {
-		panic(err.Error() + " while parsing arrival_rate")
-	}
+	int_load, _ := strconv.Atoi(param_load)
+	arrival_rate := strconv.Itoa(int_load / int(num_clients))
 
 	replica_batch_size, ok := ba.options.Option["replica_batch_size"]
 	if !ok {
@@ -128,10 +141,11 @@ func (ba *Sadl_Racs) Bootstrap(nodes []*common.Node, duration int, result chan u
 		panic(err.Error() + " while parsing replica_batch_time")
 	}
 
-	key_len, ok := ba.options.Option["key_len"]
-	if !ok {
-		panic(err.Error() + " while parsing key_len")
-	}
+	int_size, _ := strconv.Atoi(param_size)
+
+	key_len := strconv.Itoa(int_size / 2)
+
+	val_len := strconv.Itoa(int_size / 2)
 
 	broadcast_mode, ok := ba.options.Option["broadcast_mode"]
 	if !ok {
@@ -141,11 +155,6 @@ func (ba *Sadl_Racs) Bootstrap(nodes []*common.Node, duration int, result chan u
 	network_batch_time, ok := ba.options.Option["network_batch_time"]
 	if !ok {
 		panic(err.Error() + " while parsing network_batch_time")
-	}
-
-	val_len, ok := ba.options.Option["val_len"]
-	if !ok {
-		panic(err.Error() + " while parsing val_len")
 	}
 
 	client_batch_size, ok := ba.options.Option["client_batch_size"]
