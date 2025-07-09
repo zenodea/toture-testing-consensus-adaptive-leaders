@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"os"
 	"time"
 	"toture-test/consenbench/client"
@@ -29,7 +28,7 @@ func main() {
 
 	exit_timeout := time.Duration(10*(*attack_duration)) * time.Second
 	exitTimer := time.AfterFunc(exit_timeout, func() {
-		fmt.Println("Program exceeded maximum runtime, exiting forcefully.")
+		//fmt.Println("Program exceeded maximum runtime, exiting forcefully.")
 		os.Exit(1)
 	})
 
