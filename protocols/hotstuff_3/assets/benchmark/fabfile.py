@@ -15,12 +15,12 @@ def install(ctx):
 
 
 @task
-def remote(ctx, pid=1, attack_duration=2, num_replicas=3):
+def remote(ctx, pid=1, attack_duration=2, num_replicas=3, param_load=4, param_size=5):
     ''' Run benchmarks on AWS '''
     bench_params = {
         'nodes': [int(num_replicas)],
-        'rate': [50000],
-        'tx_size': 32,
+        'rate': [int(param_load)],
+        'tx_size': int(param_size),
         'faults': 0,
         'duration': int(attack_duration),
         'runs': 1,
