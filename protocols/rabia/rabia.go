@@ -70,6 +70,21 @@ func (ba *Rabia) CopyConsensus(nodes []*common.Node) error {
 }
 
 func (ba *Rabia) Bootstrap(nodes []*common.Node, duration int, result chan util.Performance, bootstrap_complete chan bool) {
+
+	data, err := os.ReadFile("params.param")
+	if err != nil {
+		panic(err.Error())
+	}
+
+	parts := strings.Fields(string(data))
+	if len(parts) != 2 {
+		panic("Expected exactly 2 values in params.param")
+	}
+
+	param_load := parts[0]
+
+	_ = parts[1]
+
 	rabia_path := "/bench/rabia"
 
 	num_replicas, err := strconv.ParseInt(ba.options.Option["num_replicas"], 10, 64)
@@ -82,10 +97,8 @@ func (ba *Rabia) Bootstrap(nodes []*common.Node, duration int, result chan util.
 		panic(err.Error() + " while parsing num_clients")
 	}
 
-	arrival_rate, ok := ba.options.Option["arrival_rate"]
-	if !ok {
-		panic(err.Error() + " while parsing arrival_rate")
-	}
+	int_load, _ := strconv.Atoi(param_load)
+	arrival_rate := strconv.Itoa(int_load / int(num_clients))
 
 	rabia_client_batch_size, ok := ba.options.Option["rabia_client_batch_size"]
 	if !ok {
