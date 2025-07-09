@@ -6,7 +6,7 @@ mkdir logs
 
 /bin/bash build.sh
 
-echo "Protocol,Attack,Throughput,Latency(ms),Percentile_99(ms),CPU,MEM,NET_IN,NET_OUT"
+echo "Load,Size,Protocol,Attack,Throughput,Latency(ms),Percentile_99(ms),CPU,MEM,NET_IN,NET_OUT"
 
 
 for protocol in mahi mysticeti hotstuff_2 tusk bullshark; do
