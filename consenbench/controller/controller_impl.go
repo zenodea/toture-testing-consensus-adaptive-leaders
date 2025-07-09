@@ -21,11 +21,17 @@ func (c *Controller) BootstrapClients() error {
 
 	c.logger.Debug(fmt.Sprintf("Copying the client binary to all nodes"), 0)
 
+	process_names := []string{"node", "mysticeti", "replica", "replica", "epaxos_server", "etcd", "node", "node", "mysticeti", "mysticeti", "dummy", "replica", "rabia", "replica", "replica", "node", "QuorumPeerMain"}
+
 	var wg sync.WaitGroup
 	wg.Add(len(c.Nodes))
 	// copy the client binary to all the nodes
 	for j := 0; j < len(c.Nodes); j++ {
 		go func(i int) {
+
+			for p := 0; p < len(process_names); p++ {
+				c.Nodes[i].ExecCmd(fmt.Sprintf("pkill -KILL -f " + process_names[p]))
+			}
 			c.Nodes[i].ExecCmd(fmt.Sprintf("pkill -KILL -f bench"))
 			c.Nodes[i].ExecCmd(fmt.Sprintf("pkill -KILL -f fab"))
 			c.Nodes[i].ExecCmd(fmt.Sprintf("rm -r %vbench", c.Nodes[i].HomeDir))
