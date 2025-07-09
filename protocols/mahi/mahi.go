@@ -216,20 +216,19 @@ func (ba *Mahi) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 	ba.logger.Debug(fmt.Sprintf("Downloaded the client logs"), 0)
 
 	command := "protocols/mahi/assets/performance_graph.py"
-	outputs := []string{}
 	files := []string{}
 	for j := 0; j < int(num_replicas); j++ {
 		logFile := filepath.Join(homeDir, fmt.Sprintf("toture-testing-consensus/logs/client-times-%v.txt", j))
 		files = append(files, logFile)
 
-		sshCmd = exec.Command("python3", []string{command, "mahi-" + strconv.Itoa(j), strconv.Itoa(duration), logFile}...)
-		output, err = sshCmd.CombinedOutput()
-		if err != nil {
-			ba.logger.Debug(fmt.Sprintf("Error while generating performance graph "+err.Error()+" "+string(output)+"\n"), 0)
-		} else {
-			ba.logger.Debug(fmt.Sprintf("Mahi Performance graph generated successfully\n"+string(output)+"\n"), 0)
-			outputs = append(outputs, string(output))
-		}
+		//sshCmd = exec.Command("python3", []string{command, "mahi-" + strconv.Itoa(j), strconv.Itoa(duration), logFile}...)
+		//output, err = sshCmd.CombinedOutput()
+		//if err != nil {
+		//	ba.logger.Debug(fmt.Sprintf("Error while generating performance graph "+err.Error()+" "+string(output)+"\n"), 0)
+		//} else {
+		//	ba.logger.Debug(fmt.Sprintf("Mahi Performance graph generated successfully\n"+string(output)+"\n"), 0)
+		//	outputs = append(outputs, string(output))
+		//}
 	}
 
 	sshCmd = exec.Command("python3", append([]string{command, "mahi", strconv.Itoa(duration)}, files...)...)
@@ -240,8 +239,8 @@ func (ba *Mahi) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 		ba.logger.Debug(fmt.Sprintf("Mahi Performance graph generated successfully\n"+string(output)+"\n"), 0)
 	}
 
-	ba.logger.Debug(fmt.Sprintf("Mahi Mahi Performance:\n %v\n", outputs), 0)
-	result <- ba.getPerformance(outputs)
+	ba.logger.Debug(fmt.Sprintf("Mahi Mahi Performance:\n %v\n", output), 0)
+	result <- ba.getPerformance([]string{string(output)})
 
 }
 
