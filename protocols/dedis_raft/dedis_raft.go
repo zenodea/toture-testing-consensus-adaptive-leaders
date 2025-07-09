@@ -95,6 +95,21 @@ func (ba *Dedis_Raft) CopyConsensus(nodes []*common.Node) error {
 }
 
 func (ba *Dedis_Raft) Bootstrap(nodes []*common.Node, duration int, result chan util.Performance, bootstrap_complete chan bool) {
+
+	data, err := os.ReadFile("params.param")
+	if err != nil {
+		panic(err.Error())
+	}
+
+	parts := strings.Fields(string(data))
+	if len(parts) != 2 {
+		panic("Expected exactly 2 values in params.param")
+	}
+
+	param_load := parts[0]
+
+	param_size := parts[1]
+
 	replica_path := "/bench/replica"
 	ctl_path := "/bench/client"
 
@@ -113,10 +128,8 @@ func (ba *Dedis_Raft) Bootstrap(nodes []*common.Node, duration int, result chan 
 		panic(err.Error() + " while parsing view_timeout_time")
 	}
 
-	arrival_rate, ok := ba.options.Option["arrival_rate"]
-	if !ok {
-		panic(err.Error() + " while parsing arrival_rate")
-	}
+	int_load, _ := strconv.Atoi(param_load)
+	arrival_rate := strconv.Itoa(int_load / int(num_clients))
 
 	pipeline_length, ok := ba.options.Option["pipeline_length"]
 	if !ok {
@@ -133,15 +146,11 @@ func (ba *Dedis_Raft) Bootstrap(nodes []*common.Node, duration int, result chan 
 		panic("replica_batch_time not found in options")
 	}
 
-	key_len, ok := ba.options.Option["key_len"]
-	if !ok {
-		panic("key_len not found in options")
-	}
+	int_size, _ := strconv.Atoi(param_size)
 
-	val_len, ok := ba.options.Option["val_len"]
-	if !ok {
-		panic("val_len not found in options")
-	}
+	key_len := strconv.Itoa(int_size / 2)
+
+	val_len := strconv.Itoa(int_size / 2)
 
 	client_batch_size, ok := ba.options.Option["client_batch_size"]
 	if !ok {
