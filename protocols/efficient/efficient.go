@@ -72,6 +72,20 @@ func (ba *Efficient) CopyConsensus(nodes []*common.Node) error {
 }
 
 func (ba *Efficient) Bootstrap(nodes []*common.Node, duration int, result chan util.Performance, bootstrap_complete chan bool) {
+	data, err := os.ReadFile("params.param")
+	if err != nil {
+		panic(err.Error())
+	}
+
+	parts := strings.Fields(string(data))
+	if len(parts) != 2 {
+		panic("Expected exactly 2 values in params.param")
+	}
+
+	param_load := parts[0]
+
+	_ = parts[1]
+
 	replica_path := "/bench/epaxos_server"
 	ctl_path := "/bench/epaxos_client"
 	master_path := "/bench/epaxos_master"
@@ -91,10 +105,8 @@ func (ba *Efficient) Bootstrap(nodes []*common.Node, duration int, result chan u
 		panic(err.Error() + " while parsing view_timeout_time")
 	}
 
-	arrival_rate, ok := ba.options.Option["arrival_rate"]
-	if !ok {
-		panic(err.Error() + " while parsing arrival_rate")
-	}
+	int_load, _ := strconv.Atoi(param_load)
+	arrival_rate := strconv.Itoa(int_load / int(num_clients))
 
 	pipeline_length, ok := ba.options.Option["pipeline_length"]
 	if !ok {
