@@ -26,7 +26,7 @@ func main() {
 
 	flag.Parse()
 
-	exit_timeout := time.Duration(10*(*attack_duration)) * time.Second
+	exit_timeout := time.Duration(30*(*attack_duration)) * time.Second
 	exitTimer := time.AfterFunc(exit_timeout, func() {
 		//fmt.Println("Program exceeded maximum runtime, exiting forcefully.")
 		os.Exit(1)
