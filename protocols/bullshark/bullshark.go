@@ -116,7 +116,7 @@ func (ba *Bullshark) Bootstrap(nodes []*common.Node, duration int, result chan u
 	var wg sync.WaitGroup
 	wg.Add(1)
 	go func() {
-		cmd = exec.Command("fab", "remote", "--pid="+fmt.Sprintf("%v", os.Getpid()), "--attack-duration="+fmt.Sprintf("%v", duration), "--num-replicas="+num_replicas, "--param_load="+param_load, "--param_size="+param_size)
+		cmd = exec.Command("fab", "remote", "--pid="+fmt.Sprintf("%v", os.Getpid()), "--attack-duration="+fmt.Sprintf("%v", duration), "--num-replicas="+num_replicas, "--param-load="+param_load, "--param-size="+param_size)
 		output, err = cmd.CombinedOutput()
 		if err != nil {
 			panic(fmt.Sprintf("Failed to run %v: %v\n%v", cmd, err, string(output)))
