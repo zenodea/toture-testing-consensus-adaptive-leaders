@@ -1,6 +1,4 @@
 num_replicas: 5
-load: 1000
 ports: 1500
-number_of_leaders: 1
-transaction_size: 18
+number_of_leaders: 2
 process_name: mysticeti
