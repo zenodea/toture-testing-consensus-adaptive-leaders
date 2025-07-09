@@ -50,8 +50,23 @@ func (ba *Bullshark) CopyConsensus(nodes []*common.Node) error {
 }
 
 func (ba *Bullshark) Bootstrap(nodes []*common.Node, duration int, result chan util.Performance, bootstrap_complete chan bool) {
+
+	data, err := os.ReadFile("params.param")
+	if err != nil {
+		panic(err.Error())
+	}
+
+	parts := strings.Fields(string(data))
+	if len(parts) != 2 {
+		panic("Expected exactly 2 values in params.param")
+	}
+
+	param_load := parts[0]
+
+	param_size := parts[1]
+
 	ba.logger.Debug(fmt.Sprintf("Running Bullshark consensus using fabric"), 0)
-	err := os.Chdir("protocols/bullshark/assets/benchmark")
+	err = os.Chdir("protocols/bullshark/assets/benchmark")
 	if err != nil {
 		panic("Failed to change directory")
 	}
@@ -101,7 +116,7 @@ func (ba *Bullshark) Bootstrap(nodes []*common.Node, duration int, result chan u
 	var wg sync.WaitGroup
 	wg.Add(1)
 	go func() {
-		cmd = exec.Command("fab", "remote", "--pid="+fmt.Sprintf("%v", os.Getpid()), "--attack-duration="+fmt.Sprintf("%v", duration), "--num-replicas="+num_replicas)
+		cmd = exec.Command("fab", "remote", "--pid="+fmt.Sprintf("%v", os.Getpid()), "--attack-duration="+fmt.Sprintf("%v", duration), "--num-replicas="+num_replicas, "--param_load="+param_load, "--param_size="+param_size)
 		output, err = cmd.CombinedOutput()
 		if err != nil {
 			panic(fmt.Sprintf("Failed to run %v: %v\n%v", cmd, err, string(output)))
