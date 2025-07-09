@@ -206,20 +206,10 @@ func (ba *Mysticeti) Bootstrap(nodes []*common.Node, duration int, result chan u
 	ba.logger.Debug(fmt.Sprintf("Downloaded the client logs"), 0)
 
 	command := "protocols/mysticeti/assets/performance_graph.py"
-	outputs := []string{}
 	logFiles := []string{}
 	for j := 0; j < int(num_replicas); j++ {
 		logFile := filepath.Join(homeDir, fmt.Sprintf("toture-testing-consensus/logs/client-times-%v.txt", j))
 		logFiles = append(logFiles, logFile)
-
-		sshCmd = exec.Command("python3", []string{command, "mysticeti-" + strconv.Itoa(j), strconv.Itoa(duration), logFile}...)
-		output, err = sshCmd.CombinedOutput()
-		if err != nil {
-			ba.logger.Debug(fmt.Sprintf("Error while generating performance graph "+err.Error()+" "+string(output)+"\n"), 0)
-		} else {
-			ba.logger.Debug(fmt.Sprintf("Mysticeti Performance graph generated successfully\n"+string(output)+"\n"), 0)
-			outputs = append(outputs, string(output))
-		}
 	}
 
 	sshCmd = exec.Command("python3", append([]string{command, "mysticeti", strconv.Itoa(duration)}, logFiles...)...)
@@ -230,8 +220,8 @@ func (ba *Mysticeti) Bootstrap(nodes []*common.Node, duration int, result chan u
 		ba.logger.Debug(fmt.Sprintf("Mysticeti Performance graph generated successfully\n"+string(output)+"\n"), 0)
 	}
 
-	ba.logger.Debug(fmt.Sprintf("Mystecity Mystecity Performance:\n %v\n", outputs), 0)
-	result <- ba.getPerformance(outputs)
+	ba.logger.Debug(fmt.Sprintf("Mystecity Mystecity Performance:\n %v\n", output), 0)
+	result <- ba.getPerformance([]string{string(output)})
 
 }
 
