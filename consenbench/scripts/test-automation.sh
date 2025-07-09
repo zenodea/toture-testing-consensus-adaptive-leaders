@@ -11,6 +11,6 @@ echo "Protocol,Attack,Throughput,Latency(ms),Percentile_99(ms),CPU,MEM,NET_IN,NE
 
 for protocol in mahi mysticeti hotstuff_2 tusk bullshark; do
   for attack in noop; do
-    /bin/bash  consenbench/scripts/dry_run.sh   "${protocol}" "${attack}" eth1
+    /bin/bash  consenbench/scripts/dry_run.sh   "${protocol}" "${attack}" eth1 60000 256
   done
 done
