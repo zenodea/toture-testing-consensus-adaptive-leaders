@@ -207,7 +207,7 @@ func (ba *CFT_DAG) Bootstrap(nodes []*common.Node, duration int, result chan uti
 
 	command := "protocols/cft_dag/assets/performance_graph.py"
 	logFiles := []string{}
-	for j := 0; j < int(num_replicas); j++ {
+	for j := 0; j < 1; j++ {
 		logFile := filepath.Join(homeDir, fmt.Sprintf("toture-testing-consensus/logs/client-times-%v.txt", j))
 		logFiles = append(logFiles, logFile)
 	}
