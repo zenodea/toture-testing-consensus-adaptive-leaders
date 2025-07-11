@@ -49,7 +49,7 @@ func (ba *Hotstuff_2) CopyConsensus(nodes []*common.Node) error {
 }
 
 func (ba *Hotstuff_2) Bootstrap(nodes []*common.Node, duration int, result chan util.Performance, bootstrap_complete chan bool) {
-
+	duration += 20 // TODO remove
 	data, err := os.ReadFile("params.param")
 	if err != nil {
 		panic(err.Error())
