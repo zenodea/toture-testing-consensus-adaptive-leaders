@@ -320,20 +320,38 @@ class LogParser:
                 avg = sum(values) / len(values) if values else 0
                 latency_values.append(avg)
 
+        plot_start, plot_end = 20, 80          # seconds you want to keep
+
+        # ----- Throughput lists limited to 20-80 s, shifted to 0-60 s
+        tps_times_plot  = [t - plot_start for t, v in zip(tps_times, tps_values)
+                           if plot_start <= t <= plot_end]
+        tps_values_plot = [v for t, v in zip(tps_times, tps_values)
+                           if plot_start <= t <= plot_end]
+
+
         # --- Plot throughput ---
         plt.figure(figsize=(10, 6))
-        plt.plot(tps_times, tps_values, label="Bullshark", color='blue')
+        plt.plot(tps_times_plot, tps_values_plot, label="Bullshark", color='blue')
         plt.xlabel("Time (s)")
         plt.ylabel("Transactions/sec")
         plt.grid(True)
         plt.legend()
+        plt.xlim(0, plot_end - plot_start)
         plt.savefig(f"../../../../logs/{output_prefix}_throughput.pdf")
+
+
+        latency_times_plot  = [t - plot_start for t, v in zip(latency_times, latency_values)
+                               if plot_start <= t <= plot_end]
+        latency_values_plot = [v for t, v in zip(latency_times, latency_values)
+                               if plot_start <= t <= plot_end]
+
 
         # --- Plot latency ---
         plt.figure(figsize=(10, 6))
-        plt.plot(latency_times, latency_values, label="Bullshark", color='blue')
+        plt.plot(latency_times_plot, latency_values_plot,  label="Bullshark", color='blue')
         plt.xlabel("Time (s)")
         plt.ylabel("Latency (ms)")
         plt.grid(True)
         plt.legend()
+        plt.xlim(0, plot_end - plot_start)
         plt.savefig(f"../../../../logs/{output_prefix}_latency.pdf")
