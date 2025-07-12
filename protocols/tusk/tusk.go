@@ -142,8 +142,8 @@ func (ba *Tusk) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 
 	ba.logger.Debug(fmt.Sprintf("Waiting for a signal from fabric (PID:", os.Getpid(), ")"), 0)
 	<-done
-	bootstrap_complete <- true
 	time.Sleep(20 * time.Second) // don't attack during warming up
+	bootstrap_complete <- true
 	ba.logger.Debug(fmt.Sprintf("bootstrap complete for tusk\n"), 0)
 	wg.Wait()
 	ba.logger.Debug(fmt.Sprintf("finished running tusk"), 0)
