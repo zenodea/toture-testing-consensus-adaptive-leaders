@@ -50,7 +50,7 @@ func (ba *Bullshark) CopyConsensus(nodes []*common.Node) error {
 }
 
 func (ba *Bullshark) Bootstrap(nodes []*common.Node, duration int, result chan util.Performance, bootstrap_complete chan bool) {
-
+	duration += 20
 	data, err := os.ReadFile("params.param")
 	if err != nil {
 		panic(err.Error())
@@ -145,6 +145,7 @@ func (ba *Bullshark) Bootstrap(nodes []*common.Node, duration int, result chan u
 	<-done
 	time.Sleep(10 * time.Second)
 	bootstrap_complete <- true
+	time.Sleep(20 * time.Second) // don't attack during warming up
 	ba.logger.Debug(fmt.Sprintf("bootstrap complete for bullshark\n"), 0)
 	wg.Wait()
 	ba.logger.Debug(fmt.Sprintf("finished running bullshark"), 0)

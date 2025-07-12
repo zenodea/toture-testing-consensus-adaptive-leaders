@@ -13,6 +13,7 @@ import (
 	"strings"
 	"sync"
 	"syscall"
+	"time"
 	"toture-test/consenbench/common"
 	"toture-test/protocols"
 	"toture-test/util"
@@ -49,7 +50,7 @@ func (ba *Hotstuff_2) CopyConsensus(nodes []*common.Node) error {
 }
 
 func (ba *Hotstuff_2) Bootstrap(nodes []*common.Node, duration int, result chan util.Performance, bootstrap_complete chan bool) {
-	duration += 20 // TODO remove
+	duration += 20
 	data, err := os.ReadFile("params.param")
 	if err != nil {
 		panic(err.Error())
@@ -142,6 +143,7 @@ func (ba *Hotstuff_2) Bootstrap(nodes []*common.Node, duration int, result chan 
 
 	ba.logger.Debug(fmt.Sprintf("Waiting for a signal from fabric (PID:", os.Getpid(), ")"), 0)
 	<-done
+	time.Sleep(20 * time.Second) // don't attack during warming up
 	bootstrap_complete <- true
 	ba.logger.Debug(fmt.Sprintf("bootstrap complete for hotstuff"), 0)
 	wg.Wait()

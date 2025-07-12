@@ -13,6 +13,7 @@ import (
 	"strings"
 	"sync"
 	"syscall"
+	"time"
 	"toture-test/consenbench/common"
 	"toture-test/protocols"
 	"toture-test/util"
@@ -49,6 +50,7 @@ func (ba *Tusk) CopyConsensus(nodes []*common.Node) error {
 }
 
 func (ba *Tusk) Bootstrap(nodes []*common.Node, duration int, result chan util.Performance, bootstrap_complete chan bool) {
+	duration += 20
 	data, err := os.ReadFile("params.param")
 	if err != nil {
 		panic(err.Error())
@@ -141,6 +143,7 @@ func (ba *Tusk) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 	ba.logger.Debug(fmt.Sprintf("Waiting for a signal from fabric (PID:", os.Getpid(), ")"), 0)
 	<-done
 	bootstrap_complete <- true
+	time.Sleep(20 * time.Second) // don't attack during warming up
 	ba.logger.Debug(fmt.Sprintf("bootstrap complete for tusk\n"), 0)
 	wg.Wait()
 	ba.logger.Debug(fmt.Sprintf("finished running tusk"), 0)
