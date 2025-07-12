@@ -11,7 +11,7 @@ echo "Load,Size,Protocol,Attack,Throughput,Latency(ms),Percentile_99(ms),CPU,MEM
 for protocol in mahi mysticeti hotstuff_2 tusk bullshark cft_dag; do
   for attack in noop; do
     for size in 512; do
-      for load in 50000; do
+      for load in 10000; do
         /bin/bash  consenbench/scripts/dry_run.sh   "${protocol}" "${attack}" eth1 "$load" "$size"
       done
     done
