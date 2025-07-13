@@ -33,31 +33,23 @@ func (ba *Efficient) CopyConsensus(nodes []*common.Node) error {
 	if !ok {
 		panic("num_replicas not found in options")
 	}
-	num_clients, ok := ba.options.Option["num_clients"]
-	if !ok {
-		panic("num_clients not found in options")
-	}
 
 	num_replicas_int, err := strconv.ParseInt(num_replicas, 10, 64)
 	if err != nil {
 		panic(err.Error() + " while parsing num_replicas")
 
 	}
-	num_clients_int, err := strconv.ParseInt(num_clients, 10, 64)
-	if err != nil {
-		panic(err.Error() + " while parsing num_clients")
-	}
 
-	if num_replicas_int+num_clients_int > int64(len(nodes)) {
+	if num_replicas_int > int64(len(nodes)) {
 		panic("Not enough nodes to deploy efficient")
 	}
 
 	// copy the replica binary, client binary
 
 	var wg sync.WaitGroup
-	wg.Add(int(num_clients_int + num_replicas_int))
+	wg.Add(int(num_replicas_int))
 
-	for j := int64(0); j < num_clients_int+num_replicas_int; j++ {
+	for j := int64(0); j < num_replicas_int; j++ {
 		go func(i int) {
 			nodes[i].Put_Load("protocols/efficient/assets/epaxos_client", fmt.Sprintf("%vbench/", nodes[i].HomeDir))
 			nodes[i].Put_Load("protocols/efficient/assets/epaxos_master", fmt.Sprintf("%vbench/", nodes[i].HomeDir))
@@ -95,10 +87,6 @@ func (ba *Efficient) Bootstrap(nodes []*common.Node, duration int, result chan u
 		panic(err.Error() + " while parsing num_replicas")
 
 	}
-	num_clients, err := strconv.ParseInt(ba.options.Option["num_clients"], 10, 64)
-	if err != nil {
-		panic(err.Error() + " while parsing num_clients")
-	}
 
 	view_timeout_time, ok := ba.options.Option["view_timeout_time"]
 	if !ok {
@@ -106,7 +94,7 @@ func (ba *Efficient) Bootstrap(nodes []*common.Node, duration int, result chan u
 	}
 
 	int_load, _ := strconv.Atoi(param_load)
-	arrival_rate := strconv.Itoa(int_load / int(num_clients))
+	arrival_rate := strconv.Itoa(int_load / int(num_replicas))
 
 	pipeline_length, ok := ba.options.Option["pipeline_length"]
 	if !ok {
@@ -149,8 +137,8 @@ func (ba *Efficient) Bootstrap(nodes []*common.Node, duration int, result chan u
 	}
 
 	var wg sync.WaitGroup
-	wg.Add(int(num_replicas + num_clients))
-	for i := 0; i < int(num_replicas+num_clients); i++ {
+	wg.Add(int(num_replicas))
+	for i := 0; i < int(num_replicas); i++ {
 		go func(j int) {
 			nodes[j].ExecCmd("pkill -KILL -f epaxos_client")
 			nodes[j].ExecCmd("pkill -KILL -f epaxos_master")
@@ -179,14 +167,14 @@ func (ba *Efficient) Bootstrap(nodes []*common.Node, duration int, result chan u
 
 	time.Sleep(5 * time.Second)
 
-	clientOutputs := make([]string, num_clients)
+	clientOutputs := make([]string, num_replicas)
 	m := 1
-	for j := int(num_replicas); j < int(num_replicas+num_clients); j++ {
+	for j := 0; j < int(num_replicas); j++ {
 		go func(i int, k int) {
 			if algo != "-pa" {
-				clientOutputs[i-int(num_replicas)] = nodes[i].ExecCmd("." + ctl_path + " -name " + strconv.Itoa(50+k) + " -maddr " + nodes[0].Ip + "  -clientBatchSize 50  -logFilePath " + fmt.Sprintf("%vbench/logs/", nodes[i].HomeDir) + " -arrivalRate  " + arrival_rate + " -testDuration " + strconv.Itoa(duration) + " -leaderTimeout " + view_timeout_time + " -defaultReplica " + strconv.Itoa(i-int(num_replicas)) + " -w " + writes + " -c " + conflicts)
+				clientOutputs[i] = nodes[i].ExecCmd("." + ctl_path + " -name " + strconv.Itoa(50+k) + " -maddr " + nodes[0].Ip + "  -clientBatchSize 50  -logFilePath " + fmt.Sprintf("%vbench/logs/", nodes[i].HomeDir) + " -arrivalRate  " + arrival_rate + " -testDuration " + strconv.Itoa(duration) + " -leaderTimeout " + view_timeout_time + " -defaultReplica " + strconv.Itoa(i) + " -w " + writes + " -c " + conflicts)
 			} else {
-				clientOutputs[i-int(num_replicas)] = nodes[i].ExecCmd("." + ctl_path + " -name " + strconv.Itoa(50+k) + " -maddr " + nodes[0].Ip + "  -clientBatchSize 50  -logFilePath " + fmt.Sprintf("%vbench/logs/", nodes[i].HomeDir) + " -arrivalRate  " + arrival_rate + " -testDuration " + strconv.Itoa(duration) + " -leaderTimeout " + view_timeout_time + " -defaultReplica " + strconv.Itoa(i-int(num_replicas)) + " -w " + writes + " -c " + conflicts + " -l")
+				clientOutputs[i] = nodes[i].ExecCmd("." + ctl_path + " -name " + strconv.Itoa(50+k) + " -maddr " + nodes[0].Ip + "  -clientBatchSize 50  -logFilePath " + fmt.Sprintf("%vbench/logs/", nodes[i].HomeDir) + " -arrivalRate  " + arrival_rate + " -testDuration " + strconv.Itoa(duration) + " -leaderTimeout " + view_timeout_time + " -defaultReplica " + strconv.Itoa(i) + " -w " + writes + " -c " + conflicts + " -l")
 			}
 		}(j, m)
 		m++
@@ -204,8 +192,8 @@ func (ba *Efficient) Bootstrap(nodes []*common.Node, duration int, result chan u
 	ba.logger.Debug(fmt.Sprintf("Finished the clients\n"), 0)
 
 	var wg1 sync.WaitGroup
-	wg1.Add(int(num_replicas + num_clients))
-	for j := 0; j < int(num_replicas+num_clients); j++ {
+	wg1.Add(int(num_replicas))
+	for j := 0; j < int(num_replicas); j++ {
 		go func(i int) {
 			nodes[i].ExecCmd("pkill -KILL -f epaxos_client")
 			nodes[i].ExecCmd("pkill -KILL -f epaxos_master")
@@ -239,9 +227,9 @@ func (ba *Efficient) Bootstrap(nodes []*common.Node, duration int, result chan u
 	}
 
 	var wg2 sync.WaitGroup
-	wg2.Add(int(num_clients))
+	wg2.Add(int(num_replicas))
 	m = 1
-	for j := int(num_replicas); j < int(num_replicas+num_clients); j++ {
+	for j := 0; j < int(num_replicas); j++ {
 		go func(i int, k int) {
 			nodes[i].Get_Load(fmt.Sprintf("%vbench/logs/%v.txt", nodes[i].HomeDir, 50+k), "logs/")
 			wg2.Done()
@@ -255,18 +243,9 @@ func (ba *Efficient) Bootstrap(nodes []*common.Node, duration int, result chan u
 	file_names := []string{}
 
 	m = 1
-	for j := int(num_replicas); j < int(num_replicas+num_clients); j++ {
+	for j := 0; j < int(num_replicas); j++ {
 		logFile := filepath.Join(homeDir, fmt.Sprintf("toture-testing-consensus/logs/%v.txt", 50+m))
-
 		file_names = append(file_names, logFile)
-
-		sshCmd = exec.Command("python3", []string{command, "efficient-" + strconv.Itoa(50+m), logFile}...)
-		output, err = sshCmd.CombinedOutput()
-		if err != nil {
-			ba.logger.Debug(fmt.Sprintf("Error while generating performance graph "+err.Error()+" "+string(output)+"\n"), 0)
-		} else {
-			ba.logger.Debug(fmt.Sprintf("Efficient Performance graph generated successfully\n"+string(output)+"\n"), 0)
-		}
 		m++
 	}
 
