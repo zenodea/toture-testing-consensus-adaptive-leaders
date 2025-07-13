@@ -33,27 +33,22 @@ func (ba *Racs) CopyConsensus(nodes []*common.Node) error {
 	if !ok {
 		panic("num_replicas not found in options")
 	}
-	num_clients, ok := ba.options.Option["num_clients"]
-	if !ok {
-		panic("num_clients not found in options")
-	}
 
 	num_replicas_int, err := strconv.ParseInt(num_replicas, 10, 64)
 	if err != nil {
 		panic(err.Error() + " while parsing num_replicas")
 
 	}
-	num_clients_int, err := strconv.ParseInt(num_clients, 10, 64)
-	if err != nil {
-		panic(err.Error() + " while parsing num_clients")
-	}
 
-	if num_replicas_int+num_clients_int > int64(len(nodes)) {
+	if num_replicas_int > int64(len(nodes)) {
 		panic("Not enough nodes to deploy racs")
 	}
 
-	config_inputs := []string{"protocols/racs/assets/config-generate.py", num_replicas, num_clients}
-	for i := int64(0); i < num_clients_int+num_replicas_int; i++ {
+	config_inputs := []string{"protocols/racs/assets/config-generate.py", num_replicas, num_replicas}
+	for i := int64(0); i < num_replicas_int; i++ {
+		config_inputs = append(config_inputs, nodes[i].Ip)
+	}
+	for i := int64(0); i < num_replicas_int; i++ {
 		config_inputs = append(config_inputs, nodes[i].Ip)
 	}
 
@@ -78,9 +73,9 @@ func (ba *Racs) CopyConsensus(nodes []*common.Node) error {
 	// copy the replica binary, client binary and configuration file to the nodes
 
 	var wg sync.WaitGroup
-	wg.Add(int(num_clients_int + num_replicas_int))
+	wg.Add(int(num_replicas_int))
 
-	for j := int64(0); j < num_clients_int+num_replicas_int; j++ {
+	for j := int64(0); j < +num_replicas_int; j++ {
 		go func(i int) {
 			nodes[i].Put_Load("protocols/racs/assets/ip_config.yaml", fmt.Sprintf("%vbench/", nodes[i].HomeDir))
 			nodes[i].Put_Load("protocols/racs/assets/replica", fmt.Sprintf("%vbench/", nodes[i].HomeDir))
@@ -117,10 +112,6 @@ func (ba *Racs) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 		panic(err.Error() + " while parsing num_replicas")
 
 	}
-	num_clients, err := strconv.ParseInt(ba.options.Option["num_clients"], 10, 64)
-	if err != nil {
-		panic(err.Error() + " while parsing num_clients")
-	}
 
 	view_timeout_time, ok := ba.options.Option["view_timeout_time"]
 	if !ok {
@@ -133,7 +124,7 @@ func (ba *Racs) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 	}
 
 	int_load, _ := strconv.Atoi(param_load)
-	arrival_rate := strconv.Itoa(int_load / int(num_clients))
+	arrival_rate := strconv.Itoa(int_load / int(num_replicas))
 
 	network_batch_time, ok := ba.options.Option["network_batch_time"]
 	if !ok {
@@ -172,8 +163,8 @@ func (ba *Racs) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 	}
 
 	var wg sync.WaitGroup
-	wg.Add(int(num_replicas + num_clients))
-	for i := 0; i < int(num_replicas+num_clients); i++ {
+	wg.Add(int(num_replicas))
+	for i := 0; i < int(num_replicas); i++ {
 		go func(j int) {
 			nodes[j].ExecCmd("pkill -KILL -f replica")
 			nodes[j].ExecCmd("pkill -KILL -f client")
@@ -196,23 +187,23 @@ func (ba *Racs) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 
 	ba.logger.Debug(fmt.Sprintf("Started all the replicas\n"), 0)
 
-	nodes[num_replicas].ExecCmd("." + ctl_path + " --name " + strconv.Itoa(51) + " --logFilePath " + fmt.Sprintf("%vbench/logs/", nodes[num_replicas].HomeDir) + " --config " + fmt.Sprintf("%vbench/ip_config.yaml", nodes[num_replicas].HomeDir) + " --requestType status --operationType 1 ")
+	nodes[0].ExecCmd("." + ctl_path + " --name " + strconv.Itoa(51) + " --logFilePath " + fmt.Sprintf("%vbench/logs/", nodes[0].HomeDir) + " --config " + fmt.Sprintf("%vbench/ip_config.yaml", nodes[0].HomeDir) + " --requestType status --operationType 1 ")
 
 	ba.logger.Debug(fmt.Sprintf("Sent initial status to bootstrap\n"), 0)
 
 	time.Sleep(15 * time.Second)
 
-	nodes[num_replicas].ExecCmd("." + ctl_path + " --name " + strconv.Itoa(51) + " --logFilePath " + fmt.Sprintf("%vbench/logs/", nodes[num_replicas].HomeDir) + " --config " + fmt.Sprintf("%vbench/ip_config.yaml", nodes[num_replicas].HomeDir) + " --requestType status --operationType 3 ")
+	nodes[0].ExecCmd("." + ctl_path + " --name " + strconv.Itoa(51) + " --logFilePath " + fmt.Sprintf("%vbench/logs/", nodes[0].HomeDir) + " --config " + fmt.Sprintf("%vbench/ip_config.yaml", nodes[0].HomeDir) + " --requestType status --operationType 3 ")
 
 	ba.logger.Debug(fmt.Sprintf("Sent consensus start-up to bootstrap\n"), 0)
 
 	time.Sleep(15 * time.Second)
 
-	clientOutputs := make([]string, num_clients)
+	clientOutputs := make([]string, num_replicas)
 	m := 1
-	for j := int(num_replicas); j < int(num_replicas+num_clients); j++ {
+	for j := 0; j < int(num_replicas); j++ {
 		go func(i int, k int) {
-			clientOutputs[i-int(num_replicas)] = nodes[i].ExecCmd("." + ctl_path + " --name " + strconv.Itoa(50+k) + " --logFilePath " + fmt.Sprintf("%vbench/logs/", nodes[i].HomeDir) + " --config " + fmt.Sprintf("%vbench/ip_config.yaml", nodes[i].HomeDir) + " --requestType request --arrivalRate  " + arrival_rate + " --testDuration " + strconv.Itoa(duration) + " --keyLen " + key_len + " --valLen " + val_len + " --batchSize " + client_batch_size + " --batchTime " + client_batch_time + " --window " + client_window)
+			clientOutputs[i] = nodes[i].ExecCmd("." + ctl_path + " --name " + strconv.Itoa(50+k) + " --logFilePath " + fmt.Sprintf("%vbench/logs/", nodes[i].HomeDir) + " --config " + fmt.Sprintf("%vbench/ip_config.yaml", nodes[i].HomeDir) + " --requestType request --arrivalRate  " + arrival_rate + " --testDuration " + strconv.Itoa(duration) + " --keyLen " + key_len + " --valLen " + val_len + " --batchSize " + client_batch_size + " --batchTime " + client_batch_time + " --window " + client_window)
 		}(j, m)
 		m++
 	}
@@ -229,8 +220,8 @@ func (ba *Racs) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 	ba.logger.Debug(fmt.Sprintf("Finished the clients\n"), 0)
 
 	var wg1 sync.WaitGroup
-	wg1.Add(int(num_replicas + num_clients))
-	for j := 0; j < int(num_replicas+num_clients); j++ {
+	wg1.Add(int(num_replicas))
+	for j := 0; j < int(num_replicas); j++ {
 		go func(i int) {
 			nodes[i].ExecCmd("pkill -KILL -f replica")
 			nodes[i].ExecCmd("pkill -KILL -f client")
@@ -263,9 +254,9 @@ func (ba *Racs) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 	}
 
 	var wg2 sync.WaitGroup
-	wg2.Add(int(num_clients))
+	wg2.Add(int(num_replicas))
 	m = 1
-	for j := int(num_replicas); j < int(num_replicas+num_clients); j++ {
+	for j := 0; j < int(num_replicas); j++ {
 		go func(i int, k int) {
 			nodes[i].Get_Load(fmt.Sprintf("%vbench/logs/%v.txt", nodes[i].HomeDir, 50+k), "logs/")
 			wg2.Done()
@@ -279,19 +270,9 @@ func (ba *Racs) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 	file_names := []string{}
 
 	m = 1
-	for j := int(num_replicas); j < int(num_replicas+num_clients); j++ {
+	for j := 0; j < int(num_replicas); j++ {
 		logFile := filepath.Join(homeDir, fmt.Sprintf("toture-testing-consensus/logs/%v.txt", 50+m))
-
 		file_names = append(file_names, logFile)
-
-		sshCmd = exec.Command("python3", []string{command, "racs-" + strconv.Itoa(50+m), logFile}...)
-		output, err = sshCmd.CombinedOutput()
-		if err != nil {
-			ba.logger.Debug(fmt.Sprintf("Error while generating performance graph "+err.Error()+" "+string(output)+"\n"), 0)
-		} else {
-			ba.logger.Debug(fmt.Sprintf("Racs Performance graph generated successfully\n"+string(output)+"\n"), 0)
-		}
-
 		m++
 	}
 
