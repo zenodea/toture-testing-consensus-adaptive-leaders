@@ -33,31 +33,23 @@ func (ba *Rabia) CopyConsensus(nodes []*common.Node) error {
 	if !ok {
 		panic("num_replicas not found in options")
 	}
-	num_clients, ok := ba.options.Option["num_clients"]
-	if !ok {
-		panic("num_clients not found in options")
-	}
 
 	num_replicas_int, err := strconv.ParseInt(num_replicas, 10, 64)
 	if err != nil {
 		panic(err.Error() + " while parsing num_replicas")
 
 	}
-	num_clients_int, err := strconv.ParseInt(num_clients, 10, 64)
-	if err != nil {
-		panic(err.Error() + " while parsing num_clients")
-	}
 
-	if num_replicas_int+num_clients_int > int64(len(nodes)) {
+	if num_replicas_int > int64(len(nodes)) {
 		panic("Not enough nodes to deploy rabia")
 	}
 
 	// copy the replica binary
 
 	var wg sync.WaitGroup
-	wg.Add(int(num_clients_int + num_replicas_int))
+	wg.Add(int(num_replicas_int))
 
-	for j := int64(0); j < num_clients_int+num_replicas_int; j++ {
+	for j := int64(0); j < num_replicas_int; j++ {
 		go func(i int) {
 			nodes[i].Put_Load("protocols/rabia/assets/rabia", fmt.Sprintf("%vbench/", nodes[i].HomeDir))
 			wg.Done()
@@ -92,13 +84,9 @@ func (ba *Rabia) Bootstrap(nodes []*common.Node, duration int, result chan util.
 		panic(err.Error() + " while parsing num_replicas")
 
 	}
-	num_clients, err := strconv.ParseInt(ba.options.Option["num_clients"], 10, 64)
-	if err != nil {
-		panic(err.Error() + " while parsing num_clients")
-	}
 
 	int_load, _ := strconv.Atoi(param_load)
-	arrival_rate := strconv.Itoa(int_load / int(num_clients))
+	arrival_rate := strconv.Itoa(int_load / int(num_replicas))
 
 	rabia_client_batch_size, ok := ba.options.Option["rabia_client_batch_size"]
 	if !ok {
@@ -116,8 +104,8 @@ func (ba *Rabia) Bootstrap(nodes []*common.Node, duration int, result chan util.
 	}
 
 	var wg sync.WaitGroup
-	wg.Add(int(num_replicas + num_clients))
-	for i := 0; i < int(num_replicas+num_clients); i++ {
+	wg.Add(int(num_replicas))
+	for i := 0; i < int(num_replicas); i++ {
 		go func(j int) {
 			nodes[j].ExecCmd("pkill -KILL -f rabia")
 			nodes[j].ExecCmd(fmt.Sprintf("rm -r %vbench/logs/", nodes[j].HomeDir))
@@ -131,7 +119,7 @@ func (ba *Rabia) Bootstrap(nodes []*common.Node, duration int, result chan util.
 
 	Controller := nodes[0].Ip + ":9000"
 	NServers := num_replicas
-	NClients := num_clients
+	NClients := num_replicas
 	RC_Peers_N := ""
 
 	for i := 0; i < int(num_replicas); i++ {
@@ -157,14 +145,14 @@ func (ba *Rabia) Bootstrap(nodes []*common.Node, duration int, result chan util.
 
 	ba.logger.Debug(fmt.Sprintf("Started all the replicas\n"), 0)
 
-	clientOutputs := make([]string, num_clients)
+	clientOutputs := make([]string, num_replicas)
 	m := 0
-	for j := int(num_replicas); j < int(num_replicas+num_clients); j++ {
+	for j := 0; j < int(num_replicas); j++ {
 		go func(i int, k int) {
 			export_command := fmt.Sprintf("export LogFilePath=%vbench/logs/ RC_Ctrl=%v RC_Folder=%v/bench/ RC_LLevel=\"warn\" Rabia_ClosedLoop=false Rabia_NServers=%v Rabia_NFaulty=0 Rabia_NClients=%v Rabia_NConcurrency=1 Rabia_ClientBatchSize=%v Rabia_ClientTimeout=%v Rabia_ClientThinkTime=0 Rabia_ClientNRequests=0 Rabia_ClientArrivalRate=%v Rabia_ProxyBatchSize=%v Rabia_ProxyBatchTimeout=%v Rabia_NetworkBatchSize=0 Rabia_NetworkBatchTimeout=0 RC_Peers=%v Rabia_StorageMode=0",
 				nodes[i].HomeDir, Controller, nodes[i].HomeDir, NServers, NClients, rabia_client_batch_size, duration, arrival_rate, rabia_proxy_batch_size, rabia_proxy_batch_timeout, RC_Peers_N)
-			cli_export := fmt.Sprintf("export RC_Role=cli RC_Index=%v RC_Proxy=\"%v:11000\"", k, nodes[int64(i)-num_replicas].Ip)
-			clientOutputs[i-int(num_replicas)] = nodes[i].ExecCmd(cli_export + ";" + export_command + ";" + "." + rabia_path)
+			cli_export := fmt.Sprintf("export RC_Role=cli RC_Index=%v RC_Proxy=\"%v:11000\"", k, nodes[i].Ip)
+			clientOutputs[i] = nodes[i].ExecCmd(cli_export + ";" + export_command + ";" + "." + rabia_path)
 			if i == int(num_replicas) {
 				ba.logger.Debug(fmt.Sprintf("export_command: %v\n\n\n", export_command), 0)
 				ba.logger.Debug(fmt.Sprintf("cli_export: %v\n\n\n", cli_export), 0)
@@ -192,9 +180,10 @@ func (ba *Rabia) Bootstrap(nodes []*common.Node, duration int, result chan util.
 	ba.logger.Debug(fmt.Sprintf("Finished the clients\n"), 0)
 
 	var wg1 sync.WaitGroup
-	wg1.Add(int(num_replicas + num_clients))
-	for j := 0; j < int(num_replicas+num_clients); j++ {
+	wg1.Add(int(num_replicas))
+	for j := 0; j < int(num_replicas); j++ {
 		go func(i int) {
+			nodes[i].ExecCmd("pkill -KILL -f rabia")
 			nodes[i].ExecCmd("pkill -KILL -f rabia")
 			nodes[i].ExecCmd("pkill -KILL -f rabia")
 			wg1.Done()
@@ -226,9 +215,9 @@ func (ba *Rabia) Bootstrap(nodes []*common.Node, duration int, result chan util.
 	}
 
 	var wg2 sync.WaitGroup
-	wg2.Add(int(num_clients))
+	wg2.Add(int(num_replicas))
 	m = 0
-	for j := int(num_replicas); j < int(num_replicas+num_clients); j++ {
+	for j := 0; j < int(num_replicas); j++ {
 		go func(i int, k int) {
 			nodes[i].Get_Load(fmt.Sprintf("%vbench/logs/%v.txt", nodes[i].HomeDir, k), "logs/")
 			wg2.Done()
@@ -242,19 +231,9 @@ func (ba *Rabia) Bootstrap(nodes []*common.Node, duration int, result chan util.
 	file_names := []string{}
 
 	m = 0
-	for j := int(num_replicas); j < int(num_replicas+num_clients); j++ {
+	for j := 0; j < int(num_replicas); j++ {
 		logFile := filepath.Join(homeDir, fmt.Sprintf("toture-testing-consensus/logs/%v.txt", m))
-
 		file_names = append(file_names, logFile)
-
-		sshCmd = exec.Command("python3", []string{command, "rabia-" + strconv.Itoa(m), logFile}...)
-		output, err = sshCmd.CombinedOutput()
-		if err != nil {
-			ba.logger.Debug(fmt.Sprintf("Error while generating performance graph "+err.Error()+" "+string(output)+"\n"), 0)
-		} else {
-			ba.logger.Debug(fmt.Sprintf("Rabia Performance graph generated successfully\n"+string(output)+"\n"), 0)
-		}
-
 		m++
 	}
 
