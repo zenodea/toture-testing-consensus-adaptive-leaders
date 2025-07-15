@@ -2,6 +2,6 @@ rabia_path: protocols/rabia/assets/rabia
 num_replicas: 5
 ports: 10000
 process_name: rabia
-rabia_client_batch_size: 50
-rabia_proxy_batch_size: 100
+rabia_client_batch_size: 100
+rabia_proxy_batch_size: 1000
 rabia_proxy_batch_timeout: 5

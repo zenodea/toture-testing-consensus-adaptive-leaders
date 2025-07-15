@@ -4,10 +4,10 @@ num_replicas: 5
 ports: 10000
 process_name: replica
 view_timeout_time: 2000000
-replica_batch_size: 100
+replica_batch_size: 1000
 replica_batch_time: 5000
 broadcast_mode: 1
-network_batch_time: 3
-client_batch_size: 50
-client_batch_time: 500
+network_batch_time: 30
+client_batch_size: 100
+client_batch_time: 5000
 client_window: 1000
