@@ -207,7 +207,7 @@ func (ba *Mysticeti) Bootstrap(nodes []*common.Node, duration int, result chan u
 
 	command := "protocols/mysticeti/assets/performance_graph.py"
 	logFiles := []string{}
-	for j := 0; j < 1; j++ {
+	for j := 0; j < int(num_replicas); j++ {
 		logFile := filepath.Join(homeDir, fmt.Sprintf("toture-testing-consensus/logs/client-times-%v.txt", j))
 		logFiles = append(logFiles, logFile)
 	}

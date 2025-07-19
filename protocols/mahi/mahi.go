@@ -217,7 +217,7 @@ func (ba *Mahi) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 
 	command := "protocols/mahi/assets/performance_graph.py"
 	files := []string{}
-	for j := 0; j < 1; j++ {
+	for j := 0; j < int(num_replicas); j++ {
 		logFile := filepath.Join(homeDir, fmt.Sprintf("toture-testing-consensus/logs/client-times-%v.txt", j))
 		files = append(files, logFile)
 
