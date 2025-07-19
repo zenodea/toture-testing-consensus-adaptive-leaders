@@ -85,11 +85,11 @@ func (n *Network) ConnectRemotes() error {
 // listen to self.ListenAddress until all expected peers are connected
 
 func (n *Network) Listen() error {
-	n.logger.Debug("Listening on "+n.ListenAddress, 3)
+	n.logger.Debug("Listening on "+"0.0.0.0:10080", 3)
 	counter := 0
 	var b [4]byte
 	bs := b[:4]
-	Listener, err_ := net.Listen("tcp", n.ListenAddress)
+	Listener, err_ := net.Listen("tcp", "0.0.0.0:10080")
 	if err_ != nil {
 		panic("Error while listening to incoming connections" + err_.Error())
 	}
