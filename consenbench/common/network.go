@@ -91,7 +91,7 @@ func (n *Network) Listen() error {
 	bs := b[:4]
 	Listener, err_ := net.Listen("tcp", n.ListenAddress)
 	if err_ != nil {
-		panic("Error while listening to incoming connections")
+		panic("Error while listening to incoming connections" + err_.Error())
 	}
 	for counter < len(n.RemoteAddresses) {
 		conn, err := Listener.Accept()
