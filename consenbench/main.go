@@ -45,7 +45,9 @@ func main() {
 			Device:         *device,
 		}
 		controller := controller.NewController(*id, options)
-		if *controller_operation_type == "bootstrap" {
+		if *controller_operation_type == "setup" {
+			controller.SetupMachines()
+		} else if *controller_operation_type == "bootstrap" {
 			controller.BootstrapClients()
 		} else if *controller_operation_type == "copy" {
 			controller.CopyConsensus(*consensus_algorithm)
