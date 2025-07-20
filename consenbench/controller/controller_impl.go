@@ -210,8 +210,22 @@ func (c *Controller) Run(protocol string) {
 	c.DownloadClientLogs()
 	c.logger.Debug(fmt.Sprintf("Downloaded the logs from the clients"), 0)
 
+	data, err := os.ReadFile("params.param")
+	if err != nil {
+		panic(err.Error())
+	}
+
+	parts := strings.Fields(string(data))
+	if len(parts) != 2 {
+		panic("Expected exactly 2 values in params.param")
+	}
+
+	param_load := parts[0]
+
+	param_size := parts[1]
+
 	logDir := filepath.Join(homeDir, "toture-testing-consensus", "logs")
-	destDir := filepath.Join(homeDir, "toture-testing-consensus", "final-results", protocol, c.Options.Attack)
+	destDir := filepath.Join(homeDir, "toture-testing-consensus", "final-results", param_load, param_size, protocol, c.Options.Attack)
 
 	cmd = exec.Command("sh", "-c", "mv "+logDir+"/*.pdf "+destDir)
 
