@@ -252,24 +252,16 @@ func (ba *CFT_DAG) getPerformance(outputs []string) util.Performance {
 	p := util.Performance{
 		Option: make(map[string]string),
 	}
-	sum_tx := 0
-	sum_lat := 0
-	for i := 0; i < len(outputs); i++ {
-		tx, err := strconv.ParseFloat(strings.Split(outputs[i], " ")[0], 64)
-		if err != nil {
-			panic(err.Error() + " while parsing tx")
-		}
-		lat, err := strconv.ParseFloat(strings.Split(outputs[i], " ")[1], 64)
-		if err != nil {
-			panic(err.Error() + " while parsing lat")
-		}
-		sum_tx += int(tx)
-		sum_lat += int(lat)
-	}
-	p.Option["throughput"] = fmt.Sprintf("%v requests per second", sum_tx/len(outputs))
-	p.Option["average latency"] = fmt.Sprintf("%v ms", sum_lat/len(outputs))
 
-	fmt.Printf("%v,%v,%v,", sum_tx/len(outputs), sum_lat/len(outputs), 0)
+	tx := strings.Split(outputs[0], " ")[0]
+	lat := strings.Split(outputs[0], " ")[1]
+	per := strings.Split(outputs[0], " ")[2]
+
+	p.Option["throughput"] = fmt.Sprintf("%v requests per second", tx)
+	p.Option["average latency"] = fmt.Sprintf("%v ms", lat)
+	p.Option["99 percentile"] = fmt.Sprintf("%v ms", per)
+
+	fmt.Printf("%v,%v,%v,", tx, lat, per)
 
 	return p
 }
