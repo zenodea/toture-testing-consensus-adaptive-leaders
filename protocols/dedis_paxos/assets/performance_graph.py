@@ -53,10 +53,11 @@ def plot_throughput(throughput):
     throughput_values = [throughput[sec] for sec in seconds]
 
     plt.figure(figsize=(10, 6))
-    plt.scatter(seconds, throughput_values, marker='o')
-    plt.xlabel('Seconds')
-    plt.ylabel('Requests per second')
+    plt.plot(seconds, throughput_values, label='Multi-Paxos', color='blue')
+    plt.xlabel('Time (s)')
+    plt.ylabel('Transactions/sec')
     plt.grid(True)
+    plt.legend()
     plt.savefig("logs/"+sys.argv[1]+"-throughput.pdf")
 
 
@@ -66,10 +67,11 @@ def plot_latency(average_latency):
     latency_values = [average_latency[sec] for sec in seconds]
 
     plt.figure(figsize=(10, 6))
-    plt.scatter(seconds, latency_values, marker='o', color='orange')
-    plt.xlabel('Seconds')
-    plt.ylabel('Average Latency (ms)')
+    plt.plot(seconds, latency_values, label='Multi-Paxos', color='blue')
+    plt.xlabel('Time (s)')
+    plt.ylabel('Latency (ms)')
     plt.grid(True)
+    plt.legend()
     plt.savefig("logs/"+sys.argv[1]+"-latency.pdf")
 
 
