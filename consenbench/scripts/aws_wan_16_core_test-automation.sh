@@ -11,8 +11,8 @@ echo "Load,Size,Protocol,Attack,Throughput,Latency(ms),Percentile_99(ms),CPU,MEM
 for protocol in mahi mysticeti hotstuff_2 tusk bullshark; do
   /bin/bash  consenbench/scripts/dry_setup.sh  "${protocol}" noop ens5
   for size in 512; do
-    for load in 100000; do
-      /bin/bash  consenbench/scripts/dry_run.sh   "${protocol}" noop ens5 "$load" "$size"
+    for load in 30000; do
+      /bin/bash  consenbench/scripts/dry_run.sh  "${protocol}" noop ens5 "$load" "$size"
     done
   done
 done
