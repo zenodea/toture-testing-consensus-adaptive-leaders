@@ -136,7 +136,21 @@ func (c *Controller) Run(protocol string) {
 		c.logger.Debug(fmt.Sprintf("deleted final-results sub directory successfully\n"+string(output)+"\n"), 0)
 	}
 
-	cmd = exec.Command("mkdir", []string{"-p", filepath.Join(homeDir, "toture-testing-consensus/final-results/"+protocol+"/"+c.Options.Attack)}...)
+	data, err := os.ReadFile("params.param")
+	if err != nil {
+		panic(err.Error())
+	}
+
+	parts := strings.Fields(string(data))
+	if len(parts) != 2 {
+		panic("Expected exactly 2 values in params.param")
+	}
+
+	param_load := parts[0]
+
+	param_size := parts[1]
+
+	cmd = exec.Command("mkdir", []string{"-p", filepath.Join(homeDir, "toture-testing-consensus/final-results/"+param_load+"/"+param_size+"/"+protocol+"/"+c.Options.Attack)}...)
 	output, err = cmd.CombinedOutput()
 	if err != nil {
 		panic("Error while creating final-results/" + protocol + "/" + c.Options.Attack + err.Error() + " " + string(output) + "\n")
@@ -209,20 +223,6 @@ func (c *Controller) Run(protocol string) {
 	c.logger.Debug(fmt.Sprintf("Closed the clients"), 0)
 	c.DownloadClientLogs()
 	c.logger.Debug(fmt.Sprintf("Downloaded the logs from the clients"), 0)
-
-	data, err := os.ReadFile("params.param")
-	if err != nil {
-		panic(err.Error())
-	}
-
-	parts := strings.Fields(string(data))
-	if len(parts) != 2 {
-		panic("Expected exactly 2 values in params.param")
-	}
-
-	param_load := parts[0]
-
-	param_size := parts[1]
 
 	logDir := filepath.Join(homeDir, "toture-testing-consensus", "logs")
 	destDir := filepath.Join(homeDir, "toture-testing-consensus", "final-results", param_load, param_size, protocol, c.Options.Attack)
