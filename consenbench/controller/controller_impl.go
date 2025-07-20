@@ -236,5 +236,16 @@ func (c *Controller) Run(protocol string) {
 		c.logger.Debug(fmt.Sprintf("moved final-results/ sub directory successfully\n"+string(output)+"\n"), 0)
 	}
 
+	logDir = filepath.Join(homeDir, "toture-testing-consensus", "bench", "log.log")
+
+	cmd = exec.Command("sh", "-c", "mv "+logDir+"  "+destDir)
+
+	output, err = cmd.CombinedOutput()
+	if err != nil {
+		panic("Error while moving to final-results/" + protocol + "/" + c.Options.Attack + err.Error() + " " + string(output) + "\n")
+	} else {
+		c.logger.Debug(fmt.Sprintf("moved final-results/ sub directory successfully\n"+string(output)+"\n"), 0)
+	}
+
 	c.logger.Debug(fmt.Sprintf("test complete"), 0)
 }
