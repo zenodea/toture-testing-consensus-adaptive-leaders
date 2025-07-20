@@ -115,7 +115,7 @@ def main():
     best_metrics = best_file[1]
 
     # print(f"Best file: {best_name}")
-    print(f"{best_metrics['overall_throughput']:.2f} {best_metrics['overall_avg_latency']:.2f}ms {best_metrics['overall_99th_latency']:.2f}ms" )
+    print(f"{best_metrics['overall_throughput']:.2f} {best_metrics['overall_avg_latency']:.2f} {best_metrics['overall_99th_latency']:.2f} ms" )
 
     plot_throughput(best_metrics["throughput"], output_name)
     plot_latency(best_metrics["average_latency"], output_name)
