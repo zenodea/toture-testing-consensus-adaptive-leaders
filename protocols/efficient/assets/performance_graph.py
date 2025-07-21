@@ -67,7 +67,7 @@ def plot_latency(average_latency):
     latency_values = [average_latency[sec] for sec in seconds]
 
     plt.figure(figsize=(10, 6))
-    plt.scatter(seconds, latency_values, label='EPaxos', color='green')
+    plt.plot(seconds, latency_values, label='EPaxos', color='green')
     plt.xlabel('Time (s)')
     plt.ylabel('Latency (ms)')
     plt.grid(True)
