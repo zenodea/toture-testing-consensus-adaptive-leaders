@@ -4,10 +4,8 @@ master_path: protocols/efficient/assets/epaxos_master
 num_replicas: 5
 ports: 10000
 process_name: epaxos_server
-pipeline_length: 1
-view_timeout_time: 2000000
+pipeline_length: 100
+view_timeout_time: 2000000000
 algo: -e
-exec: -exec
-dreply: -dreply
 w: 100
 c: 2

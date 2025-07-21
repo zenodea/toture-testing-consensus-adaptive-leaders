@@ -168,11 +168,11 @@ func (ba *Efficient) Bootstrap(nodes []*common.Node, duration int, result chan u
 	time.Sleep(5 * time.Second)
 
 	clientOutputs := make([]string, num_replicas)
-	m := 1
+	m := 2
 	for j := 1; j < int(num_replicas); j++ {
 		go func(i int, k int) {
 			if algo != "-pa" {
-				clientOutputs[i] = nodes[i].ExecCmd("." + ctl_path + " -name " + strconv.Itoa(50+k) + " -maddr " + nodes[0].Ip + "  -clientBatchSize 50  -logFilePath " + fmt.Sprintf("%vbench/logs/", nodes[i].HomeDir) + " -arrivalRate  " + arrival_rate + " -testDuration " + strconv.Itoa(duration) + " -leaderTimeout " + view_timeout_time + " -defaultReplica " + strconv.Itoa(i) + " -w " + writes + " -c " + conflicts)
+				clientOutputs[i] = nodes[i].ExecCmd("." + ctl_path + " -name " + strconv.Itoa(50+k) + " -maddr " + nodes[0].Ip + "  -clientBatchSize 100  -logFilePath " + fmt.Sprintf("%vbench/logs/", nodes[i].HomeDir) + " -arrivalRate  " + arrival_rate + " -testDuration " + strconv.Itoa(duration) + " -leaderTimeout " + view_timeout_time + " -defaultReplica " + strconv.Itoa(i) + " -w " + writes + " -c " + conflicts)
 			} else {
 				clientOutputs[i] = nodes[i].ExecCmd("." + ctl_path + " -name " + strconv.Itoa(50+k) + " -maddr " + nodes[0].Ip + "  -clientBatchSize 50  -logFilePath " + fmt.Sprintf("%vbench/logs/", nodes[i].HomeDir) + " -arrivalRate  " + arrival_rate + " -testDuration " + strconv.Itoa(duration) + " -leaderTimeout " + view_timeout_time + " -defaultReplica " + strconv.Itoa(i) + " -w " + writes + " -c " + conflicts + " -l")
 			}
@@ -227,8 +227,8 @@ func (ba *Efficient) Bootstrap(nodes []*common.Node, duration int, result chan u
 	}
 
 	var wg2 sync.WaitGroup
-	wg2.Add(int(num_replicas))
-	m = 1
+	wg2.Add(int(num_replicas - 1))
+	m = 2
 	for j := 1; j < int(num_replicas); j++ {
 		go func(i int, k int) {
 			nodes[i].Get_Load(fmt.Sprintf("%vbench/logs/%v.txt", nodes[i].HomeDir, 50+k), "logs/")
@@ -242,7 +242,7 @@ func (ba *Efficient) Bootstrap(nodes []*common.Node, duration int, result chan u
 	command := "protocols/efficient/assets/performance_graph.py"
 	file_names := []string{}
 
-	m = 1
+	m = 2
 	for j := 1; j < int(num_replicas); j++ {
 		logFile := filepath.Join(homeDir, fmt.Sprintf("toture-testing-consensus/logs/%v.txt", 50+m))
 		file_names = append(file_names, logFile)
