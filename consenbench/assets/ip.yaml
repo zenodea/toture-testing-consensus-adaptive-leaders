@@ -1,6 +1,6 @@
 nodes:
   - Id: 1
-    Ip: "13.244.105.185"
+    Ip: "13.247.194.214"
     Username: "ubuntu"
     HomeDir: "/home/ubuntu/"
     privateKeyPath: "/home/ubuntu/.ssh/gc"
