@@ -137,7 +137,7 @@ func (ba *Mysticeti) Bootstrap(nodes []*common.Node, duration int, result chan u
 			nodes[j].ExecCmd(fmt.Sprintf("rm %vclient-times-%v.txt", nodes[j].HomeDir, j))
 			nodes[j].Put_Load("protocols/mysticeti/assets/client-parameters.yml", fmt.Sprintf("%vbench/", nodes[j].HomeDir))
 			nodes[j].Put_Load("protocols/mysticeti/assets/node-parameters.yml", fmt.Sprintf("%vbench/", nodes[j].HomeDir))
-			nodes[j].ExecCmd(fmt.Sprintf("rm %vbench/storage-%v/wal", nodes[j].HomeDir, j))
+			nodes[j].ExecCmd(fmt.Sprintf("rm -rf %vbench/storage-{0..%v}", nodes[j].HomeDir, num_replicas-1))
 			nodes[j].ExecCmd(fmt.Sprintf("./bench/mysticeti benchmark-genesis --ips %v --working-directory %v --node-parameters-path %vnode-parameters.yml", ip_string, nodes[j].HomeDir+"bench/", nodes[j].HomeDir+"bench/"))
 			nodes[j].ExecCmd(fmt.Sprintf("python3 %vbench/config-rewrite.py %vbench/public-config.yaml", nodes[j].HomeDir, nodes[j].HomeDir))
 			wg1.Done()
