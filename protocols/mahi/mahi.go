@@ -147,7 +147,7 @@ func (ba *Mahi) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 			nodes[j].ExecCmd(fmt.Sprintf("rm %vclient-times-%v.txt", nodes[j].HomeDir, j))
 			nodes[j].Put_Load("protocols/mahi/assets/client-parameters.yml", fmt.Sprintf("%vbench/", nodes[j].HomeDir))
 			nodes[j].Put_Load("protocols/mahi/assets/node-parameters.yml", fmt.Sprintf("%vbench/", nodes[j].HomeDir))
-			nodes[j].ExecCmd(fmt.Sprintf("rm %vbench/storage-%v/wal", nodes[j].HomeDir, j))
+			nodes[j].ExecCmd(fmt.Sprintf("rm -rf %vbench/storage-{0..%v}", nodes[j].HomeDir, num_replicas-1))
 			nodes[j].ExecCmd(fmt.Sprintf("./bench/mysticeti benchmark-genesis --ips %v --working-directory %v --node-parameters-path %vnode-parameters.yml", ip_string, nodes[j].HomeDir+"bench/", nodes[j].HomeDir+"bench/"))
 			nodes[j].ExecCmd(fmt.Sprintf("python3 %vbench/config-rewrite.py %vbench/public-config.yaml", nodes[j].HomeDir, nodes[j].HomeDir))
 			wg1.Done()
@@ -220,15 +220,6 @@ func (ba *Mahi) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 	for j := 0; j < int(num_replicas); j++ {
 		logFile := filepath.Join(homeDir, fmt.Sprintf("toture-testing-consensus/logs/client-times-%v.txt", j))
 		files = append(files, logFile)
-
-		//sshCmd = exec.Command("python3", []string{command, "mahi-" + strconv.Itoa(j), strconv.Itoa(duration), logFile}...)
-		//output, err = sshCmd.CombinedOutput()
-		//if err != nil {
-		//	ba.logger.Debug(fmt.Sprintf("Error while generating performance graph "+err.Error()+" "+string(output)+"\n"), 0)
-		//} else {
-		//	ba.logger.Debug(fmt.Sprintf("Mahi Performance graph generated successfully\n"+string(output)+"\n"), 0)
-		//	outputs = append(outputs, string(output))
-		//}
 	}
 
 	sshCmd = exec.Command("python3", append([]string{command, "mahi", strconv.Itoa(duration)}, files...)...)
