@@ -25,8 +25,8 @@ def str_to_bool(value):
 # File 1: node-parameters.yml
 node_parameters = {
     'leader_timeout': {
-        'secs': 0,
-        'nanos': 2000000000
+        'secs': 2,
+        'nanos': 0
     },
     'wave_length': args.wave_length,
     'number_of_leaders': args.number_of_leaders,
