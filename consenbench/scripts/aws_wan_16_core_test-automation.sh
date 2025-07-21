@@ -10,17 +10,26 @@ echo "Load,Size,Protocol,Attack,Throughput,Latency(ms),Percentile_99(ms),CPU,MEM
 
 for protocol in mahi mysticeti hotstuff_2 tusk bullshark; do
   /bin/bash  consenbench/scripts/dry_setup.sh  "${protocol}" noop ens5
-  for size in 512; do
-    for load in 20000; do
+  for size in 32 512; do
+    for load in 1000 10000 20000 50000 80000 100000 120000 150000 180000 200000; do
       /bin/bash  consenbench/scripts/dry_run.sh  "${protocol}" noop ens5 "$load" "$size"
     done
   done
 done
 
-for protocol in dedis_paxos rabia sadl_racs efficient quepaxa cft_dag; do
+for protocol in dedis_paxos sadl_racs quepaxa cft_dag; do
+  /bin/bash  consenbench/scripts/dry_setup.sh  "${protocol}" noop ens5
+  for size in 18 256; do
+    for load in 1000 10000 20000 50000 100000 150000 200000 250000 300000 350000 400000 450000 500000 600000; do
+      /bin/bash  consenbench/scripts/dry_run.sh   "${protocol}" noop ens5 "$load" "$size"
+    done
+  done
+done
+
+for protocol in rabia efficient; do
   /bin/bash  consenbench/scripts/dry_setup.sh  "${protocol}" noop ens5
   for size in 18; do
-    for load in 100000; do
+    for load in 1000 30000 50000 100000 150000 200000 250000 300000 350000 400000 450000 500000 600000; do
       /bin/bash  consenbench/scripts/dry_run.sh   "${protocol}" noop ens5 "$load" "$size"
     done
   done
