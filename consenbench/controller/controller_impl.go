@@ -215,7 +215,8 @@ func (c *Controller) Run(protocol string) {
 		c.Nodes[i].StopUpdateStats()
 	}
 
-	_ = <-performance_output_chan
+	perf := <-performance_output_chan
+	c.logger.Debug(fmt.Sprintf("Performance %v \n", perf), 0)
 
 	c.PrintStats(int(num_replicas))
 
