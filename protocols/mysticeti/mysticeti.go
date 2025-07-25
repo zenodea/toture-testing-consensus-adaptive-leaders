@@ -223,6 +223,18 @@ func (ba *Mysticeti) Bootstrap(nodes []*common.Node, duration int, result chan u
 	ba.logger.Debug(fmt.Sprintf("Mystecity Mystecity Performance:\n %v\n", output), 0)
 	result <- ba.getPerformance([]string{string(output)})
 
+	var wg5 sync.WaitGroup
+	wg5.Add(int(num_replicas))
+	for i := 0; i < int(num_replicas); i++ {
+		go func(j int) {
+			nodes[j].ExecCmd("pkill -KILL -f mysticeti")
+			nodes[j].ExecCmd(fmt.Sprintf("rm %vclient-times-%v.txt", nodes[j].HomeDir, j))
+			nodes[j].ExecCmd(fmt.Sprintf("rm -rf %vbench/storage-{0..%v}", nodes[j].HomeDir, num_replicas-1))
+			wg5.Done()
+		}(i)
+	}
+	wg5.Wait()
+
 }
 
 func (ba *Mysticeti) ExtractOptions(path string) protocols.ConsensusOptions {

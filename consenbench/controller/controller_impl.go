@@ -248,5 +248,17 @@ func (c *Controller) Run(protocol string) {
 		c.logger.Debug(fmt.Sprintf("moved final-results/ sub directory successfully\n"+string(output)+"\n"), 0)
 	}
 
+	var wg sync.WaitGroup
+	wg.Add(int(num_replicas))
+
+	for i := 0; i < int(num_replicas); i++ {
+		go func(j int) {
+			c.Nodes[j].ExecCmd(fmt.Sprintf("rm -r %vbench/logs/", c.Nodes[j].HomeDir))
+			c.Nodes[j].ExecCmd(fmt.Sprintf("mkdir -p %vbench/logs/", c.Nodes[j].HomeDir))
+			wg.Done()
+		}(i)
+	}
+
+	wg.Wait()
 	c.logger.Debug(fmt.Sprintf("test complete"), 0)
 }

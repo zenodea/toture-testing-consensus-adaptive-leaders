@@ -244,6 +244,16 @@ class Bench:
 
         # Parse logs and return the parser.
         Print.info("Parsing logs and computing performance...")
+
+        # Cleanup all nodes.
+        cmd = f"{CommandMaker.cleanup()} || true"
+        g = Group(*hosts, user=self.manager.user(), connect_kwargs=self.connect)
+        g.run(cmd, hide=True)
+
+        cmd = f"{CommandMaker.clean_logs()} || true"
+        g = Group(*hosts, user=self.manager.user(), connect_kwargs=self.connect)
+        g.run(cmd, hide=True)
+
         return LogParser.process(PathMaker.logs_path(), faults=faults)
 
     def run(self, bench_parameters_dict, node_parameters_dict, pid, debug=False):

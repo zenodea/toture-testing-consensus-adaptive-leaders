@@ -134,6 +134,36 @@ class Bench:
         g = Group(*ips, user=self.manager.user(), connect_kwargs=self.connect)
         g.run(' && '.join(cmd), hide=True)
 
+    def _delete_logs(self, hosts, node_parameters, bench_parameters):
+        Print.info('deleting logs...')
+
+        # Create alias for the client and nodes binary.
+
+        keys = []
+        key_files = [PathMaker.key_file(i) for i in range(len(hosts))]
+        for filename in key_files:
+            cmd = CommandMaker.generate_key(filename).split()
+            subprocess.run(cmd, check=True)
+            keys += [Key.from_file(filename)]
+
+        names = [x.name for x in keys]
+
+        workers = bench_parameters.workers
+        addresses = OrderedDict(
+            (x, [y] * (workers + 1)) for x, y in zip(names, hosts)
+        )
+
+        committee = Committee(addresses, self.settings.base_port)
+
+        # Cleanup all nodes
+        names = names[:len(names) - bench_parameters.faults]
+        progress = progress_bar(names, prefix='Deleting logs:')
+        for i, name in enumerate(progress):
+            for ip in committee.ips(name):
+                c = Connection(ip, user=self.manager.user(), connect_kwargs=self.connect)
+                c.run(f'{CommandMaker.cleanup()} || true', hide=True)
+                c.run(f'{CommandMaker.clean_logs()} || true', hide=True)
+
     def _config(self, hosts, node_parameters, bench_parameters):
         Print.info('Generating configuration files...')
 
@@ -353,6 +383,10 @@ class Bench:
                             r,
                             bench_parameters.tx_size,
                         ))
+
+                        self._delete_logs(selected_hosts, node_parameters, bench_parameters)
+
+
                     except (subprocess.SubprocessError, GroupException, ParseError) as e:
                         self.kill(hosts=selected_hosts)
                         if isinstance(e, GroupException):
