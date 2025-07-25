@@ -113,6 +113,13 @@ func (c *Controller) Run(protocol string) {
 
 	for i := 0; i < len(c.Nodes); i++ {
 		go func(j int) {
+			c.Nodes[j].ExecCmd(fmt.Sprintf("rm -rf %va_mysticeti", c.Nodes[j].HomeDir))
+			c.Nodes[j].ExecCmd(fmt.Sprintf("rm -rf %vasync-mystecity", c.Nodes[j].HomeDir))
+			c.Nodes[j].ExecCmd(fmt.Sprintf("rm -rf %vresults", c.Nodes[j].HomeDir))
+			c.Nodes[j].ExecCmd(fmt.Sprintf("find %v -type f -name \"stable-store*\" -delete", c.Nodes[j].HomeDir))
+			c.Nodes[j].ExecCmd(fmt.Sprintf("find %v -type f -name \"client-times*\" -delete", c.Nodes[j].HomeDir))
+			c.Nodes[j].ExecCmd(fmt.Sprintf("find %v -type f -name \"db-*\" -delete", c.Nodes[j].HomeDir))
+			c.Nodes[j].ExecCmd(fmt.Sprintf("find %v -type f -name \"storage-*\" -delete", c.Nodes[j].HomeDir))
 			c.Nodes[j].ExecCmd(fmt.Sprintf("df -h"))
 			wg2.Done()
 		}(i)
