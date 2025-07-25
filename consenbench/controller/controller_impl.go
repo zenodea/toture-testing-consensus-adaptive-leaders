@@ -107,6 +107,19 @@ func (c *Controller) CopyConsensus(protocol string) {
 // run the controller
 
 func (c *Controller) Run(protocol string) {
+
+	var wg2 sync.WaitGroup
+	wg2.Add(len(c.Nodes))
+
+	for i := 0; i < len(c.Nodes); i++ {
+		go func(j int) {
+			c.Nodes[j].ExecCmd(fmt.Sprintf("df -h"))
+			wg2.Done()
+		}(i)
+	}
+
+	wg2.Wait()
+
 	fmt.Printf("%v,%v,", protocol, c.Options.Attack)
 	c.InitiliazeNodes()
 	// start the client binary
@@ -255,6 +268,7 @@ func (c *Controller) Run(protocol string) {
 		go func(j int) {
 			c.Nodes[j].ExecCmd(fmt.Sprintf("rm -r %vbench/logs/", c.Nodes[j].HomeDir))
 			c.Nodes[j].ExecCmd(fmt.Sprintf("mkdir -p %vbench/logs/", c.Nodes[j].HomeDir))
+			c.Nodes[j].ExecCmd(fmt.Sprintf("df -h"))
 			wg.Done()
 		}(i)
 	}
