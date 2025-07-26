@@ -107,6 +107,7 @@ func (c *Controller) CopyConsensus(protocol string) {
 // run the controller
 
 func (c *Controller) Run(protocol string) {
+	c.InitiliazeNodes()
 
 	var wg2 sync.WaitGroup
 	wg2.Add(len(c.Nodes))
@@ -121,6 +122,7 @@ func (c *Controller) Run(protocol string) {
 			c.Nodes[j].ExecCmd(fmt.Sprintf("find %v -type f -name \"db-*\" -delete", c.Nodes[j].HomeDir))
 			c.Nodes[j].ExecCmd(fmt.Sprintf("find %v -type f -name \"storage-*\" -delete", c.Nodes[j].HomeDir))
 			c.Nodes[j].ExecCmd(fmt.Sprintf("df -h"))
+			c.logger.Debug(fmt.Sprintf("done cleaning up the node %v", j), 0)
 			wg2.Done()
 		}(i)
 	}
@@ -128,7 +130,7 @@ func (c *Controller) Run(protocol string) {
 	wg2.Wait()
 
 	fmt.Printf("%v,%v,", protocol, c.Options.Attack)
-	c.InitiliazeNodes()
+
 	// start the client binary
 	for i := 0; i < len(c.Nodes); i++ {
 		c.Nodes[i].Start_Client(c.Options.Device)
