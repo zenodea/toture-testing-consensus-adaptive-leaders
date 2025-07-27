@@ -10,27 +10,36 @@ echo "Load,Size,Protocol,Attack,Throughput,Latency(ms),Percentile_99(ms),CPU,MEM
 
 for protocol in mahi mysticeti hotstuff_2 tusk bullshark; do
   /bin/bash  consenbench/scripts/dry_setup.sh  "${protocol}" noop ens5
-  for size in 32 512; do
-    for load in 1000 10000 20000 50000 80000 100000 120000 150000 180000 200000; do
-      /bin/bash  consenbench/scripts/dry_run.sh  "${protocol}" noop ens5 "$load" "$size"
-    done
+  size=32
+  for load in 10000 50000 150000 200000 300000 350000 400000 500000 600000; do
+    /bin/bash  consenbench/scripts/dry_run.sh  "${protocol}" noop ens5 "$load" "$size"
+  done
+  size=512
+  for load in 10000 30000 50000 80000 100000 120000 150000 200000; do
+    /bin/bash  consenbench/scripts/dry_run.sh  "${protocol}" noop ens5 "$load" "$size"
   done
 done
 
 for protocol in dedis_paxos sadl_racs quepaxa cft_dag; do
   /bin/bash  consenbench/scripts/dry_setup.sh  "${protocol}" noop ens5
-  for size in 18 256; do
-    for load in 1000 10000 20000 50000 100000 150000 200000 250000 300000 350000 400000 450000 500000 600000; do
-      /bin/bash  consenbench/scripts/dry_run.sh   "${protocol}" noop ens5 "$load" "$size"
-    done
+  size=18
+  for load in 10000 100000 150000 200000 250000 300000 350000 400000 450000 500000 600000; do
+    /bin/bash  consenbench/scripts/dry_run.sh   "${protocol}" noop ens5 "$load" "$size"
+  done
+  size=32
+  for load in 10000 100000 150000 200000 250000 300000 350000 400000 450000 500000 600000; do
+    /bin/bash  consenbench/scripts/dry_run.sh   "${protocol}" noop ens5 "$load" "$size"
+  done
+  size=256
+  for load in 5000 10000 20000 30000 40000 50000 100000 200000; do
+    /bin/bash  consenbench/scripts/dry_run.sh   "${protocol}" noop ens5 "$load" "$size"
   done
 done
 
-for protocol in rabia efficient; do
+for protocol in efficient; do
   /bin/bash  consenbench/scripts/dry_setup.sh  "${protocol}" noop ens5
-  for size in 18; do
-    for load in 1000 30000 50000 100000 150000 200000 250000 300000 350000 400000 450000 500000 600000; do
-      /bin/bash  consenbench/scripts/dry_run.sh   "${protocol}" noop ens5 "$load" "$size"
-    done
+  size=18
+  for load in 1000 100000 150000 200000 250000 300000 350000 400000 450000 500000 600000; do
+    /bin/bash  consenbench/scripts/dry_run.sh   "${protocol}" noop ens5 "$load" "$size"
   done
 done
