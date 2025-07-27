@@ -66,7 +66,7 @@ def plot_throughput(throughput, name):
     plt.ylabel("Transactions/sec")
     plt.grid(True)
     plt.legend()
-    plt.savefig("logs/" + name + "_throughput.pdf")
+    plt.savefig("bench/logs/" + name + "_throughput.pdf")
 
 
 def plot_latency(average_latency, name):
@@ -78,7 +78,7 @@ def plot_latency(average_latency, name):
     plt.ylabel("Latency (ms)")
     plt.grid(True)
     plt.legend()
-    plt.savefig("logs/" + name + "_latency.pdf")
+    plt.savefig("bench/logs/" + name + "_latency.pdf")
 
 
 def main():

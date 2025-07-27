@@ -58,6 +58,7 @@ func (ba *CFT_DAG) CopyConsensus(nodes []*common.Node) error {
 		go func(i int) {
 			nodes[i].Put_Load("protocols/cft_dag/assets/mysticeti", fmt.Sprintf("%vbench/", nodes[i].HomeDir))
 			nodes[i].Put_Load("protocols/cft_dag/assets/config-rewrite.py", fmt.Sprintf("%vbench/", nodes[i].HomeDir))
+			nodes[i].Put_Load("protocols/cft_dag/assets/performance_graph.py", fmt.Sprintf("%vbench/", nodes[i].HomeDir))
 			wg.Done()
 		}(int(j))
 	}
@@ -195,33 +196,20 @@ func (ba *CFT_DAG) Bootstrap(nodes []*common.Node, duration int, result chan uti
 
 	var wg3 sync.WaitGroup
 	wg3.Add(int(num_replicas))
+	perf_result := make([]string, num_replicas)
 	for i := 0; i < int(num_replicas); i++ {
 		go func(j int) {
-			nodes[j].Get_Load(fmt.Sprintf("%vclient-times-%v.txt", nodes[j].HomeDir, j), fmt.Sprintf("logs/"))
+			perf_result[j] = nodes[j].ExecCmd(fmt.Sprintf("python3 %vbench/performance_graph.py CFT_DAG  %v %vclient-times-%v.txt", nodes[j].HomeDir, duration, nodes[j].HomeDir, j))
+			nodes[j].Get_Load(fmt.Sprintf("%vbench/logs/CFT_DAG_latency.pdf", nodes[j].HomeDir), fmt.Sprintf("logs/%v_latency.pdf", j))
+			nodes[j].Get_Load(fmt.Sprintf("%vbench/logs/CFT_DAG_throughput.pdf", nodes[j].HomeDir), fmt.Sprintf("logs/%v_throughput.pdf", j))
 			wg3.Done()
 		}(i)
 	}
 	wg3.Wait()
 
-	ba.logger.Debug(fmt.Sprintf("Downloaded the client logs"), 0)
+	ba.logger.Debug(fmt.Sprintf("Calculated all client performances"), 0)
 
-	command := "protocols/cft_dag/assets/performance_graph.py"
-	logFiles := []string{}
-	for j := 0; j < int(num_replicas); j++ {
-		logFile := filepath.Join(homeDir, fmt.Sprintf("toture-testing-consensus/logs/client-times-%v.txt", j))
-		logFiles = append(logFiles, logFile)
-	}
-
-	sshCmd = exec.Command("python3", append([]string{command, "CFT_DAG", strconv.Itoa(duration)}, logFiles...)...)
-	output, err = sshCmd.CombinedOutput()
-	if err != nil {
-		ba.logger.Debug(fmt.Sprintf("Error while generating performance graph "+err.Error()+" "+string(output)+"\n"), 0)
-	} else {
-		ba.logger.Debug(fmt.Sprintf("CFT_DAG Performance graph generated successfully\n"+string(output)+"\n"), 0)
-	}
-
-	ba.logger.Debug(fmt.Sprintf("CFT_DAG Performance:\n %v\n", output), 0)
-	result <- ba.getPerformance([]string{string(output)})
+	result <- ba.getPerformance(perf_result)
 
 	var wg5 sync.WaitGroup
 	wg5.Add(int(num_replicas))
@@ -265,15 +253,35 @@ func (ba *CFT_DAG) getPerformance(outputs []string) util.Performance {
 		Option: make(map[string]string),
 	}
 
-	tx := strings.Split(outputs[0], " ")[0]
-	lat := strings.Split(outputs[0], " ")[1]
-	per := strings.Split(outputs[0], " ")[2]
+	var maxTx float64
+	var maxLat, maxPer float64
 
-	p.Option["throughput"] = fmt.Sprintf("%v requests per second", tx)
-	p.Option["average latency"] = fmt.Sprintf("%v ms", lat)
-	p.Option["99 percentile"] = fmt.Sprintf("%v ms", per)
+	for _, out := range outputs {
+		parts := strings.Split(out, " ")
+		if len(parts) < 3 {
+			continue
+		}
 
-	fmt.Printf("%v,%v,%v,", tx, lat, per)
+		tx, err1 := strconv.ParseFloat(parts[0], 64)
+		lat, err2 := strconv.ParseFloat(parts[1], 64)
+		per, err3 := strconv.ParseFloat(parts[2], 64)
+
+		if err1 != nil || err2 != nil || err3 != nil {
+			continue
+		}
+
+		if tx > maxTx {
+			maxTx = tx
+			maxLat = lat
+			maxPer = per
+		}
+	}
+
+	p.Option["throughput"] = fmt.Sprintf("%.2f requests per second", maxTx)
+	p.Option["average latency"] = fmt.Sprintf("%.2f ms", maxLat)
+	p.Option["99 percentile"] = fmt.Sprintf("%.2f ms", maxPer)
+
+	fmt.Printf("%v,%v,%v,", maxTx, maxLat, maxPer)
 
 	return p
 }
