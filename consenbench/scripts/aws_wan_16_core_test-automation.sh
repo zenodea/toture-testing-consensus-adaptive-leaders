@@ -11,11 +11,11 @@ echo "Load,Size,Protocol,Attack,Throughput,Latency(ms),Percentile_99(ms),CPU,MEM
 for protocol in mahi mysticeti hotstuff_2 tusk bullshark; do
   /bin/bash  consenbench/scripts/dry_setup.sh  "${protocol}" noop ens5
   size=32
-  for load in 10000 50000 150000 200000 300000 350000 400000 500000 600000; do
+  for load in 10000 100000 200000 350000 400000 500000 600000; do
     /bin/bash  consenbench/scripts/dry_run.sh  "${protocol}" noop ens5 "$load" "$size"
   done
   size=512
-  for load in 10000 30000 50000 80000 100000 120000 150000 200000; do
+  for load in 10000 50000 80000 100000 120000 150000 200000; do
     /bin/bash  consenbench/scripts/dry_run.sh  "${protocol}" noop ens5 "$load" "$size"
   done
 done
@@ -23,15 +23,15 @@ done
 for protocol in dedis_paxos sadl_racs quepaxa cft_dag; do
   /bin/bash  consenbench/scripts/dry_setup.sh  "${protocol}" noop ens5
   size=18
-  for load in 10000 50000 100000 150000 200000 250000 300000 400000 500000 600000; do
+  for load in 10000 100000 150000 200000 250000 300000 400000 500000 600000; do
     /bin/bash  consenbench/scripts/dry_run.sh   "${protocol}" noop ens5 "$load" "$size"
   done
   size=32
   for load in 10000 50000 100000 150000 200000 250000 300000 400000 500000 600000; do
     /bin/bash  consenbench/scripts/dry_run.sh   "${protocol}" noop ens5 "$load" "$size"
   done
-  size=256
-  for load in 5000 10000 20000 30000 40000 50000 100000 200000 300000; do
+  size=512
+  for load in 5000 10000 20000 30000 40000 50000 100000 150000; do
     /bin/bash  consenbench/scripts/dry_run.sh   "${protocol}" noop ens5 "$load" "$size"
   done
 done
@@ -39,7 +39,7 @@ done
 for protocol in efficient; do
   /bin/bash  consenbench/scripts/dry_setup.sh  "${protocol}" noop ens5
   size=18
-  for load in 1000 50000 100000 150000 200000 250000 300000 400000 500000 600000; do
+  for load in 10000 100000 200000 300000 400000 500000 600000; do
     /bin/bash  consenbench/scripts/dry_run.sh   "${protocol}" noop ens5 "$load" "$size"
   done
 done
