@@ -58,6 +58,7 @@ func (ba *Mahi) CopyConsensus(nodes []*common.Node) error {
 		go func(i int) {
 			nodes[i].Put_Load("protocols/mahi/assets/mysticeti", fmt.Sprintf("%vbench/", nodes[i].HomeDir))
 			nodes[i].Put_Load("protocols/mahi/assets/config-rewrite.py", fmt.Sprintf("%vbench/", nodes[i].HomeDir))
+			nodes[i].Put_Load("protocols/mahi/assets/performance_graph.py", fmt.Sprintf("%vbench/", nodes[i].HomeDir))
 			wg.Done()
 		}(int(j))
 	}
@@ -205,33 +206,20 @@ func (ba *Mahi) Bootstrap(nodes []*common.Node, duration int, result chan util.P
 
 	var wg3 sync.WaitGroup
 	wg3.Add(int(num_replicas))
+	perf_result := make([]string, num_replicas)
 	for i := 0; i < int(num_replicas); i++ {
 		go func(j int) {
-			nodes[j].Get_Load(fmt.Sprintf("%vclient-times-%v.txt", nodes[j].HomeDir, j), fmt.Sprintf("logs/"))
+			perf_result[j] = nodes[j].ExecCmd(fmt.Sprintf("python3 %vbench/performance_graph.py mahi  %v %vclient-times-%v.txt", nodes[j].HomeDir, duration, nodes[j].HomeDir, j))
+			nodes[j].Get_Load(fmt.Sprintf("%vbench/logs/mahi_latency.pdf", nodes[j].HomeDir), fmt.Sprintf("logs/%v_latency.pdf", j))
+			nodes[j].Get_Load(fmt.Sprintf("%vbench/logs/mahi_throughput.pdf", nodes[j].HomeDir), fmt.Sprintf("logs/%v_throughput.pdf", j))
 			wg3.Done()
 		}(i)
 	}
 	wg3.Wait()
 
-	ba.logger.Debug(fmt.Sprintf("Downloaded the client logs"), 0)
+	ba.logger.Debug(fmt.Sprintf("calculated performance"), 0)
 
-	command := "protocols/mahi/assets/performance_graph.py"
-	files := []string{}
-	for j := 0; j < int(num_replicas); j++ {
-		logFile := filepath.Join(homeDir, fmt.Sprintf("toture-testing-consensus/logs/client-times-%v.txt", j))
-		files = append(files, logFile)
-	}
-
-	sshCmd = exec.Command("python3", append([]string{command, "mahi", strconv.Itoa(duration)}, files...)...)
-	output, err = sshCmd.CombinedOutput()
-	if err != nil {
-		ba.logger.Debug(fmt.Sprintf("Error while generating performance graph "+err.Error()+" "+string(output)+"\n"), 0)
-	} else {
-		ba.logger.Debug(fmt.Sprintf("Mahi Performance graph generated successfully\n"+string(output)+"\n"), 0)
-	}
-
-	ba.logger.Debug(fmt.Sprintf("Mahi Mahi Performance:\n %v\n", output), 0)
-	result <- ba.getPerformance([]string{string(output)})
+	result <- ba.getPerformance(perf_result)
 
 	var wg5 sync.WaitGroup
 	wg5.Add(int(num_replicas))
@@ -274,23 +262,31 @@ func (ba *Mahi) getPerformance(outputs []string) util.Performance {
 	p := util.Performance{
 		Option: make(map[string]string),
 	}
-	sum_tx := 0
-	sum_lat := 0
-	for i := 0; i < len(outputs); i++ {
-		tx, err := strconv.ParseFloat(strings.Split(outputs[i], " ")[0], 64)
-		if err != nil {
-			panic(err.Error() + " while parsing tx")
-		}
-		lat, err := strconv.ParseFloat(strings.Split(outputs[i], " ")[1], 64)
-		if err != nil {
-			panic(err.Error() + " while parsing lat")
-		}
-		sum_tx += int(tx)
-		sum_lat += int(lat)
-	}
-	p.Option["throughput"] = fmt.Sprintf("%v requests per second", sum_tx/len(outputs))
-	p.Option["average latency"] = fmt.Sprintf("%v ms", sum_lat/len(outputs))
+	var maxTx float64
+	var maxLat float64
 
-	fmt.Printf("%v,%v,%v,", sum_tx/len(outputs), sum_lat/len(outputs), 0)
+	for _, out := range outputs {
+		parts := strings.Split(out, " ")
+		if len(parts) < 2 {
+			continue
+		}
+
+		tx, err1 := strconv.ParseFloat(parts[0], 64)
+		lat, err2 := strconv.ParseFloat(parts[1], 64)
+
+		if err1 != nil || err2 != nil {
+			continue
+		}
+
+		if tx > maxTx {
+			maxTx = tx
+			maxLat = lat
+		}
+	}
+
+	p.Option["throughput"] = fmt.Sprintf("%.2f requests per second", maxTx)
+	p.Option["average latency"] = fmt.Sprintf("%.2f ms", maxLat)
+
+	fmt.Printf("%v,%v,%v,", maxTx, maxLat, 0)
 	return p
 }
