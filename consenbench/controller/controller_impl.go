@@ -57,6 +57,7 @@ func (c *Controller) BootstrapClients() error {
 				c.Nodes[i].ExecCmd(fmt.Sprintf("pkill -KILL -f " + process_names[p]))
 			}
 			c.Nodes[i].ExecCmd(fmt.Sprintf("pkill -KILL -f bench"))
+			c.Nodes[i].ExecCmd(fmt.Sprintf("sudo apt update && sudo apt install python3-matplotlib"))
 			c.Nodes[i].ExecCmd(fmt.Sprintf("pkill -KILL -f fab"))
 			c.Nodes[i].ExecCmd(fmt.Sprintf("rm -r %vbench", c.Nodes[i].HomeDir))
 			c.Nodes[i].ExecCmd(fmt.Sprintf("mkdir -p %vbench", c.Nodes[i].HomeDir))
