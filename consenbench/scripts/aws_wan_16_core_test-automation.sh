@@ -8,10 +8,10 @@ mkdir logs
 
 echo "Load,Size,Protocol,Attack,Throughput,Latency(ms),Percentile_99(ms),CPU,MEM,NET_IN,NET_OUT"
 
-for protocol in cft_dag dedis_paxos sadl_racs quepaxa efficient; do
+for protocol in cft_dag dedis_paxos quepaxa; do
   /bin/bash  consenbench/scripts/dry_setup.sh  "${protocol}" noop ens5
   size=18
-  for load in 10000 30000 50000 80000 100000 150000 200000 250000 300000 350000 400000 450000 500000; do
+  for load in 10000 20000 30000 50000 80000 100000 150000 200000 250000 300000 350000 400000 450000 500000; do
     /bin/bash  consenbench/scripts/dry_run.sh   "${protocol}" noop ens5 "$load" "$size"
   done
 done
