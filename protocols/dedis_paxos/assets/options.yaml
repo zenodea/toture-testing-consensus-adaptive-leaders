@@ -1,6 +1,6 @@
 replica_path: protocols/dedis_paxos/assets/replica
 client_path: protocols/dedis_paxos/assets/client
-num_replicas: 5
+num_replicas: 3
 ports: 10000
 process_name: replica
 pipeline_length: 10
