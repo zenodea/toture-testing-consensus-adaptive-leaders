@@ -6,7 +6,7 @@ mkdir logs
 
 /bin/bash build.sh
 
-echo "Load,Size,Protocol,Attack,Throughput,Latency(ms),Percentile_99(ms),CPU,MEM,NET_IN,NET_OUT"
+echo "Load,Size,Protocol,Attack,Num_Replicas,Throughput,Latency(ms),Percentile_99(ms),CPU,MEM,NET_IN,NET_OUT"
 
 for protocol in cft_dag dedis_paxos quepaxa; do
   /bin/bash  consenbench/scripts/dry_setup.sh  "${protocol}" noop ens5

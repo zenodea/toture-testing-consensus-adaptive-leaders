@@ -209,6 +209,9 @@ func (c *Controller) Run(protocol string) {
 		panic(err.Error() + " while parsing num_replicas")
 
 	}
+
+	fmt.Printf("%v,", num_replicas)
+
 	process_name, ok := options.Option["process_name"]
 	if !ok {
 		panic("error while parsing process name")
