@@ -1,56 +1,56 @@
 nodes:
   - Id: 1
-    Ip: "13.247.55.126"
+    Ip: "13.247.100.79"
     Username: "ubuntu"
     HomeDir: "/home/ubuntu/"
     privateKeyPath: "/home/ubuntu/.ssh/gc"
   - Id: 2
-    Ip: "13.245.230.132"
+    Ip: "13.245.231.90"
     Username: "ubuntu"
     HomeDir: "/home/ubuntu/"
     privateKeyPath: "/home/ubuntu/.ssh/gc"
   - Id: 3
-    Ip: "13.247.119.11"
+    Ip: "13.245.117.107"
     Username: "ubuntu"
     HomeDir: "/home/ubuntu/"
     privateKeyPath: "/home/ubuntu/.ssh/gc"
   - Id: 4
-    Ip: "18.60.242.175"
+    Ip: "40.192.33.243"
     Username: "ubuntu"
     HomeDir: "/home/ubuntu/"
     privateKeyPath: "/home/ubuntu/.ssh/gc"
   - Id: 5
-    Ip: "18.60.56.66"
+    Ip: "18.61.225.190"
     Username: "ubuntu"
     HomeDir: "/home/ubuntu/"
     privateKeyPath: "/home/ubuntu/.ssh/gc"
   - Id: 6
-    Ip: "16.79.69.53"
+    Ip: "16.78.198.234"
     Username: "ubuntu"
     HomeDir: "/home/ubuntu/"
     privateKeyPath: "/home/ubuntu/.ssh/gc"
   - Id: 7
-    Ip: "16.78.74.242"
+    Ip: "108.136.230.112"
     Username: "ubuntu"
     HomeDir: "/home/ubuntu/"
     privateKeyPath: "/home/ubuntu/.ssh/gc"
   - Id: 8
-    Ip: "13.208.210.149"
+    Ip: "15.168.153.156"
     Username: "ubuntu"
     HomeDir: "/home/ubuntu/"
     privateKeyPath: "/home/ubuntu/.ssh/gc"
   - Id: 9
-    Ip: "56.155.90.123"
+    Ip: "15.152.218.190"
     Username: "ubuntu"
     HomeDir: "/home/ubuntu/"
     privateKeyPath: "/home/ubuntu/.ssh/gc"
   - Id: 10
-    Ip: "18.102.60.201"
+    Ip: "15.160.158.166"
     Username: "ubuntu"
     HomeDir: "/home/ubuntu/"
     privateKeyPath: "/home/ubuntu/.ssh/gc"
   - Id: 11
-    Ip: "15.160.17.185"
+    Ip: "15.161.154.206"
     Username: "ubuntu"
     HomeDir: "/home/ubuntu/"
     privateKeyPath: "/home/ubuntu/.ssh/gc"
