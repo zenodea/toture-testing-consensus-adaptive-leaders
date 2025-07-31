@@ -4,9 +4,9 @@ num_replicas: 5
 ports: 10000
 process_name: replica
 pipeline_length: 10
-leader_timeout: 2000000000
+leader_timeout: 2000000
 server_mode: 0
-leader_mode: 0
+leader_mode: 4
 replica_batch_size: 1000
 replica_batch_time: 5000
 request_propagation_time: 5
