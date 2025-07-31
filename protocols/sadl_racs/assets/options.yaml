@@ -1,6 +1,6 @@
 replica_path: protocols/sadl_racs/assets/replica
 client_path: protocols/sadl_racs/assets/client
-num_replicas: 9
+num_replicas: 5
 ports: 10000
 process_name: replica
 view_timeout_time: 2000000000
