@@ -33,6 +33,8 @@ func (c *Controller) GetAttackImpl() Attack {
 		return NewMajorityHighDelay(c.logger)
 	case "MinorityCrash":
 		return NewMinorityCrash(c.logger)
+	case "LeaderCrash":
+		return NewLeaderCrash(c.logger)
 	case "MinorityStraggler":
 		return NewMinorityStraggler(c.logger)
 	default:
