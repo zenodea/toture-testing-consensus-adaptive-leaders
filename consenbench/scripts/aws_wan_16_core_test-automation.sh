@@ -11,7 +11,7 @@ echo "Load,Size,Protocol,Attack,Num_Replicas,Throughput,Latency(ms),Percentile_9
 for protocol in cft_dag dedis_paxos quepaxa sadl_racs efficient; do
   /bin/bash  consenbench/scripts/dry_setup.sh  "${protocol}" noop ens5
   size=18
-  for load in 10000; do
+  for load in 50000; do
     /bin/bash  consenbench/scripts/dry_run.sh   "${protocol}" LeaderCrash ens5 "$load" "$size"
   done
 done

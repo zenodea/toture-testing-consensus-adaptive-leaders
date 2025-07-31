@@ -271,12 +271,12 @@ func NewLeaderCrash(logger *util.Logger) *LeaderCrash {
 
 func (a *LeaderCrash) Attack(nodes []*AttackNode, links [][]*AttackLink, oracle *LeaderOracle, duration int) {
 	a.logger.Debug(fmt.Sprintf("Running Leader Crash attack\n"), 0)
-	time.Sleep(10 * time.Second)
+	time.Sleep(30 * time.Second)
 	leader := oracle.GetTopNLeaders()[0]
 	nodes[leader].Kill()
 	start_time := time.Now()
 
-	for time.Now().Sub(start_time).Seconds() < float64(duration-15) {
+	for time.Now().Sub(start_time).Seconds() < float64(duration-35) {
 		a.logger.Debug(fmt.Sprintf("The leader order is %v\n", oracle.GetTopNLeaders()), 0)
 		time.Sleep(2 * time.Second)
 	}
