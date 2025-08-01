@@ -18,10 +18,6 @@ for protocol in dedis_paxos dedis_raft sadl_racs racs quepaxa; do
   for load in 10000 50000 100000 200000 300000 400000 500000 600000; do
     /bin/bash  consenbench/scripts/dry_run.sh   "${protocol}" noop ens5 "$load" "$size"
   done
-  size=512
-  for load in 1000 5000 10000 20000 30000 50000 80000 100000 200000; do
-    /bin/bash  consenbench/scripts/dry_run.sh   "${protocol}" noop ens5 "$load" "$size"
-  done
 done
 
 for protocol in rabia efficient; do
