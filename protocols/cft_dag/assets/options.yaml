@@ -1,4 +1,4 @@
-num_replicas: 10
+num_replicas: 5
 ports: 1500
 number_of_leaders: 2
 process_name: mysticeti
