@@ -8,10 +8,26 @@ mkdir logs
 
 echo "Load,Size,Protocol,Attack,Num_Replicas,Throughput,Latency(ms),Percentile_99(ms),CPU,MEM,NET_IN,NET_OUT"
 
-for protocol in cft_dag; do
+for protocol in dedis_paxos dedis_raft sadl_racs racs quepaxa; do
   /bin/bash  consenbench/scripts/dry_setup.sh  "${protocol}" noop ens5
+  size=18
+  for load in 10000 50000 100000 200000 300000 400000 500000 600000; do
+    /bin/bash  consenbench/scripts/dry_run.sh   "${protocol}" noop ens5 "$load" "$size"
+  done
   size=32
-  for load in 10000 100000 200000 300000 400000 500000 600000; do
+  for load in 10000 50000 100000 200000 300000 400000 500000 600000; do
+    /bin/bash  consenbench/scripts/dry_run.sh   "${protocol}" noop ens5 "$load" "$size"
+  done
+  size=512
+  for load in 1000 5000 10000 20000 30000 50000 80000 100000 200000; do
+    /bin/bash  consenbench/scripts/dry_run.sh   "${protocol}" noop ens5 "$load" "$size"
+  done
+done
+
+for protocol in rabia efficient; do
+  /bin/bash  consenbench/scripts/dry_setup.sh  "${protocol}" noop ens5
+  size=18
+  for load in 10000 50000 100000 200000 300000 400000 500000 600000; do
     /bin/bash  consenbench/scripts/dry_run.sh   "${protocol}" noop ens5 "$load" "$size"
   done
 done
