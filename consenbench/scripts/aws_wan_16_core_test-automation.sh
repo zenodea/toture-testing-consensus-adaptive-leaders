@@ -32,7 +32,7 @@ for protocol in efficient; do
   done
 done
 
-for protocol in dedis_paxos quepaxa; do
+for protocol in dedis_paxos quepaxa dedis_raft sadl_racs racs; do
   /bin/bash  consenbench/scripts/dry_setup.sh  "${protocol}" noop ens5
   size=18
   for load in 10000 50000 100000 200000 300000 400000; do
