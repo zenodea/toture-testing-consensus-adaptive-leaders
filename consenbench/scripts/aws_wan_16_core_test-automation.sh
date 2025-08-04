@@ -11,7 +11,7 @@ echo "Load,Size,Protocol,Attack,Num_Replicas,Throughput,Latency(ms),Percentile_9
 for protocol in cft_dag; do
   /bin/bash  consenbench/scripts/dry_setup.sh  "${protocol}" noop ens5
   size=18
-  for load in 700000 800000 900000 1000000 1200000; do
+  for load in 800000 900000 1000000 1200000; do
     /bin/bash  consenbench/scripts/dry_run.sh   "${protocol}" noop ens5 "$load" "$size"
   done
 done
