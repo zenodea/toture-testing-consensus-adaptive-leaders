@@ -253,14 +253,14 @@ func (c *Controller) Run(protocol string) {
 	logDir := filepath.Join(homeDir, "toture-testing-consensus", "logs")
 	destDir := filepath.Join(homeDir, "toture-testing-consensus", "final-results", param_load, param_size, protocol, c.Options.Attack)
 
-	cmd = exec.Command("sh", "-c", "mv "+logDir+"/*.pdf "+destDir)
+	//cmd = exec.Command("sh", "-c", "mv "+logDir+"/*.pdf "+destDir)
 
-	output, err = cmd.CombinedOutput()
-	if err != nil {
-		panic("Error while moving to final-results/" + protocol + "/" + c.Options.Attack + err.Error() + " " + string(output) + "\n")
-	} else {
-		c.logger.Debug(fmt.Sprintf("moved final-results/ sub directory successfully\n"+string(output)+"\n"), 0)
-	}
+	//output, err = cmd.CombinedOutput()
+	//if err != nil {
+	//	panic("Error while moving to final-results/" + protocol + "/" + c.Options.Attack + err.Error() + " " + string(output) + "\n")
+	//} else {
+	//	c.logger.Debug(fmt.Sprintf("moved final-results/ sub directory successfully\n"+string(output)+"\n"), 0)
+	//}
 
 	logDir = filepath.Join(homeDir, "toture-testing-consensus", "bench", "log.log")
 
