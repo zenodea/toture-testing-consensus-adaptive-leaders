@@ -7,7 +7,7 @@ import (
 	dedis_paxos "toture-test/protocols/dedis_paxos"
 	dedis_raft "toture-test/protocols/dedis_raft"
 	efficient "toture-test/protocols/efficient"
-	efficient_exec "toture-test/protocols/efficient-exec"
+	efficient_exec "toture-test/protocols/efficient_exec"
 	etcd "toture-test/protocols/etcd"
 	hotstuff_2 "toture-test/protocols/hotstuff_2"
 	hotstuff_3 "toture-test/protocols/hotstuff_3"
@@ -61,7 +61,7 @@ func (c *Controller) GetProtocolImpl(protocol string) protocols.Consensus {
 		return racs.NewRacs(c.logger)
 	} else if protocol == "efficient" {
 		return efficient.NewEfficient(c.logger)
-	} else if protocol == "efficient-exec" {
+	} else if protocol == "efficient_exec" {
 		return efficient_exec.NewEfficientExec(c.logger)
 	} else if protocol == "quepaxa" {
 		return quepaxa.NewQuePaxa(c.logger)

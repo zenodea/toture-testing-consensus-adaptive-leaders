@@ -42,7 +42,7 @@ func (ba *EfficientExec) CopyConsensus(nodes []*common.Node) error {
 	}
 
 	if num_replicas_int > int64(len(nodes)) {
-		panic("Not enough nodes to deploy efficient-exec")
+		panic("Not enough nodes to deploy efficient_exec")
 	}
 
 	// copy the replica binary, client binary
@@ -52,14 +52,14 @@ func (ba *EfficientExec) CopyConsensus(nodes []*common.Node) error {
 
 	for j := int64(0); j < num_replicas_int; j++ {
 		go func(i int) {
-			nodes[i].Put_Load("protocols/efficient-exec/assets/epaxos_client", fmt.Sprintf("%vbench/", nodes[i].HomeDir))
-			nodes[i].Put_Load("protocols/efficient-exec/assets/epaxos_master", fmt.Sprintf("%vbench/", nodes[i].HomeDir))
-			nodes[i].Put_Load("protocols/efficient-exec/assets/epaxos_server", fmt.Sprintf("%vbench/", nodes[i].HomeDir))
+			nodes[i].Put_Load("protocols/efficient_exec/assets/epaxos_client", fmt.Sprintf("%vbench/", nodes[i].HomeDir))
+			nodes[i].Put_Load("protocols/efficient_exec/assets/epaxos_master", fmt.Sprintf("%vbench/", nodes[i].HomeDir))
+			nodes[i].Put_Load("protocols/efficient_exec/assets/epaxos_server", fmt.Sprintf("%vbench/", nodes[i].HomeDir))
 			wg.Done()
 		}(int(j))
 	}
 	wg.Wait()
-	ba.logger.Debug(fmt.Sprintf("Copied the efficient-exec binaries to all the nodes\n"), 0)
+	ba.logger.Debug(fmt.Sprintf("Copied the efficient_exec binaries to all the nodes\n"), 0)
 
 	return nil
 }
@@ -250,7 +250,7 @@ func (ba *EfficientExec) Bootstrap(nodes []*common.Node, duration int, result ch
 		m++
 	}
 
-	sshCmd = exec.Command("python3", append([]string{command, "efficient-exec"}, file_names...)...)
+	sshCmd = exec.Command("python3", append([]string{command, "efficient_exec"}, file_names...)...)
 	output, err = sshCmd.CombinedOutput()
 	if err != nil {
 		ba.logger.Debug(fmt.Sprintf("Error while generating performance graphs "+err.Error()+" "+string(output)+"\n"), 0)

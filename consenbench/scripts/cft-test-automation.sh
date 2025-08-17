@@ -28,7 +28,7 @@ for protocol in dedis_paxos dedis_raft sadl_racs racs quepaxa; do
 
 done
 
-for protocol in rabia efficient efficient-exec; do
+for protocol in rabia efficient efficient_exec; do
   /bin/bash  consenbench/scripts/dry_setup.sh  "${protocol}" noop eth1
   size=18
   for load in 1000 10000 50000 100000 150000 200000 300000 400000 500000 600000 700000 800000 900000 1000000; do
