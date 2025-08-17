@@ -2,7 +2,6 @@ package consensus
 
 import (
 	"fmt"
-	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"log"
 	"os"
@@ -15,6 +14,8 @@ import (
 	"toture-test/consenbench/common"
 	"toture-test/protocols"
 	"toture-test/util"
+
+	"gopkg.in/yaml.v2"
 )
 
 type Rabia struct {
@@ -214,36 +215,36 @@ func (ba *Rabia) Bootstrap(nodes []*common.Node, duration int, result chan util.
 		ba.logger.Debug(fmt.Sprintf("created logs/ successfully\n"+string(output)+"\n"), 0)
 	}
 
-	var wg2 sync.WaitGroup
-	wg2.Add(int(num_replicas))
-	m = 0
-	for j := 0; j < int(num_replicas); j++ {
-		go func(i int, k int) {
-			nodes[i].Get_Load(fmt.Sprintf("%vbench/logs/%v.txt", nodes[i].HomeDir, k), "logs/")
-			wg2.Done()
-		}(j, m)
-		m++
-	}
-	wg2.Wait()
-	ba.logger.Debug(fmt.Sprintf("Downloaded all the rabia client logs"), 0)
-
-	command := "protocols/rabia/assets/performance_graph.py"
-	file_names := []string{}
-
-	m = 0
-	for j := 0; j < int(num_replicas); j++ {
-		logFile := filepath.Join(homeDir, fmt.Sprintf("toture-testing-consensus/logs/%v.txt", m))
-		file_names = append(file_names, logFile)
-		m++
-	}
-
-	sshCmd = exec.Command("python3", append([]string{command, "rabia"}, file_names...)...)
-	output, err = sshCmd.CombinedOutput()
-	if err != nil {
-		ba.logger.Debug(fmt.Sprintf("Error while generating performance graphs "+err.Error()+" "+string(output)+"\n"), 0)
-	} else {
-		ba.logger.Debug(fmt.Sprintf("Rabia Performance graphs generated successfully\n"+string(output)+"\n"), 0)
-	}
+	//var wg2 sync.WaitGroup
+	//wg2.Add(int(num_replicas))
+	//m = 0
+	//for j := 0; j < int(num_replicas); j++ {
+	//	go func(i int, k int) {
+	//		nodes[i].Get_Load(fmt.Sprintf("%vbench/logs/%v.txt", nodes[i].HomeDir, k), "logs/")
+	//		wg2.Done()
+	//	}(j, m)
+	//	m++
+	//}
+	//wg2.Wait()
+	//ba.logger.Debug(fmt.Sprintf("Downloaded all the rabia client logs"), 0)
+	//
+	//command := "protocols/rabia/assets/performance_graph.py"
+	//file_names := []string{}
+	//
+	//m = 0
+	//for j := 0; j < int(num_replicas); j++ {
+	//	logFile := filepath.Join(homeDir, fmt.Sprintf("toture-testing-consensus/logs/%v.txt", m))
+	//	file_names = append(file_names, logFile)
+	//	m++
+	//}
+	//
+	//sshCmd = exec.Command("python3", append([]string{command, "rabia"}, file_names...)...)
+	//output, err = sshCmd.CombinedOutput()
+	//if err != nil {
+	//	ba.logger.Debug(fmt.Sprintf("Error while generating performance graphs "+err.Error()+" "+string(output)+"\n"), 0)
+	//} else {
+	//	ba.logger.Debug(fmt.Sprintf("Rabia Performance graphs generated successfully\n"+string(output)+"\n"), 0)
+	//}
 
 	result <- ba.GetPerformance(clientOutputs)
 }
