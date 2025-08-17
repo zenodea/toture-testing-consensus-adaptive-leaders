@@ -1,0 +1,13 @@
+replica_path: protocols/efficient-exec/assets/epaxos_server
+client_path: protocols/efficient-exec/assets/epaxos_client
+master_path: protocols/efficient-exec/assets/epaxos_master
+num_replicas: 5
+ports: 10000
+process_name: epaxos_server
+pipeline_length: 10
+view_timeout_time: 200000000
+algo: -e
+exec: -exec
+dreply: -dreply
+w: 100
+c: 2
