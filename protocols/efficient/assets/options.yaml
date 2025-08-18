@@ -8,4 +8,4 @@ pipeline_length: 10
 view_timeout_time: 200000000
 algo: -e
 w: 100
-c: 2
+c: 10
