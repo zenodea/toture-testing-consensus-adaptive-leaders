@@ -32,7 +32,7 @@ for protocol in efficient; do
   /bin/bash  consenbench/scripts/dry_setup.sh  "${protocol}" noop eth1
 
   size=18
-  for load in 1000 20000 50000 150000 200000 300000 400000 500000 600000; do
+  for load in 1000 20000 30000 50000 100000 120000 150000 200000 300000; do
     /bin/bash  consenbench/scripts/dry_run.sh   "${protocol}" noop eth1 "$load" "$size"
   done
 
