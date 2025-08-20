@@ -3,7 +3,7 @@ client_path: protocols/dedis_raft/assets/client
 num_replicas: 5
 ports: 11000
 process_name: replica
-pipeline_length: 1
+pipeline_length: 10
 view_timeout_time: 200000000
 replica_batch_size: 1000
 replica_batch_time: 5000

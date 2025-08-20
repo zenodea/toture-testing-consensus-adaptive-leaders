@@ -3,7 +3,7 @@ client_path: protocols/racs/assets/client
 num_replicas: 5
 ports: 10000
 process_name: replica
-pipeline_length: 1
+pipeline_length: 10
 view_timeout_time: 200000000
 network_batch_time: 2
 replica_batch_size: 1000

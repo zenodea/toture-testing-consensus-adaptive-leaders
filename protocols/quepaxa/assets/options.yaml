@@ -3,7 +3,7 @@ client_path: protocols/quepaxa/assets/client
 num_replicas: 5
 ports: 10000
 process_name: replica
-pipeline_length: 1
+pipeline_length: 10
 leader_timeout: 200000000
 server_mode: 0
 leader_mode: 0
