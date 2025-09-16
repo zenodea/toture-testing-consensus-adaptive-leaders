@@ -1,7 +1,7 @@
 replica_path: protocols/efficient/assets/epaxos_server
 client_path: protocols/efficient/assets/epaxos_client
 master_path: protocols/efficient/assets/epaxos_master
-num_replicas: 3
+num_replicas: 7
 ports: 10000
 process_name: epaxos_server
 pipeline_length: 10

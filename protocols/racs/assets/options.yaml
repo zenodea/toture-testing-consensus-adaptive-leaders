@@ -1,6 +1,6 @@
 replica_path: protocols/racs/assets/replica
 client_path: protocols/racs/assets/client
-num_replicas: 3
+num_replicas: 7
 ports: 10000
 process_name: replica
 pipeline_length: 10

@@ -1,6 +1,6 @@
 replica_path: protocols/dedis_raft/assets/replica
 client_path: protocols/dedis_raft/assets/client
-num_replicas: 3
+num_replicas: 7
 ports: 11000
 process_name: replica
 pipeline_length: 10
