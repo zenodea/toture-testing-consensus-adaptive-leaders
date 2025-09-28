@@ -47,13 +47,16 @@ def calculate_throughput_latency(start_end_pairs, duration):
     overall_throughput = total_requests / total_seconds
     overall_average_latency = total_latency / total_requests / 1_000
     overall_99th_latency = np.percentile(all_latencies, 99) / 1_000
+    overall_median_latency = np.percentile(all_latencies, 50) / 1_000
 
     return {
         "throughput": throughput,
         "average_latency": average_latency,
         "overall_throughput": overall_throughput,
         "overall_avg_latency": overall_average_latency,
-        "overall_99th_latency": overall_99th_latency
+        "overall_99th_latency": overall_99th_latency,
+        "overall_median_latency": overall_median_latency,
+
     }
 
 
@@ -115,10 +118,10 @@ def main():
     best_metrics = best_file[1]
 
     # print(f"Best file: {best_name}")
-    print(f"{best_metrics['overall_throughput']:.2f} {best_metrics['overall_avg_latency']:.2f} {best_metrics['overall_99th_latency']:.2f} ms" )
+    print(f"{best_metrics['overall_throughput']:.2f} {best_metrics['overall_median_latency']:.2f} {best_metrics['overall_99th_latency']:.2f} ms" )
 
-    plot_throughput(best_metrics["throughput"], output_name)
-    plot_latency(best_metrics["average_latency"], output_name)
+    # plot_throughput(best_metrics["throughput"], output_name)
+    # plot_latency(best_metrics["average_latency"], output_name)
 
 
 if __name__ == "__main__":

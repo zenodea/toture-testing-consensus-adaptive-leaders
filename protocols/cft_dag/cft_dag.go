@@ -200,8 +200,8 @@ func (ba *CFT_DAG) Bootstrap(nodes []*common.Node, duration int, result chan uti
 	for i := 0; i < int(num_replicas); i++ {
 		go func(j int) {
 			perf_result[j] = nodes[j].ExecCmd(fmt.Sprintf("python3 %vbench/performance_graph.py CFT_DAG  %v %vclient-times-%v.txt", nodes[j].HomeDir, duration, nodes[j].HomeDir, j))
-			nodes[j].Get_Load(fmt.Sprintf("%vbench/logs/CFT_DAG_latency.pdf", nodes[j].HomeDir), fmt.Sprintf("logs/%v_latency.pdf", j))
-			nodes[j].Get_Load(fmt.Sprintf("%vbench/logs/CFT_DAG_throughput.pdf", nodes[j].HomeDir), fmt.Sprintf("logs/%v_throughput.pdf", j))
+			//nodes[j].Get_Load(fmt.Sprintf("%vbench/logs/CFT_DAG_latency.pdf", nodes[j].HomeDir), fmt.Sprintf("logs/%v_latency.pdf", j))
+			//nodes[j].Get_Load(fmt.Sprintf("%vbench/logs/CFT_DAG_throughput.pdf", nodes[j].HomeDir), fmt.Sprintf("logs/%v_throughput.pdf", j))
 			wg3.Done()
 		}(i)
 	}
@@ -278,7 +278,7 @@ func (ba *CFT_DAG) getPerformance(outputs []string) util.Performance {
 	}
 
 	p.Option["throughput"] = fmt.Sprintf("%.2f requests per second", maxTx)
-	p.Option["average latency"] = fmt.Sprintf("%.2f ms", maxLat)
+	p.Option["median latency"] = fmt.Sprintf("%.2f ms", maxLat)
 	p.Option["99 percentile"] = fmt.Sprintf("%.2f ms", maxPer)
 
 	fmt.Printf("%v,%v,%v,", maxTx, maxLat, maxPer)
