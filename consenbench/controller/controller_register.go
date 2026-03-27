@@ -8,6 +8,7 @@ import (
 	dedis_raft "toture-test/protocols/dedis_raft"
 	efficient "toture-test/protocols/efficient"
 	etcd "toture-test/protocols/etcd"
+	hammerhead2 "toture-test/protocols/hammerhead2"
 	hotstuff_2 "toture-test/protocols/hotstuff_2"
 	hotstuff_3 "toture-test/protocols/hotstuff_3"
 	mahi "toture-test/protocols/mahi"
@@ -80,6 +81,8 @@ func (c *Controller) GetProtocolImpl(protocol string) protocols.Consensus {
 		return zoo_keeper.NewZooKeeper(c.logger)
 	} else if protocol == "cft_dag" {
 		return cft.NewCFT_DAG(c.logger)
+	} else if protocol == "hammerhead2" {
+		return hammerhead2.NewHammerhead2(c.logger)
 	} else {
 		panic("Unknown protocol")
 	}
