@@ -16,7 +16,7 @@ parser.add_argument('--load', type=int, default=1000, help='Load (default: 1000)
 parser.add_argument('--transaction_size', type=int, default=512, help='Transaction size (default: 512)')
 parser.add_argument('--output_dir', type=str, default="protocols/hammerhead2/assets/", help='configuration file output directory')
 parser.add_argument('--max_leaders_per_round', type=int, default=5, help='Maximum number of leaders (default: 5)')
-parser.add_argument('--interval', type=int, default=100, help='Interval at which to recalc the number of leaders (default: 101)')
+parser.add_argument('--scheduler_interval', type=int, default=100, help='Interval at which to recalc the number of leaders (default: 100)')
 
 args = parser.parse_args()
 
@@ -36,7 +36,7 @@ node_parameters = {
     'consensus_only': str_to_bool(args.consensus_only),
     'enable_synchronizer': str_to_bool(args.enable_synchronizer),
     'max_leaders_per_round': args.max_leaders_per_round,
-    'interval': args.interval
+    'scheduler_interval': args.scheduler_interval
 }
 
 # Write node-parameters.yml

@@ -2,6 +2,6 @@ num_replicas: 10
 ports: 1500
 number_of_leaders: 2
 max_leaders_per_round: 5
-interval: 100
+scheduler_interval: 100
 process_name: hammerhead2
 
