@@ -125,9 +125,9 @@ func (ba *Hammerhead2) Bootstrap(nodes []*common.Node, duration int, result chan
 		panic("max_leaders_per_round not found in options")
 	}
 
-	interval, ok := ba.options.Option["interval"]
+	scheduler_interval, ok := ba.options.Option["scheduler_interval"]
 	if !ok {
-		panic("interval not found in options")
+		panic("scheduler_interval not found in options")
 	}
 
 	enable_pipelining := "true"
@@ -136,7 +136,7 @@ func (ba *Hammerhead2) Bootstrap(nodes []*common.Node, duration int, result chan
 
 	transaction_size := param_size
 
-	sshCmd := exec.Command("python3", []string{"protocols/hammerhead2/assets/genrate-configs.py", "--wave_length", wave_length, "--number_of_leaders", number_of_leaders, "--enable_pipelining", enable_pipelining, "--consensus_only", "true", "--enable_synchronizer", enable_synchronizer, "--initial_delay_secs", "5", "--initial_delay_nanos", "0", "--load", load, "--transaction_size", transaction_size, "--max_leaders_per_round", max_leaders_per_round, "--interval", interval, "--output_dir", "protocols/hammerhead2/assets/"}...)
+	sshCmd := exec.Command("python3", []string{"protocols/hammerhead2/assets/genrate-configs.py", "--wave_length", wave_length, "--number_of_leaders", number_of_leaders, "--enable_pipelining", enable_pipelining, "--consensus_only", "true", "--enable_synchronizer", enable_synchronizer, "--initial_delay_secs", "5", "--initial_delay_nanos", "0", "--load", load, "--transaction_size", transaction_size, "--max_leaders_per_round", max_leaders_per_round, "--scheduler_interval", scheduler_interval, "--output_dir", "protocols/hammerhead2/assets/"}...)
 	output, err := sshCmd.CombinedOutput()
 	if err != nil {
 		panic("Error while running config-generate.py " + err.Error() + " " + string(output))
